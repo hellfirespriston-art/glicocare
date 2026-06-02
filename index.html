@@ -52,10 +52,15 @@
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
 
     /* TABS */
+    @keyframes pulso-tab-verde {
+      0%,100% { box-shadow: inset 0 -2px 0 #00ff99aa, 0 0 6px #00ff9955; }
+      50%      { box-shadow: inset 0 -2px 0 #00ff99ff, 0 0 16px #00ff9988; }
+    }
     .tabs { display:flex; background:#0a0a20; border-bottom:1px solid #1a1a3a; padding:0 20px; }
     .tab { padding:13px 22px; cursor:pointer; color:#888; font-size:0.92rem; border-bottom:2px solid transparent; transition:all 0.2s; }
     .tab:hover { color:#00e5ff; }
     .tab.active { color:#00e5ff; border-bottom-color:#00e5ff; }
+    .tab.active[onclick*="registrar"] { color:#00ff99; border-bottom-color:#00ff99; animation:pulso-tab-verde 2s ease-in-out infinite; }
 
     /* CONTENT */
     .content { display:none; padding:20px; }
