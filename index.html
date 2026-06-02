@@ -130,6 +130,55 @@
     .proxima-box .prox-time { font-size:1.5rem; font-weight:700; color:#00ff99; margin-top:4px; }
     .proxima-box .prox-motivo { font-size:0.88rem; color:#bbb; margin-top:4px; }
 
+    /* ALARME TOGGLE */
+    .alarme-row { display:flex; align-items:center; gap:10px; margin-top:12px; }
+    .alarme-label { font-size:0.85rem; color:#aaa; }
+    .toggle-switch { position:relative; width:46px; height:26px; cursor:pointer; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider {
+      position:absolute; inset:0; background:#222; border-radius:26px;
+      transition:0.3s; border:1px solid #444;
+    }
+    .toggle-slider:before {
+      content:''; position:absolute; width:18px; height:18px;
+      left:3px; top:3px; background:#666; border-radius:50%; transition:0.3s;
+    }
+    .toggle-switch input:checked + .toggle-slider { background:#006633; border-color:#00ff99; }
+    .toggle-switch input:checked + .toggle-slider:before { background:#00ff99; transform:translateX(20px); }
+    .alarme-status { font-size:0.8rem; color:#555; }
+    .alarme-status.on { color:#00ff99; }
+
+    /* MODAL ALARME */
+    .alarme-modal {
+      display:none; position:fixed; inset:0; background:#000000cc;
+      z-index:999; justify-content:center; align-items:center;
+    }
+    .alarme-modal.show { display:flex; }
+    .alarme-modal-box {
+      background:#0d1f0d; border:2px solid #00ff99; border-radius:16px;
+      padding:32px 28px; text-align:center; max-width:300px; width:90%;
+    }
+    @keyframes pulso-alarme { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .alarme-modal-icon { font-size:3rem; animation:pulso-alarme 0.8s infinite; }
+    .alarme-modal-title { font-size:1.2rem; font-weight:700; color:#00ff99; margin:10px 0 6px; }
+    .alarme-modal-msg { font-size:0.9rem; color:#aaa; margin-bottom:20px; }
+    .btn-parar { background:#00ff99; color:#000; font-weight:700; font-size:1rem;
+      padding:12px 28px; border:none; border-radius:8px; cursor:pointer; width:100%; }
+
+    /* MODAL INSULINA LENTA */
+    .lenta-modal { display:none; position:fixed; inset:0; background:#000000cc; z-index:1000; justify-content:center; align-items:center; }
+    .lenta-modal.show { display:flex; }
+    .lenta-modal-box { background:#12001f; border:2px solid #cc44ff; border-radius:16px; padding:28px 24px; text-align:center; max-width:320px; width:90%; }
+    .lenta-modal-icon { font-size:2.6rem; }
+    .lenta-modal-title { font-size:1.1rem; font-weight:700; color:#cc44ff; margin:10px 0 4px; }
+    .lenta-modal-sub { font-size:0.85rem; color:#aaa; margin-bottom:18px; }
+    .lenta-dose-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:20px; }
+    .lenta-dose-row input { background:#0a0a20; border:1px solid #cc44ff; color:#f0f0f0; padding:10px 14px; border-radius:8px; font-size:1.4rem; font-weight:700; width:90px; text-align:center; }
+    .lenta-dose-row span { color:#cc44ff; font-size:1.1rem; font-weight:700; }
+    .lenta-btn-row { display:flex; gap:10px; }
+    .btn-lenta-confirmar { flex:1; background:#cc44ff; color:#000; font-weight:700; font-size:0.95rem; padding:11px; border:none; border-radius:8px; cursor:pointer; }
+    .btn-lenta-pular { flex:1; background:#1a1a2a; color:#888; font-size:0.9rem; padding:11px; border:1px solid #333; border-radius:8px; cursor:pointer; }
+
     /* GRAFICO */
     .chart-box { background:linear-gradient(135deg,#080818,#0d1130); border:1px solid #1e2a5a; border-radius:12px; padding:16px; height:340px; }
     .chart-controls { display:flex; gap:12px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
@@ -207,6 +256,23 @@
     .scroll-list::-webkit-scrollbar { width:4px; }
     .scroll-list::-webkit-scrollbar-track { background:#0a0a20; }
     .scroll-list::-webkit-scrollbar-thumb { background:#1e2a5a; border-radius:2px; }
+
+    /* CONFIG */
+    .config-section { background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a; border-radius:12px; padding:20px; margin-bottom:16px; }
+    .config-section h3 { font-size:0.95rem; color:#00e5ff; margin-bottom:16px; text-transform:uppercase; letter-spacing:1px; }
+    .config-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+    .config-row:last-child { margin-bottom:0; }
+    .config-label { font-size:0.9rem; color:#f0f0f0; flex:1; min-width:180px; }
+    .config-label small { display:block; font-size:0.75rem; color:#aaa; margin-top:2px; }
+    .config-input { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:8px 12px; border-radius:6px; font-size:0.95rem; width:130px; text-align:center; }
+    .config-select { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:8px 20px 8px 12px; border-radius:6px; font-size:0.9rem; width:230px; }
+    .config-badge { font-size:0.8rem; padding:4px 10px; border-radius:20px; font-weight:600; }
+    .badge-auto { background:#003322; color:#00ff99; border:1px solid #00ff9955; }
+    .badge-manual { background:#1a1a00; color:#ffaa00; border:1px solid #ffaa0055; }
+    .fator-display { font-size:1.4rem; font-weight:700; color:#00e5ff; text-align:center; min-width:60px; }
+    .config-save { background:linear-gradient(135deg,#0066cc,#004499); color:white; border:none; padding:11px 28px; border-radius:8px; font-size:0.95rem; font-weight:600; cursor:pointer; width:100%; margin-top:8px; }
+    .config-save:hover { background:linear-gradient(135deg,#0077ee,#0055bb); }
+    .aprendizado-info { font-size:0.82rem; color:#aaa; margin-top:8px; line-height:1.5; }
   </style>
 </head>
 <body>
@@ -246,19 +312,13 @@
   </div>
 </div>
 
-<!-- ALERTAS -->
-<div class="alerta alerta-hipo" id="alerta-hipo">
-  ⚠️ ATENÇÃO — HIPOGLICEMIA! Glicemia abaixo de 70 mg/dL. Consuma açúcar imediatamente e procure assistência médica se necessário.
-</div>
-<div class="alerta alerta-hiper" id="alerta-hiper">
-  ⚠️ Hiperglicemia detectada. Glicemia acima de 250 mg/dL. Verifique a necessidade de insulina com seu médico.
-</div>
 
 <div class="tabs">
   <div class="tab active" onclick="switchTab('registrar',this)">➕ Registrar</div>
   <div class="tab" onclick="switchTab('grafico',this)">📈 Gráfico</div>
   <div class="tab" onclick="switchTab('historico',this)">📋 Histórico</div>
   <div class="tab" onclick="switchTab('analise',this)">🧠 Análise</div>
+  <div class="tab" onclick="switchTab('config',this)">⚙️ Config</div>
 </div>
 
 <!-- ══════════ REGISTRAR ══════════ -->
@@ -336,6 +396,41 @@
         <div class="prox-title">⏰ Próxima medição recomendada</div>
         <div class="prox-time" id="prox-time">—</div>
         <div class="prox-motivo" id="prox-motivo"></div>
+        <div class="alarme-row">
+          <span class="alarme-label">🔔 Alarme</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="alarme-toggle" onchange="toggleAlarme(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="alarme-status" id="alarme-status">Desligado</span>
+        </div>
+      </div>
+
+      <!-- MODAL INSULINA LENTA (uma vez por dia) -->
+      <div class="lenta-modal" id="lenta-modal">
+        <div class="lenta-modal-box">
+          <div class="lenta-modal-icon">🟣</div>
+          <div class="lenta-modal-title">Insulina Lenta — Manhã</div>
+          <div class="lenta-modal-sub">Você tomou insulina lenta hoje?<br>Confirme ou ajuste a dose abaixo:</div>
+          <div class="lenta-dose-row">
+            <input type="number" id="inp-lenta-modal" value="20" min="0" max="80" step="1"/>
+            <span>U</span>
+          </div>
+          <div class="lenta-btn-row">
+            <button class="btn-lenta-confirmar" onclick="confirmarLentaModal()">✅ Confirmei, tomei!</button>
+            <button class="btn-lenta-pular" onclick="pularLentaModal()">Não vou tomar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL ALARME -->
+      <div class="alarme-modal" id="alarme-modal">
+        <div class="alarme-modal-box">
+          <div class="alarme-modal-icon">⏰</div>
+          <div class="alarme-modal-title">Hora de medir!</div>
+          <div class="alarme-modal-msg" id="alarme-modal-msg">Verifique sua glicemia agora.</div>
+          <button class="btn-parar" onclick="pararAlarme()">✋ Parar Alarme</button>
+        </div>
       </div>
     </div>
 
@@ -453,6 +548,124 @@
   </div>
 </div>
 
+<!-- ══════════ CONFIG ══════════ -->
+<div id="tab-config" class="content">
+  <div style="max-width:700px;margin:0 auto;padding:20px;">
+
+    <!-- INSULINA LENTA -->
+    <div class="config-section">
+      <h3>🟣 Insulina Lenta (Basal)</h3>
+      <div class="config-row">
+        <div class="config-label">Tipo de insulina
+          <small>Define duração no cálculo de IOB</small>
+        </div>
+        <select class="config-select" id="cfg-insulina-tipo">
+          <option value="24">Lantus / Glargina U100 — 24h</option>
+          <option value="36">Toujeo / Glargina U300 — 36h</option>
+          <option value="42">Tresiba / Degludeca — 42h</option>
+          <option value="14">NPH — 14h</option>
+        </select>
+      </div>
+      <div class="config-row">
+        <div class="config-label">Dose padrão matinal
+          <small>Valor pré-preenchido no aviso de insulina lenta da manhã</small>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="number" class="config-input" id="cfg-dose-lenta" value="20" min="1" max="80" step="1"/>
+          <span style="color:#cc44ff;font-weight:700;">U</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLICEMIA ALVO -->
+    <div class="config-section">
+      <h3>🎯 Glicemia Alvo</h3>
+      <div class="config-row">
+        <div class="config-label">Meta de glicemia
+          <small>Usado no cálculo da dose de insulina rápida</small>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="number" class="config-input" id="cfg-glicemia-alvo" value="200" min="70" max="300" step="5"/>
+          <span style="color:#aaa;font-size:0.85rem;">mg/dL</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FATOR DE SENSIBILIDADE -->
+    <div class="config-section">
+      <h3>⚡ Fator de Sensibilidade à Insulina</h3>
+      <div class="config-row">
+        <div class="config-label">Fator atual
+          <small>1U de insulina rápida reduz X mg/dL</small>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="fator-display" id="cfg-fator-display">40</div>
+          <span style="color:#aaa;font-size:0.85rem;">mg/dL por U</span>
+        </div>
+      </div>
+      <div class="config-row">
+        <div class="config-label">Ajuste manual
+          <small>Desativa o auto-aprendizado</small>
+        </div>
+        <input type="number" class="config-input" id="cfg-fator-manual" value="40" min="10" max="200" step="1" oninput="onFatorManualChange()"/>
+      </div>
+      <div class="config-row">
+        <div class="config-label">Auto-aprendizado
+          <small>Ajusta o fator automaticamente com base nas doses aplicadas e resultado real</small>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-auto-aprendizado" onchange="onAutoAprendizadoChange()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="config-badge" id="cfg-badge-auto">Manual</span>
+        </div>
+      </div>
+      <div class="aprendizado-info" id="cfg-aprendizado-info" style="display:none;">
+        🤖 O app observa a queda real de glicemia após cada dose aplicada e ajusta o fator gradualmente. Quanto mais registros, mais preciso fica. Você pode voltar para manual a qualquer momento.
+      </div>
+    </div>
+
+    <!-- HORÁRIO SILENCIOSO -->
+    <div class="config-section">
+      <h3>🔕 Horário Silencioso</h3>
+      <div class="config-row">
+        <div class="config-label">Ativar horário silencioso
+          <small>O alarme de medição não toca nesse intervalo</small>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-silencioso-ativo" onchange="onSilenciosoChange()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="config-badge badge-manual" id="cfg-silencioso-badge">Desligado</span>
+        </div>
+      </div>
+      <div id="cfg-silencioso-horario" style="display:none;">
+        <div class="config-row">
+          <div class="config-label">Início do silêncio
+            <small>Alarme para de tocar a partir deste horário</small>
+          </div>
+          <input type="time" class="config-input" id="cfg-silencioso-inicio" value="23:00"/>
+        </div>
+        <div class="config-row">
+          <div class="config-label">Fim do silêncio
+            <small>Alarme volta a funcionar a partir daqui</small>
+          </div>
+          <input type="time" class="config-input" id="cfg-silencioso-fim" value="07:00"/>
+        </div>
+        <div class="aprendizado-info" style="display:block;">
+          🔕 Durante o horário silencioso o alarme sonoro fica bloqueado. Hipoglicemias (<54 mg/dL) sempre tocam, independente do horário.
+        </div>
+      </div>
+    </div>
+
+    <button class="config-save" onclick="salvarConfig()">💾 Salvar Configurações</button>
+    <div id="cfg-salvo-msg" style="text-align:center;color:#00ff99;font-size:0.85rem;margin-top:10px;display:none;">✅ Configurações salvas!</div>
+
+  </div>
+</div>
+
 <!-- CARD RESULTADO -->
 <div class="resultado-card" id="resultado-card">
   <div class="res-inner">
@@ -500,11 +713,120 @@
 //  GLICOCARE v1.0 — Engine
 // ══════════════════════════════════════════════
 
+// ── CONFIG ──
+function loadConfig() {
+  const def = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false };
+  return Object.assign(def, JSON.parse(localStorage.getItem('glicocare_cfg') || '{}'));
+}
+function saveConfig(cfg) { localStorage.setItem('glicocare_cfg', JSON.stringify(cfg)); }
+
+function getFatorSensAtual() { return loadConfig().fatorSens; }
+function getDurLenta()       { return loadConfig().insulinaTipo; }
+function getGlicemiaAlvo()   { return loadConfig().glicemiaAlvo; }
+
+function initConfig() {
+  const cfg = loadConfig();
+  document.getElementById('cfg-insulina-tipo').value = cfg.insulinaTipo;
+  document.getElementById('cfg-dose-lenta').value    = cfg.doseLenta;
+  document.getElementById('cfg-glicemia-alvo').value = cfg.glicemiaAlvo;
+  document.getElementById('cfg-fator-manual').value  = Math.round(cfg.fatorSens);
+  document.getElementById('cfg-fator-display').textContent = Math.round(cfg.fatorSens);
+  document.getElementById('cfg-auto-aprendizado').checked  = cfg.autoAprendizado;
+  document.getElementById('cfg-badge-auto').textContent    = cfg.autoAprendizado ? 'Auto' : 'Manual';
+  document.getElementById('cfg-badge-auto').className      = 'config-badge ' + (cfg.autoAprendizado ? 'badge-auto' : 'badge-manual');
+  document.getElementById('cfg-aprendizado-info').style.display = cfg.autoAprendizado ? 'block' : 'none';
+  document.getElementById('inp-lenta-modal').value = cfg.doseLenta;
+  // Silencioso
+  document.getElementById('cfg-silencioso-ativo').checked  = !!cfg.silenciosoAtivo;
+  document.getElementById('cfg-silencioso-inicio').value   = cfg.silenciosoInicio || '23:00';
+  document.getElementById('cfg-silencioso-fim').value      = cfg.silenciosoFim    || '07:00';
+  document.getElementById('cfg-silencioso-badge').textContent = cfg.silenciosoAtivo ? 'Ligado' : 'Desligado';
+  document.getElementById('cfg-silencioso-badge').className   = 'config-badge ' + (cfg.silenciosoAtivo ? 'badge-auto' : 'badge-manual');
+  document.getElementById('cfg-silencioso-horario').style.display = cfg.silenciosoAtivo ? 'block' : 'none';
+}
+
+function salvarConfig() {
+  const cfg = loadConfig();
+  cfg.insulinaTipo   = parseInt(document.getElementById('cfg-insulina-tipo').value);
+  cfg.doseLenta      = parseFloat(document.getElementById('cfg-dose-lenta').value) || 20;
+  cfg.glicemiaAlvo   = parseFloat(document.getElementById('cfg-glicemia-alvo').value) || 100;
+  if (!cfg.autoAprendizado) cfg.fatorSens = parseFloat(document.getElementById('cfg-fator-manual').value) || 40;
+  cfg.autoAprendizado    = document.getElementById('cfg-auto-aprendizado').checked;
+  cfg.silenciosoAtivo    = document.getElementById('cfg-silencioso-ativo').checked;
+  cfg.silenciosoInicio   = document.getElementById('cfg-silencioso-inicio').value || '23:00';
+  cfg.silenciosoFim      = document.getElementById('cfg-silencioso-fim').value    || '07:00';
+  saveConfig(cfg);
+  document.getElementById('cfg-fator-display').textContent = Math.round(cfg.fatorSens);
+  const msg = document.getElementById('cfg-salvo-msg');
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 2500);
+}
+
+function onFatorManualChange() {
+  const v = parseFloat(document.getElementById('cfg-fator-manual').value) || 40;
+  document.getElementById('cfg-fator-display').textContent = Math.round(v);
+  // desativa auto ao editar manualmente
+  document.getElementById('cfg-auto-aprendizado').checked = false;
+  onAutoAprendizadoChange();
+}
+
+function onSilenciosoChange() {
+  const on = document.getElementById('cfg-silencioso-ativo').checked;
+  document.getElementById('cfg-silencioso-badge').textContent  = on ? 'Ligado' : 'Desligado';
+  document.getElementById('cfg-silencioso-badge').className    = 'config-badge ' + (on ? 'badge-auto' : 'badge-manual');
+  document.getElementById('cfg-silencioso-horario').style.display = on ? 'block' : 'none';
+}
+
+function estaNoSilencio() {
+  const cfg = loadConfig();
+  if (!cfg.silenciosoAtivo) return false;
+  const agora = new Date();
+  const [hI, mI] = (cfg.silenciosoInicio||'23:00').split(':').map(Number);
+  const [hF, mF] = (cfg.silenciosoFim||'07:00').split(':').map(Number);
+  const minAgora = agora.getHours()*60 + agora.getMinutes();
+  const minInicio = hI*60 + mI;
+  const minFim    = hF*60 + mF;
+  // Suporte a intervalo que cruza meia-noite (ex: 23h–7h)
+  if (minInicio > minFim) return minAgora >= minInicio || minAgora < minFim;
+  return minAgora >= minInicio && minAgora < minFim;
+}
+
+function onAutoAprendizadoChange() {
+  const on = document.getElementById('cfg-auto-aprendizado').checked;
+  document.getElementById('cfg-badge-auto').textContent  = on ? 'Auto' : 'Manual';
+  document.getElementById('cfg-badge-auto').className    = 'config-badge ' + (on ? 'badge-auto' : 'badge-manual');
+  document.getElementById('cfg-aprendizado-info').style.display = on ? 'block' : 'none';
+}
+
+// Auto-aprendizado: chamado após nova medição
+function ajustarFatorAutoAprendizado(dadosOrdenados) {
+  const cfg = loadConfig();
+  if (!cfg.autoAprendizado) return;
+  const n = dadosOrdenados.length;
+  if (n < 2) return;
+  // Pega últimos 2 registros com glicemia real
+  const comGlic = dadosOrdenados.filter(r => r.glicemia != null && r.glicemia > 0);
+  if (comGlic.length < 2) return;
+  const ultimo  = comGlic[comGlic.length - 1];
+  const anterior = comGlic[comGlic.length - 2];
+  const doseRapida = anterior.rapida || 0;
+  if (doseRapida <= 0) return; // sem dose, sem aprendizado
+  const quedaReal = anterior.glicemia - ultimo.glicemia;
+  if (quedaReal <= 0) return; // glicemia subiu (comeu), não usar
+  const fatorReal = quedaReal / doseRapida;
+  if (fatorReal < 10 || fatorReal > 200) return; // fora do range fisiológico
+  // Suaviza: 80% fator atual + 20% novo
+  cfg.fatorSens = cfg.fatorSens * 0.8 + fatorReal * 0.2;
+  saveConfig(cfg);
+  document.getElementById('cfg-fator-display').textContent = Math.round(cfg.fatorSens);
+  document.getElementById('cfg-fator-manual').value = Math.round(cfg.fatorSens);
+}
+
 // Constantes fisiológicas
 const DUR_RAPIDA_H = 4;    // horas de duração insulina rápida
-const DUR_LENTA_H  = 20;   // horas de duração insulina lenta
-const GLICEMIA_ALVO = 100; // mg/dL alvo
-const FATOR_SENS_DEFAULT = 40; // 1U reduz X mg/dL (aprendido com o tempo)
+const DUR_LENTA_H  = 20;   // fallback (usa getDurLenta() no runtime)
+const GLICEMIA_ALVO = 100; // fallback
+const FATOR_SENS_DEFAULT = 40; // fallback
 
 // ── STORAGE ──
 function loadData() { return JSON.parse(localStorage.getItem('glicocare') || '[]'); }
@@ -526,6 +848,48 @@ function atualizarDatetime() {
 }
 atualizarDatetime();
 setInterval(atualizarDatetime, 60000);
+initConfig();
+
+// ── INSULINA LENTA MATINAL ──
+function verificarLentaMatinal() {
+  const agora = new Date();
+  const hoje = new Date().toDateString();
+  const visto = localStorage.getItem('lenta_dia');
+  if (visto === hoje) return;          // já respondeu hoje
+  if (agora.getHours() < 7) return;   // só libera a partir das 7h
+  document.getElementById('lenta-modal').classList.add('show');
+}
+
+function confirmarLentaModal() {
+  const dose = parseFloat(document.getElementById('inp-lenta-modal').value) || 0;
+  const hoje = new Date().toDateString();
+  localStorage.setItem('lenta_dia', hoje);
+  localStorage.setItem('lenta_dose_hoje', dose);
+  document.getElementById('lenta-modal').classList.remove('show');
+
+  if (dose > 0) {
+    const dados = loadData();
+    const agora = new Date();
+    const dtStr = new Date(agora.getTime() - agora.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    dados.push({ id: Date.now(), dt: dtStr, glicemia: null, rapida: 0, lenta: dose, aplicou: true, refeicao: '', refeicaoStatus: 'sem', sugRapida: null, _tipo: 'insulina lenta' });
+    dados.sort((a,b) => new Date(a.dt) - new Date(b.dt));
+    saveData(dados);
+  }
+}
+
+function pularLentaModal() {
+  const hoje = new Date().toDateString();
+  localStorage.setItem('lenta_dia', hoje);
+  localStorage.setItem('lenta_dose_hoje', 0);
+  document.getElementById('lenta-modal').classList.remove('show');
+}
+
+// Mostra modal após 1 segundo (deixa o app carregar primeiro)
+setTimeout(() => {
+  // Atualiza dose padrão com o valor configurado antes de mostrar
+  document.getElementById('inp-lenta-modal').value = loadConfig().doseLenta;
+  verificarLentaMatinal();
+}, 1000);
 
 // ── TABS ──
 function switchTab(id, el) {
@@ -546,7 +910,7 @@ function calcIOB(dados, tipoFiltro) {
     if (!r.aplicou) continue;
     const dtMs = new Date(r.dt).getTime();
     const horasAtras = (agora - dtMs) / 3600000;
-    const dur = tipoFiltro === 'rapida' ? DUR_RAPIDA_H : DUR_LENTA_H;
+    const dur = tipoFiltro === 'rapida' ? DUR_RAPIDA_H : getDurLenta();
     const dose = tipoFiltro === 'rapida' ? (r.rapida||0) : (r.lenta||0);
     if (horasAtras < dur && dose > 0) {
       const restante = 1 - (horasAtras / dur);
@@ -582,14 +946,15 @@ function calcularSugestao() {
   const dados = loadData();
   const iobR = calcIOB(dados, 'rapida');
   const iobL = calcIOB(dados, 'lenta');
-  const fator = getFatorSens(dados);
+  const fator = getFatorSensAtual();
+  const alvo  = getGlicemiaAlvo();
 
   // Sugestão rápida
   let sugRapida = 0;
-  if (glicemia > GLICEMIA_ALVO) {
-    sugRapida = (glicemia - GLICEMIA_ALVO) / fator;
+  if (glicemia > alvo) {
+    sugRapida = (glicemia - alvo) / fator;
     sugRapida = Math.max(0, sugRapida - iobR);
-    sugRapida = Math.round(sugRapida * 2) / 2; // arredonda para 0.5
+    sugRapida = Math.round(sugRapida * 2) / 2;
   }
 
   // Sugestão lenta (se IOB lenta < 5U e horário matutino)
@@ -599,13 +964,13 @@ function calcularSugestao() {
     sugLenta = dados.length > 0 ? (calcMediaLenta(dados) || 0) : 0;
   }
 
-  // Monta explicação do porquê da sugestão
-  const bruta = (glicemia - GLICEMIA_ALVO) / fator;
+  // Monta explicação
+  const bruta = (glicemia - alvo) / fator;
   let explicacao = '';
-  if (glicemia <= GLICEMIA_ALVO) {
-    explicacao = `✅ Glicemia de ${glicemia} mg/dL está no alvo (≤${GLICEMIA_ALVO} mg/dL). Nenhuma correção necessária.`;
+  if (glicemia <= alvo) {
+    explicacao = `✅ Glicemia de ${glicemia} mg/dL está no alvo (≤${alvo} mg/dL). Nenhuma correção necessária.`;
   } else {
-    explicacao = `📐 Glicemia ${glicemia} mg/dL − alvo ${GLICEMIA_ALVO} mg/dL = <strong style="color:#fff">${(glicemia-GLICEMIA_ALVO)} mg/dL acima</strong><br>`;
+    explicacao = `📐 Glicemia ${glicemia} mg/dL − alvo ${alvo} mg/dL = <strong style="color:#fff">${(glicemia-alvo)} mg/dL acima</strong><br>`;
     explicacao += `➗ Fator de sensibilidade: 1U reduz ~${fator.toFixed(0)} mg/dL → dose bruta: <strong style="color:#fff">${bruta.toFixed(1)}U</strong><br>`;
     if (iobR > 0) {
       explicacao += `⏳ IOB ativo: −${iobR.toFixed(1)}U já em circulação → dose final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)}U</strong>`;
@@ -646,6 +1011,98 @@ function calcMediaLenta(dados) {
   return lentas.reduce((a,b)=>a+b,0)/lentas.length;
 }
 
+// ── ALARME ──
+let alarmeTimeout = null;
+let alarmeAudioCtx = null;
+let alarmeInterval = null;
+let alarmeAtivo = false;
+let proximaHoraAlarme = null;
+
+function toggleAlarme(ligado) {
+  const status = document.getElementById('alarme-status');
+  if (ligado) {
+    status.textContent = proximaHoraAlarme ? 'Agendado para ' + proximaHoraAlarme : 'Ligado';
+    status.className = 'alarme-status on';
+    agendarAlarme();
+  } else {
+    status.textContent = 'Desligado';
+    status.className = 'alarme-status';
+    cancelarAlarme();
+  }
+}
+
+function agendarAlarme() {
+  cancelarAlarme();
+  if (!proximaHoraAlarme) return;
+  const agora = new Date();
+  const [h, m] = proximaHoraAlarme.split(':').map(Number);
+  const alvo = new Date(agora);
+  alvo.setHours(h, m, 0, 0);
+  if (alvo <= agora) alvo.setDate(alvo.getDate() + 1);
+  const diff = alvo - agora;
+  alarmeTimeout = setTimeout(() => dispararAlarme(), diff);
+}
+
+function cancelarAlarme() {
+  if (alarmeTimeout) { clearTimeout(alarmeTimeout); alarmeTimeout = null; }
+  pararSomAlarme();
+}
+
+function dispararAlarme() {
+  // Bloqueia durante horário silencioso, exceto se última glicemia foi hipo severa
+  const ultimaGlic = loadData().filter(r=>r.glicemia!=null).slice(-1)[0]?.glicemia;
+  const hipoSevera = ultimaGlic && ultimaGlic < 54;
+  if (estaNoSilencio() && !hipoSevera) {
+    // Reagenda para o fim do silêncio
+    const cfg = loadConfig();
+    const [hF, mF] = (cfg.silenciosoFim||'07:00').split(':').map(Number);
+    const agora = new Date();
+    const alvo = new Date(agora); alvo.setHours(hF, mF, 0, 0);
+    if (alvo <= agora) alvo.setDate(alvo.getDate()+1);
+    alarmeTimeout = setTimeout(() => dispararAlarme(), alvo - agora);
+    return;
+  }
+  alarmeAtivo = true;
+  document.getElementById('alarme-modal').classList.add('show');
+  const motivo = document.getElementById('prox-motivo').textContent;
+  document.getElementById('alarme-modal-msg').textContent = (hipoSevera ? '⚠️ ATENÇÃO — Hipoglicemia severa registrada! ' : '') + (motivo || 'Verifique sua glicemia agora.');
+  tocarSomAlarme();
+}
+
+function tocarSomAlarme() {
+  try {
+    alarmeAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let bip = 0;
+    alarmeInterval = setInterval(() => {
+      if (!alarmeAtivo) return;
+      const osc = alarmeAudioCtx.createOscillator();
+      const gain = alarmeAudioCtx.createGain();
+      osc.connect(gain); gain.connect(alarmeAudioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(bip % 2 === 0 ? 880 : 660, alarmeAudioCtx.currentTime);
+      gain.gain.setValueAtTime(0.6, alarmeAudioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, alarmeAudioCtx.currentTime + 0.3);
+      osc.start(); osc.stop(alarmeAudioCtx.currentTime + 0.3);
+      bip++;
+    }, 600);
+  } catch(e) {}
+}
+
+function pararSomAlarme() {
+  alarmeAtivo = false;
+  if (alarmeInterval) { clearInterval(alarmeInterval); alarmeInterval = null; }
+  if (alarmeAudioCtx) { try { alarmeAudioCtx.close(); } catch(e){} alarmeAudioCtx = null; }
+}
+
+function pararAlarme() {
+  pararSomAlarme();
+  document.getElementById('alarme-modal').classList.remove('show');
+  // Desliga o toggle automaticamente
+  document.getElementById('alarme-toggle').checked = false;
+  document.getElementById('alarme-status').textContent = 'Desligado';
+  document.getElementById('alarme-status').className = 'alarme-status';
+}
+
 // ── PRÓXIMA MEDIÇÃO ──
 function calcProximaMedicao(glicemia, sugRapida) {
   let horas = 4, motivo = '';
@@ -659,6 +1116,13 @@ function calcProximaMedicao(glicemia, sugRapida) {
 
   const proxima = new Date(Date.now() + horas * 3600000);
   const proxStr = proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) + ' (' + (horas < 1 ? '30min' : horas + 'h') + ')';
+
+  // Salva horário para o alarme
+  proximaHoraAlarme = proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  if (document.getElementById('alarme-toggle').checked) {
+    document.getElementById('alarme-status').textContent = 'Agendado para ' + proximaHoraAlarme;
+    agendarAlarme();
+  }
 
   // Atualiza box pequeno
   document.getElementById('proxima-box').style.display = 'block';
@@ -736,10 +1200,10 @@ function atualizarDisplayGlicemia(v) {
   const el = document.getElementById('glicemia-display');
   const st = document.getElementById('glicemia-status');
   el.textContent = v;
-  if (v < 70)       { el.style.color='#ff4466'; st.textContent='🔴 HIPOGLICEMIA'; st.style.color='#ff4466'; document.getElementById('alerta-hipo').style.display='block'; document.getElementById('alerta-hiper').style.display='none'; }
-  else if (v <= 140){ el.style.color='#00ff99'; st.textContent='✅ Normal';        st.style.color='#00ff99'; document.getElementById('alerta-hipo').style.display='none'; document.getElementById('alerta-hiper').style.display='none'; }
-  else if (v <= 250){ el.style.color='#ffaa00'; st.textContent='⚠️ Elevada';       st.style.color='#ffaa00'; document.getElementById('alerta-hipo').style.display='none'; document.getElementById('alerta-hiper').style.display='none'; }
-  else              { el.style.color='#ff6633'; st.textContent='🔴 HIPERGLICEMIA'; st.style.color='#ff6633'; document.getElementById('alerta-hipo').style.display='none'; document.getElementById('alerta-hiper').style.display='block'; }
+  if (v < 70)       { el.style.color='#ff4466'; st.textContent='🔴 HIPOGLICEMIA'; st.style.color='#ff4466'; }
+  else if (v <= 140){ el.style.color='#00ff99'; st.textContent='✅ Normal';        st.style.color='#00ff99'; }
+  else if (v <= 250){ el.style.color='#ffaa00'; st.textContent='⚠️ Elevada';       st.style.color='#ffaa00'; }
+  else              { el.style.color='#ff6633'; st.textContent='🔴 HIPERGLICEMIA'; st.style.color='#ff6633'; }
 }
 
 // ── REGISTRAR ──
@@ -747,7 +1211,7 @@ function registrar() {
   const glicemia = parseFloat(document.getElementById('inp-glicemia').value);
   const dt = document.getElementById('inp-datetime').value;
   const rapida = parseFloat(document.getElementById('inp-rapida').value)||0;
-  const lenta = 0;
+  const lenta = 0; // lenta registrada separadamente via modal matinal
   const aplicou = (rapida > 0 || lenta > 0);
   const refeicao = document.getElementById('inp-refeicao').value.trim();
   const refeicaoStatus = document.querySelector('input[name="refeicao-status"]:checked')?.value || '';
@@ -763,14 +1227,18 @@ function registrar() {
   dados.sort((a,b)=>new Date(a.dt)-new Date(b.dt));
   saveData(dados);
 
+  // Auto-aprendizado do fator (usa os dados já ordenados)
+  ajustarFatorAutoAprendizado(loadData());
+
   // Calcula sugestão com base na glicemia registrada
   const dadosAtual = loadData();
   const iobR = calcIOB(dadosAtual,'rapida');
   const iobL = calcIOB(dadosAtual,'lenta');
-  const fator = getFatorSens(dadosAtual);
+  const fator = getFatorSensAtual();
+  const alvo2 = getGlicemiaAlvo();
   let sugRapida = 0;
-  const bruta2 = glicemia > GLICEMIA_ALVO ? (glicemia - GLICEMIA_ALVO) / fator : 0;
-  if (glicemia > GLICEMIA_ALVO) {
+  const bruta2 = glicemia > alvo2 ? (glicemia - alvo2) / fator : 0;
+  if (glicemia > alvo2) {
     sugRapida = Math.max(0, bruta2 - iobR);
     sugRapida = Math.round(sugRapida * 2) / 2;
   }
@@ -779,11 +1247,11 @@ function registrar() {
   const idx = dadosSug.findIndex(r => r.id === novoId);
   if (idx !== -1) { dadosSug[idx].sugRapida = sugRapida; saveData(dadosSug); }
   let tooltipCard = '';
-  if (glicemia <= GLICEMIA_ALVO) {
-    tooltipCard = `Sua glicemia está dentro do alvo (abaixo de ${GLICEMIA_ALVO} mg/dL), então não é necessário aplicar insulina agora.`;
+  if (glicemia <= alvo2) {
+    tooltipCard = `Sua glicemia está dentro do alvo (abaixo de ${alvo2} mg/dL), então não é necessário aplicar insulina agora.`;
   } else {
-    const acima = glicemia - GLICEMIA_ALVO;
-    tooltipCard = `Sua glicemia está ${acima} mg/dL acima do alvo (${GLICEMIA_ALVO} mg/dL). `;
+    const acima = glicemia - alvo2;
+    tooltipCard = `Sua glicemia está ${acima} mg/dL acima do alvo (${alvo2} mg/dL). `;
     tooltipCard += `Como 1 unidade de insulina reduz cerca de ${fator.toFixed(0)} mg/dL no seu caso, seriam necessárias ${bruta2.toFixed(1)} unidades para corrigir. `;
     if (iobR > 0) {
       tooltipCard += `Mas você ainda tem ${iobR.toFixed(1)} unidade(s) ativa(s) no corpo de aplicações anteriores, então foram descontadas — resultando em ${sugRapida.toFixed(1)} unidade(s) sugerida(s).`;
@@ -943,16 +1411,22 @@ function renderHistorico() {
     const cor = r.glicemia<70?'#ff4466':r.glicemia<=140?'#00ff99':r.glicemia<=250?'#ffaa00':'#ff6633';
     const dtFmt = new Date(r.dt).toLocaleString('pt-BR');
     const insulina = [];
-    if (r.sugRapida != null && r.sugRapida > 0) insulina.push(`🔵 Sugerido: ${r.sugRapida}U`);
-    if (r.rapida>0) insulina.push(`💉 Aplicado: ${r.rapida}U`);
+    if (r._tipo === 'insulina lenta') insulina.push(`🟣 Insulina Lenta: ${r.lenta}U`);
+    else {
+      if (r.sugRapida != null && r.sugRapida > 0) insulina.push(`🔵 Sugerido: ${r.sugRapida}U`);
+      if (r.rapida>0) insulina.push(`💉 Insulina Rápida: ${r.rapida}U`);
+    }
     const insulinaStr = insulina.length
       ? `<div class="hist-insulin">${insulina.join(' · ')} ✅</div>`
       : r.aplicou === false
         ? `<div class="hist-insulin" style="color:#666;">💉 Sem insulina aplicada</div>`
         : '';
+    const glicemiaDisplay = r._tipo === 'insulina lenta'
+      ? `<div class="hist-glicemia" style="color:#cc44ff">🟣 Insulina Lenta</div>`
+      : `<div class="hist-glicemia" style="color:${cor}">${r.glicemia} <small style="font-size:0.5em;color:#555">mg/dL</small></div>`;
     html += `<div class="hist-item">
       <div class="hist-left">
-        <div class="hist-glicemia" style="color:${cor}">${r.glicemia} <small style="font-size:0.5em;color:#555">mg/dL</small></div>
+        ${glicemiaDisplay}
         <div class="hist-meta">${dtFmt}</div>
         ${insulinaStr}
         ${r.refeicao?`<div class="hist-refeicao">🍽️ ${r.refeicao}${r.refeicaoStatus==='vai_comer'?' <span style="color:#ffaa00;font-size:0.75rem">(vai comer)</span>':r.refeicaoStatus==='ja_comi'?' <span style="color:#00ff99;font-size:0.75rem">(já comeu)</span>':''}</div>`:''}
@@ -1030,153 +1504,366 @@ function renderAnalise() {
 
 // ── GERAR PDF ──
 function gerarPDF() {
+  // Normaliza texto para jsPDF (remove acentos, substitui chars especiais)
+  const ascii = (s) => {
+    if (!s && s !== 0) return '';
+    return String(s)
+      .normalize('NFD').replace(/[̀-ͯ]/g, '') // remove diacriticos
+      .replace(/[—–]/g, '-')   // dashes
+      .replace(/[""]/g, '"')
+      .replace(/['']/g, "'")
+      .replace(/[^\x00-\x7F]/g, '?'); // qualquer outro char fora ASCII → ?
+  };
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const dados = loadData();
   const dias = parseInt(document.getElementById('sel-pdf-periodo').value);
   const corte = dias ? Date.now() - dias * 86400000 : 0;
-  const filtrado = dados.filter(r => new Date(r.dt).getTime() >= corte);
+  const filtrado = dados.filter(r => new Date(r.dt).getTime() >= corte && r.glicemia != null && r.glicemia > 0);
 
   if (!filtrado.length) { alert('Nenhum dado no período selecionado!'); return; }
 
+  // ── CÁLCULOS GERAIS ──
+  const avg = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
   const glicemias = filtrado.map(r => r.glicemia);
-  const media = glicemias.reduce((a,b)=>a+b,0) / glicemias.length;
+  const n = glicemias.length;
+  const media = avg(glicemias);
   const max = Math.max(...glicemias);
   const min = Math.min(...glicemias);
+
+  // Desvio padrão e CV
+  const dp = Math.sqrt(glicemias.reduce((s,v)=>s+Math.pow(v-media,2),0)/n);
+  const cv = (dp/media*100);
+
+  // GMI (Glucose Management Indicator) — fórmula ADA
+  const gmi = (3.31 + 0.02392 * media).toFixed(1);
+  const gmiNum = parseFloat(gmi);
+
+  // Time in Range — padrão internacional (consenso 2019)
+  const tir_hipo2  = glicemias.filter(v=>v<54).length;          // Hipo severa <54
+  const tir_hipo1  = glicemias.filter(v=>v>=54&&v<70).length;   // Hipo leve 54-70
+  const tir_normal = glicemias.filter(v=>v>=70&&v<=180).length; // Alvo 70-180
+  const tir_alta1  = glicemias.filter(v=>v>180&&v<=250).length; // Elevada 180-250
+  const tir_alta2  = glicemias.filter(v=>v>250).length;          // Hiper severa >250
+  const pct = v => Math.round(v/n*100);
+  const pctH2=pct(tir_hipo2), pctH1=pct(tir_hipo1), pctNormal=pct(tir_normal), pctA1=pct(tir_alta1), pctA2=pct(tir_alta2);
+
+  // Metas AGP (consenso internacional)
+  const metaNormal=70, metaHipo=4, metaHipo2=1, metaAlta1=25, metaAlta2=5;
+
+  // HbA1c estimada — fórmula Nathan
   const hba1c = ((media + 46.7) / 28.7).toFixed(1);
   const hbaNum = parseFloat(hba1c);
-  const emZona = glicemias.filter(v=>v>=70&&v<=140).length;
-  const pctElevada = Math.round(glicemias.filter(v=>v>140&&v<=250).length/glicemias.length*100);
-  const pctHiper = Math.round(glicemias.filter(v=>v>250).length/glicemias.length*100);
-  const pctHipo = Math.round(glicemias.filter(v=>v<70).length/glicemias.length*100);
-  const pctZona = Math.round(emZona/glicemias.length*100);
+
+  // Médias por período do dia
+  const avgGlic = (h1,h2) => {
+    const sub = filtrado.filter(r=>{const h=new Date(r.dt).getHours();return h>=h1&&h<h2;}).map(r=>r.glicemia);
+    return sub.length ? Math.round(avg(sub)) : null;
+  };
+  const periMadrugada = avgGlic(0,6);
+  const periManha     = avgGlic(6,12);
+  const periTarde     = avgGlic(12,18);
+  const periNoite     = avgGlic(18,24);
+
+  // Perfil por hora (AGP-like)
+  const porHora = Array.from({length:24},(_,h)=>{
+    const vals = filtrado.filter(r=>new Date(r.dt).getHours()===h).map(r=>r.glicemia);
+    return vals.length ? Math.round(avg(vals)) : null;
+  });
+
+  // Resumo de insulina
+  const somenteMedicoes = filtrado.filter(r=>!r._tipo);
+  const comRapida = somenteMedicoes.filter(r=>r.rapida>0);
+  const lentas = dados.filter(r=>r._tipo==='insulina lenta' && new Date(r.dt).getTime()>=corte);
+  const totalRapida = comRapida.reduce((s,r)=>s+r.rapida,0);
+  const totalLenta  = lentas.reduce((s,r)=>s+r.lenta,0);
+  const diasPeriodo = Math.max(1, dias || Math.ceil((Date.now()-new Date(filtrado[0].dt).getTime())/86400000));
+  const mediaRapidaDia = (totalRapida/diasPeriodo).toFixed(1);
+  const mediaLentaDia  = (totalLenta/diasPeriodo).toFixed(1);
+  const tdd = (totalRapida + totalLenta) / diasPeriodo;
+  const pctBasal = tdd>0 ? Math.round(totalLenta/(totalRapida+totalLenta)*100) : null;
+
+  // Hipoglicemias — eventos (registros <70 separados por >30min)
+  const eventos_hipo = [];
+  let ultimoHipo = 0;
+  filtrado.filter(r=>r.glicemia<70).forEach(r=>{
+    const t = new Date(r.dt).getTime();
+    if (t - ultimoHipo > 1800000) { eventos_hipo.push(r); ultimoHipo = t; }
+  });
+
+  // Fator de sensibilidade atual
+  const fatorAtual = Math.round(getFatorSensAtual());
+  const cfgAtual = loadConfig();
+
   const hoje = new Date().toLocaleDateString('pt-BR');
+  const dataInicio = new Date(filtrado[0].dt).toLocaleDateString('pt-BR');
+  const dataFim = new Date(filtrado[filtrado.length-1].dt).toLocaleDateString('pt-BR');
 
-  // Por período do dia
-  const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : null;
-  const manha = avg(filtrado.filter(r=>{const h=new Date(r.dt).getHours();return h>=6&&h<12;}).map(r=>r.glicemia));
-  const tarde  = avg(filtrado.filter(r=>{const h=new Date(r.dt).getHours();return h>=12&&h<18;}).map(r=>r.glicemia));
-  const noite  = avg(filtrado.filter(r=>{const h=new Date(r.dt).getHours();return h>=18||h<6;}).map(r=>r.glicemia));
+  // ── CORES ──
+  const C = {
+    azul:[0,180,220], azulEsc:[0,100,180], branco:[255,255,255],
+    cinza:[160,160,160], cinzaEsc:[80,80,100], escuro:[12,14,30],
+    vermelho:[220,50,70], vermelhoClaro:[255,100,120],
+    verde:[0,180,100], verdeClaro:[0,220,130],
+    amarelo:[220,160,0], laranja:[230,100,0],
+    roxo:[160,80,220], rosa:[220,80,160],
+    cinzaFundo:[18,22,48], cinzaFundo2:[22,28,58],
+  };
+  const corGlicemia = v => v==null?C.cinza:v<54?C.vermelho:v<70?C.rosa:v<=180?C.verde:v<=250?C.amarelo:C.laranja;
+  const corGMI = v => v<6?C.verdeClaro:v<7?C.verde:v<8?C.amarelo:C.vermelho;
+  const corCV  = v => v<=36?C.verde:v<=50?C.amarelo:C.vermelho;
 
-  // Apenas registros fora do padrão (hipo ou hiper)
-  const foraPadrao = filtrado.filter(r=>r.glicemia<70||r.glicemia>250).reverse();
-
-  const azul=[0,180,220], branco=[255,255,255], cinza=[180,180,180], escuro=[20,20,40];
-  const vermelho=[220,50,70], verde=[0,180,100], amarelo=[220,150,0], laranja=[230,120,0];
-  const hbaCor = hbaNum<5.7?verde:hbaNum<6.5?amarelo:vermelho;
-  const hbaCat = hbaNum<5.7?'Normal':hbaNum<6.5?'Pré-diabetes':'Diabetes — buscar controle';
-
-  const rodape = (pag) => {
-    doc.setTextColor(...cinza); doc.setFontSize(8); doc.setFont('helvetica','normal');
-    doc.text('GlicoCare v1.0  |  Gerado em '+hoje, 14, 292);
-    doc.text('Página '+pag, 196, 292, {align:'right'});
+  // ── RODAPÉ ──
+  const rodape = (pag, total) => {
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+    doc.text('GlicoCare v1.0  -  Relatorio gerado em '+hoje, 14, 292);
+    doc.text('Pagina '+pag+(total?' de '+total:''), 196, 292, {align:'right'});
+    doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.2);
+    doc.line(10, 288, 200, 288);
   };
 
-  // ══════════════════════════════
-  // PÁG 1 — RESUMO VISUAL
-  // ══════════════════════════════
-  doc.setFillColor(...escuro);
-  doc.rect(0,0,210,32,'F');
-  doc.setTextColor(...azul); doc.setFontSize(20); doc.setFont('helvetica','bold');
-  doc.text('GlicoCare — Relatório Médico', 14, 14);
-  doc.setFontSize(9); doc.setTextColor(...cinza);
-  doc.text(`Gerado em: ${hoje}   |   Período: ${dias?'últimos '+dias+' dias':'todo o histórico'}   |   v1.0`, 14, 24);
+  // ══════════════════════════════════════════════
+  // PÁG 1 — PAINEL EXECUTIVO (estilo AGP)
+  // ══════════════════════════════════════════════
 
-  let y = 40;
+  // Cabeçalho
+  doc.setFillColor(...C.escuro); doc.rect(0,0,210,38,'F');
+  doc.setTextColor(...C.azul); doc.setFontSize(18); doc.setFont('helvetica','bold');
+  doc.text('GlicoCare - Relatorio de Controle Glicemico', 14, 15);
+  doc.setTextColor(...C.cinza); doc.setFontSize(8.5); doc.setFont('helvetica','normal');
+  doc.text(`Periodo: ${dataInicio} a ${dataFim}   |   ${n} medicoes   |   ~${(n/diasPeriodo).toFixed(1)} medicoes/dia`, 14, 24);
+  doc.text(`Insulina lenta: ${cfgAtual.insulinaTipo}h   |   Dose padrao: ${cfgAtual.doseLenta}U   |   Alvo: ${cfgAtual.glicemiaAlvo} mg/dL`, 14, 31);
 
-  // ── HBA1C DESTAQUE ──
-  doc.setFillColor(15,20,50); doc.roundedRect(10,y,95,28,3,3,'F');
-  doc.setTextColor(...cinza); doc.setFontSize(8); doc.setFont('helvetica','normal');
-  doc.text('HbA1c ESTIMADA', 15, y+8);
-  doc.setTextColor(...hbaCor); doc.setFontSize(18); doc.setFont('helvetica','bold');
-  doc.text(hba1c+'%', 15, y+22);
-  doc.setFontSize(10); doc.text(hbaCat, 38, y+22);
+  let y = 44;
 
-  // ── STATS LADO DIREITO ──
-  doc.setFillColor(15,20,50); doc.roundedRect(110,y,90,28,3,3,'F');
-  const stats2 = [['Média',Math.round(media)+' mg/dL'],['Máx',max+' mg/dL'],['Mín',min+' mg/dL'],['Total',filtrado.length+' med.']];
-  stats2.forEach(([l,v],i)=>{
-    const cx=115+(i%2)*44, cy=y+10+Math.floor(i/2)*12;
-    doc.setTextColor(...cinza); doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.text(l+':', cx, cy);
-    doc.setTextColor(...branco); doc.setFont('helvetica','bold'); doc.text(String(v), cx+14, cy);
-  });
-
-  y += 36;
-
-  // ── GRÁFICO DE BARRAS — DISTRIBUIÇÃO ──
-  doc.setTextColor(...azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('DISTRIBUIÇÃO DO TEMPO (%)', 14, y); y+=6;
-
-  const zonas = [
-    ['Hipoglicemia (<70)', pctHipo, vermelho],
-    ['Normal (70–140)',    pctZona, verde],
-    ['Elevada (140–250)', pctElevada, amarelo],
-    ['Hiper (>250)',       pctHiper, laranja],
+  // ── BLOCO GMI + HbA1c + CV ──
+  const blocos = [
+    { label:'GMI', valor:gmi+'%', sub: gmiNum<6?'Otimo':gmiNum<7?'Bom':gmiNum<8?'Atencao':'Alto', cor:corGMI(gmiNum), desc:'Formula ADA' },
+    { label:'HbA1c Est.', valor:hba1c+'%', sub: hbaNum<5.7?'Normal':hbaNum<6.5?'Pre-DM':'Diabetes', cor:hbaNum<5.7?C.verdeClaro:hbaNum<6.5?C.amarelo:C.vermelho, desc:'Nathan et al.' },
+    { label:'Media', valor:Math.round(media)+' mg/dL', sub:'', cor:corGlicemia(media), desc:'' },
+    { label:'CV', valor:cv.toFixed(0)+'%', sub: cv<=36?'Estavel':cv<=50?'Moderado':'Instavel', cor:corCV(cv), desc:'Meta <=36%' },
+    { label:'DP', valor:Math.round(dp)+' mg/dL', sub:'', cor:C.azul, desc:'Desvio padrao' },
   ];
-  zonas.forEach(([label, pct, cor], i) => {
-    const ly = y + i*10;
-    doc.setTextColor(...cinza); doc.setFontSize(8); doc.setFont('helvetica','normal');
-    doc.text(label, 14, ly+5);
-    doc.setFillColor(20,25,50); doc.roundedRect(75, ly, 100, 7, 1, 1, 'F');
-    doc.setFillColor(...cor); doc.roundedRect(75, ly, Math.max(1,pct), 7, 1, 1, 'F');
-    doc.setTextColor(...cor); doc.setFont('helvetica','bold');
-    doc.text(pct+'%', 178, ly+5.5);
+  blocos.forEach((b, i)=>{
+    const bx = 10 + i*40, bw=38, bh=28;
+    doc.setFillColor(...C.cinzaFundo); doc.roundedRect(bx,y,bw,bh,2,2,'F');
+    doc.setDrawColor(...b.cor); doc.setLineWidth(0.6); doc.roundedRect(bx,y,bw,bh,2,2,'S');
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6.5); doc.setFont('helvetica','normal');
+    doc.text(b.label, bx+2, y+6);
+    doc.setTextColor(...b.cor); doc.setFontSize(13); doc.setFont('helvetica','bold');
+    doc.text(b.valor, bx+2, y+17);
+    if(b.sub){ doc.setFontSize(7); doc.text(b.sub, bx+2, y+24); }
+    if(b.desc){ doc.setTextColor(...C.cinzaEsc); doc.setFontSize(5.5); doc.text(b.desc, bx+2, y+26.5); }
   });
 
-  y += 48;
+  y += 34;
 
-  // ── MÉDIAS POR PERÍODO ──
-  doc.setTextColor(...azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('MÉDIA POR PERÍODO DO DIA', 14, y); y+=6;
+  // ── TIME IN RANGE — PADRÃO INTERNACIONAL ──
+  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('TIME IN RANGE - Consenso Internacional 2019 (ADA/EASD)', 14, y); y+=5;
 
-  const periodos = [['Manha (6h-12h)', manha],['Tarde (12h-18h)', tarde],['Noite (18h-6h)', noite]];
-  periodos.forEach(([label, val], i) => {
-    if (!val) return;
-    const px = 14 + i*65;
-    const cor = val<70?vermelho:val<=140?verde:val<=250?amarelo:laranja;
-    doc.setFillColor(15,20,50); doc.roundedRect(px, y, 60, 22, 3,3,'F');
-    doc.setTextColor(...cinza); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
-    doc.text(label, px+4, y+7);
-    doc.setTextColor(...cor); doc.setFontSize(14); doc.setFont('helvetica','bold');
-    doc.text(val+' mg/dL', px+4, y+18);
-  });
-
-  y += 30;
-
-  // ── PADRÕES ──
-  doc.setTextColor(...azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('PADRÕES IDENTIFICADOS', 14, y); y+=6;
-
-  const padroes = [];
-  if (manha && manha > 140) padroes.push('• Glicemia tende a ser alta de manhã — revisar dose noturna ou jantar');
-  if (noite && noite < 80) padroes.push('• Risco de hipoglicemia noturna — avaliar redução de dose');
-  if (pctHipo > 5) padroes.push(`• ${pctHipo}% do tempo em hipoglicemia — atenção às doses`);
-  if (pctHiper > 20) padroes.push(`• ${pctHiper}% do tempo em hiperglicemia — controle necessário`);
-  const fator = getFatorSens(dados);
-  if (fator !== 40) padroes.push(`• Sensibilidade: 1U de insulina reduz ~${Math.round(fator)} mg/dL neste perfil`);
-  if (!padroes.length) padroes.push('• Dados insuficientes para identificar padrões relevantes');
-
-  padroes.forEach(p => {
-    doc.setTextColor(...cinza); doc.setFontSize(8.5); doc.setFont('helvetica','normal');
-    doc.text(p, 14, y); y+=7;
+  const tirs = [
+    { label:'Hipo Severa  < 54 mg/dL', pct:pctH2,     cor:C.vermelho,      meta:'Meta: <'+metaHipo2+'%', ok: pctH2 <= metaHipo2 },
+    { label:'Hipo Leve   54–70 mg/dL', pct:pctH1,     cor:C.rosa,          meta:'Meta: <'+metaHipo+'%',  ok: pctH1 <= metaHipo  },
+    { label:'Alvo         70–180 mg/dL',pct:pctNormal, cor:C.verdeClaro,    meta:'Meta: >'+metaNormal+'%',ok: pctNormal >= metaNormal },
+    { label:'Elevada    180–250 mg/dL', pct:pctA1,     cor:C.amarelo,       meta:'Meta: <'+metaAlta1+'%', ok: pctA1 <= metaAlta1 },
+    { label:'Hiper Severa > 250 mg/dL', pct:pctA2,     cor:C.laranja,       meta:'Meta: <'+metaAlta2+'%', ok: pctA2 <= metaAlta2 },
+  ];
+  tirs.forEach(t => {
+    doc.setTextColor(...C.cinza); doc.setFontSize(8); doc.setFont('helvetica','normal');
+    doc.text(t.label, 14, y+5);
+    doc.setFillColor(20,24,50); doc.roundedRect(82, y, 88, 7, 1,1,'F');
+    doc.setFillColor(...t.cor); doc.roundedRect(82, y, Math.max(0.5, t.pct*0.88), 7, 1,1,'F');
+    doc.setTextColor(...t.cor); doc.setFont('helvetica','bold'); doc.text(t.pct+'%', 173, y+5.5);
+    doc.setFontSize(6.5); doc.setTextColor(t.ok?C.verdeClaro:C.vermelho);
+    doc.text(t.meta + (t.ok?' OK':' !'), 177, y+5.5);
+    y+=10;
   });
 
   y += 4;
 
+  // ── PERFIL POR HORA (AGP simplificado) ──
+  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('PERFIL MEDIO POR HORA DO DIA (AGP)', 14, y); y+=4;
+
+  const chartX=14, chartW=182, chartH=36, chartY=y;
+  doc.setFillColor(...C.cinzaFundo); doc.rect(chartX, chartY, chartW, chartH,'F');
+  // faixas de referência
+  const gMax=400, gMin=0;
+  const gy = (v) => chartY + chartH - ((v-gMin)/(gMax-gMin))*chartH;
+  // zona verde 70-180
+  doc.setFillColor(0,80,40); doc.rect(chartX, gy(180), chartW, gy(70)-gy(180),'F');
+  // linhas de referência
+  [70,140,180,250].forEach(v=>{
+    const lc = v===70?C.vermelhoClaro:v===180?C.amarelo:C.cinzaEsc;
+    doc.setDrawColor(...lc); doc.setLineWidth(0.2);
+    doc.line(chartX, gy(v), chartX+chartW, gy(v));
+    doc.setTextColor(...lc); doc.setFontSize(5.5); doc.setFont('helvetica','normal');
+    doc.text(v+'', chartX+chartW+1, gy(v)+1.5);
+  });
+  // pontos e linha
+  const validos = porHora.map((v,h)=>({h,v})).filter(p=>p.v!==null);
+  if(validos.length>1){
+    validos.forEach((p,i)=>{
+      const px = chartX + (p.h/23)*chartW;
+      const py = gy(p.v);
+      if(i>0){
+        const prev=validos[i-1];
+        const ppx=chartX+(prev.h/23)*chartW, ppy=gy(prev.v);
+        doc.setDrawColor(...corGlicemia(p.v)); doc.setLineWidth(1); doc.line(ppx,ppy,px,py);
+      }
+      doc.setFillColor(...corGlicemia(p.v)); doc.circle(px,py,1,'F');
+    });
+  }
+  // eixo X (horas)
+  [0,6,12,18,23].forEach(h=>{
+    const px=chartX+(h/23)*chartW;
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6); doc.setFont('helvetica','normal');
+    doc.text(h+'h', px-2, chartY+chartH+5);
+    doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.1); doc.line(px,chartY,px,chartY+chartH);
+  });
+  doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.3); doc.rect(chartX,chartY,chartW,chartH);
+  y = chartY + chartH + 10;
+
+  // ── MÉDIAS POR PERÍODO ──
+  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('MEDIA POR PERIODO DO DIA', 14, y); y+=5;
+
+  const periodos = [
+    ['Madrugada\n0h-6h', periMadrugada],
+    ['Manha\n6h-12h', periManha],
+    ['Tarde\n12h-18h', periTarde],
+    ['Noite\n18h-24h', periNoite],
+  ];
+  periodos.forEach(([label, val], i) => {
+    const px = 10 + i*50, pw=46, ph=24;
+    doc.setFillColor(...C.cinzaFundo); doc.roundedRect(px,y,pw,ph,2,2,'F');
+    if(val){
+      const cor=corGlicemia(val);
+      doc.setDrawColor(...cor); doc.setLineWidth(0.4); doc.roundedRect(px,y,pw,ph,2,2,'S');
+      doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6.5); doc.setFont('helvetica','normal');
+      doc.text(label.replace('\n',' '), px+3, y+7);
+      doc.setTextColor(...cor); doc.setFontSize(13); doc.setFont('helvetica','bold');
+      doc.text(val+' mg/dL', px+3, y+18);
+    } else {
+      doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.2); doc.roundedRect(px,y,pw,ph,2,2,'S');
+      doc.setTextColor(...C.cinzaEsc); doc.setFontSize(7); doc.setFont('helvetica','italic');
+      doc.text('Sem dados', px+3, y+14);
+    }
+  });
+  y += 30;
+
   // ── AVISO LEGAL ──
-  doc.setFillColor(10,10,25); doc.roundedRect(10,y,190,18,3,3,'F');
-  doc.setTextColor(120,120,120); doc.setFontSize(7); doc.setFont('helvetica','normal');
-  const aviso = 'AVISO LEGAL: Informações de caráter exclusivamente informativo. Não substituem avaliação, diagnóstico ou prescrição médica. Consulte seu endocrinologista antes de alterar doses de insulina.';
-  doc.text(doc.splitTextToSize(aviso, 184), 13, y+6);
+  doc.setFillColor(10,12,28); doc.roundedRect(10,y,190,16,2,2,'F');
+  doc.setTextColor(90,90,110); doc.setFontSize(6.5); doc.setFont('helvetica','normal');
+  const aviso = 'AVISO LEGAL: Este relatorio e de carater exclusivamente informativo e nao substitui avaliacao, diagnostico ou prescricao medica. Consulte seu endocrinologista antes de alterar doses de insulina.';
+  doc.text(doc.splitTextToSize(aviso, 184), 13, y+5.5);
 
-  rodape(1);
+  rodape(1, 3);
 
-  // ══════════════════════════════
-  // PÁG 2 — RESUMO SEMANAL
-  // ══════════════════════════════
+  // ══════════════════════════════════════════════
+  // PÁG 2 — INSULINA + HIPOGLICEMIAS + PADRÕES
+  // ══════════════════════════════════════════════
   doc.addPage(); y=14;
-  doc.setTextColor(...azul); doc.setFontSize(13); doc.setFont('helvetica','bold');
-  doc.text('RESUMO SEMANAL', 14, y); y+=8;
+
+  doc.setFillColor(...C.escuro); doc.rect(0,0,210,20,'F');
+  doc.setTextColor(...C.azul); doc.setFontSize(13); doc.setFont('helvetica','bold');
+  doc.text('RESUMO DE INSULINA E ANALISE CLINICA', 14, 13);
+  y=26;
+
+  // ── PAINEL INSULINA ──
+  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('DOSES DE INSULINA NO PERIODO', 14, y); y+=5;
+
+  const insulinaCards = [
+    { label:'Dose Total Diaria (TDD)',    valor: tdd.toFixed(1)+'U',        cor:C.azul,    desc:'Rapida + Lenta/dia' },
+    { label:'Insulina Rapida Media/dia',  valor: mediaRapidaDia+'U',        cor:C.azulEsc, desc:comRapida.length+' aplicacoes no periodo' },
+    { label:'Insulina Lenta Media/dia',   valor: mediaLentaDia+'U',         cor:C.roxo,    desc:lentas.length+' registros de lenta' },
+    { label:'Proporcao Basal/Bolus',      valor: pctBasal!=null?pctBasal+'% basal':'-', cor:C.rosa, desc:'Ideal: 48-60% basal' },
+    { label:'Fator de Sensibilidade',     valor:'1U = '+fatorAtual+' mg/dL', cor:C.verdeClaro, desc:cfgAtual.autoAprendizado?'Auto-aprendizado ativo':'Configurado manualmente' },
+  ];
+  insulinaCards.forEach((c,i)=>{
+    const ix=10+(i%3)*66, iy=y+Math.floor(i/3)*22, iw=62, ih=19;
+    doc.setFillColor(...C.cinzaFundo); doc.roundedRect(ix,iy,iw,ih,2,2,'F');
+    doc.setDrawColor(...c.cor); doc.setLineWidth(0.4); doc.roundedRect(ix,iy,iw,ih,2,2,'S');
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6.5); doc.setFont('helvetica','normal'); doc.text(c.label, ix+2.5, iy+6);
+    doc.setTextColor(...c.cor); doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.text(c.valor, ix+2.5, iy+14);
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(5.5); doc.text(c.desc, ix+2.5, iy+18);
+  });
+
+  y += 50;
+
+  // ── HIPOGLICEMIAS ──
+  doc.setTextColor(...C.vermelho); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('EPISODIOS DE HIPOGLICEMIA (<70 mg/dL)', 14, y); y+=4;
+
+  if(!eventos_hipo.length){
+    doc.setFillColor(10,20,12); doc.roundedRect(10,y,190,12,2,2,'F');
+    doc.setTextColor(...C.verdeClaro); doc.setFontSize(9); doc.setFont('helvetica','bold');
+    doc.text('Nenhum episodio de hipoglicemia registrado no periodo!', 14, y+8);
+    y+=16;
+  } else {
+    doc.setTextColor(...C.cinza); doc.setFontSize(8); doc.setFont('helvetica','normal');
+    doc.text(`${eventos_hipo.length} episodio(s) identificado(s). Episodios <54 mg/dL requerem atencao imediata.`, 14, y+4);
+    y+=8;
+    const rowsHipo = eventos_hipo.slice(0,20).map(r=>{
+      const sev = r.glicemia<54?'SEVERA':'LEVE';
+      return [new Date(r.dt).toLocaleString('pt-BR'), r.glicemia+' mg/dL', sev, ascii(r.refeicao)||'-'];
+    });
+    doc.autoTable({
+      startY:y,
+      head:[['Data/Hora','Glicemia','Severidade','Contexto']],
+      body:rowsHipo,
+      styles:{fontSize:8, textColor:[200,200,200], fillColor:[30,10,15], lineColor:[60,20,30], lineWidth:0.2},
+      headStyles:{fillColor:[100,20,30], textColor:[255,150,150], fontStyle:'bold'},
+      alternateRowStyles:{fillColor:[40,15,20]},
+      didParseCell:(data)=>{
+        if(data.column.index===2){data.cell.styles.textColor=data.cell.raw==='SEVERA'?[255,50,70]:[255,130,140];}
+        if(data.column.index===1){data.cell.styles.textColor=[255,100,120];}
+      },
+      margin:{left:10,right:10}
+    });
+    y = doc.lastAutoTable.finalY+8;
+  }
+
+  // ── PADRÕES CLÍNICOS ──
+  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('OBSERVACOES CLINICAS', 14, y); y+=5;
+
+  const obs = [];
+  if (pctNormal < metaNormal) obs.push(['ATENCAO', `Tempo no alvo (70-180): ${pctNormal}% - abaixo da meta de ${metaNormal}%. Revisar terapia.`, C.amarelo]);
+  else obs.push(['OK', `Tempo no alvo (70-180): ${pctNormal}% - dentro da meta de ${metaNormal}%.`, C.verdeClaro]);
+  if (pctH2 > metaHipo2) obs.push(['RISCO', `Hipoglicemia severa (<54): ${pctH2}% - acima do limite de ${metaHipo2}%. Risco elevado.`, C.vermelho]);
+  if (pctH1 > metaHipo) obs.push(['ATENCAO', `Hipoglicemia leve (54-70): ${pctH1}% - revisar doses e horarios.`, C.rosa]);
+  if (cv > 36) obs.push(['ATENCAO', `CV=${cv.toFixed(0)}% - glicemia instavel (meta <=36%). Avaliar variabilidade.`, C.amarelo]);
+  else obs.push(['OK', `CV=${cv.toFixed(0)}% - glicemia estavel (meta <=36%).`, C.verdeClaro]);
+  if (periManha && periManha > 180) obs.push(['ATENCAO', `Glicemia matinal elevada (${periManha} mg/dL) - possivel fenomeno Dawn. Revisar dose noturna de lenta.`, C.amarelo]);
+  if (periMadrugada && periMadrugada < 80) obs.push(['ATENCAO', `Glicemia de madrugada baixa (${periMadrugada} mg/dL) - risco hipoglicemia noturna.`, C.rosa]);
+  if (pctA2 > metaAlta2) obs.push(['ATENCAO', `${pctA2}% do tempo acima de 250 mg/dL - ajuste de dose ou rotina necessario.`, C.laranja]);
+  if (pctBasal!==null && (pctBasal<40||pctBasal>65)) obs.push(['INFO', `Proporcao basal/bolus: ${pctBasal}% basal - ideal entre 48-60%. Considerar ajuste.`, C.azul]);
+  if (!obs.length) obs.push(['INFO', 'Dados insuficientes para padroes conclusivos. Continue registrando.', C.cinza]);
+
+  obs.forEach(([icon, txt, cor])=>{
+    if(y > 270){ doc.addPage(); y=14; }
+    doc.setFillColor(...C.cinzaFundo2); doc.roundedRect(10,y,190,12,2,2,'F');
+    doc.setTextColor(...cor); doc.setFontSize(7.5); doc.setFont('helvetica','bold');
+    doc.text(icon, 13, y+8);
+    doc.setFont('helvetica','normal'); doc.setTextColor(...C.cinza);
+    doc.text(doc.splitTextToSize(txt, 178), 20, y+8);
+    y+=14;
+  });
+
+  rodape(2, 3);
+
+  // ══════════════════════════════════════════════
+  // PÁG 3 — RESUMO SEMANAL + HISTÓRICO COMPLETO
+  // ══════════════════════════════════════════════
+  doc.addPage(); y=14;
+
+  doc.setFillColor(...C.escuro); doc.rect(0,0,210,20,'F');
+  doc.setTextColor(...C.azul); doc.setFontSize(13); doc.setFont('helvetica','bold');
+  doc.text('RESUMO SEMANAL E HISTORICO', 14, 13);
+  y=26;
 
   // Agrupa por semana
   const semanas = {};
@@ -1189,59 +1876,66 @@ function gerarPDF() {
   });
 
   const rowsSem = Object.entries(semanas).reverse().map(([semana, vals]) => {
-    const med = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
-    const mx = Math.max(...vals), mn = Math.min(...vals);
-    const zona = Math.round(vals.filter(v=>v>=70&&v<=140).length/vals.length*100);
-    return [semana, vals.length+' med.', mn+' mg/dL', med+' mg/dL', mx+' mg/dL', zona+'%'];
+    const med = Math.round(avg(vals));
+    const mx=Math.max(...vals), mn=Math.min(...vals);
+    const dp_s = Math.sqrt(vals.reduce((s,v)=>s+Math.pow(v-med,2),0)/vals.length);
+    const tir_s = Math.round(vals.filter(v=>v>=70&&v<=180).length/vals.length*100);
+    const hipo_s = vals.filter(v=>v<70).length;
+    return [semana, vals.length, mn+' mg/dL', med+' mg/dL', mx+' mg/dL', tir_s+'%', hipo_s||'—'];
   });
 
   doc.autoTable({
-    startY: y,
-    head:[['Semana','Medições','Mínima','Média','Máxima','Tempo normal']],
-    body: rowsSem,
-    styles:{fontSize:9, textColor:[200,200,200], fillColor:[15,20,50], lineColor:[30,40,90], lineWidth:0.2},
+    startY:y,
+    head:[['Semana','Med.','Min','Media','Max','TIR 70-180','Hipos']],
+    body:rowsSem,
+    styles:{fontSize:8.5, textColor:[200,200,200], fillColor:[15,20,50], lineColor:[30,40,90], lineWidth:0.2},
     headStyles:{fillColor:[0,50,100], textColor:[0,200,255], fontStyle:'bold'},
     alternateRowStyles:{fillColor:[20,25,60]},
     didParseCell:(data)=>{
-      if(data.column.index===3){
-        const v=parseInt(data.cell.raw);
-        data.cell.styles.textColor=v<70?[255,80,100]:v<=140?[0,220,120]:v<=250?[255,170,0]:[255,100,50];
-      }
+      if(data.column.index===3){const v=parseInt(data.cell.raw);data.cell.styles.textColor=v<70?[255,80,100]:v<=180?[0,220,120]:v<=250?[255,170,0]:[255,100,50];}
+      if(data.column.index===5){const v=parseInt(data.cell.raw);data.cell.styles.textColor=v>=70?[0,220,120]:v>=50?[255,170,0]:[255,80,100];}
+      if(data.column.index===6&&data.cell.raw!=='—'){data.cell.styles.textColor=[255,80,100];}
     },
     margin:{left:10,right:10}
   });
 
-  y = doc.lastAutoTable.finalY + 12;
+  y = doc.lastAutoTable.finalY + 10;
 
-  // ── REGISTROS FORA DO PADRÃO ──
-  if (foraPadrao.length) {
-    doc.setTextColor(...vermelho); doc.setFontSize(11); doc.setFont('helvetica','bold');
-    doc.text('REGISTROS FORA DO PADRÃO (HIPO / HIPER)', 14, y); y+=4;
+  // Histórico completo
+  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('HISTORICO COMPLETO DE MEDICOES', 14, y); y+=4;
 
-    const rowsFora = foraPadrao.slice(0,30).map(r => {
-      const status = r.glicemia<70?'HIPO':'HIPER';
-      return [new Date(r.dt).toLocaleString('pt-BR'), r.glicemia+' mg/dL', status, r.rapida>0?r.rapida+'U':'—', r.refeicao?r.refeicao.slice(0,35):'—'];
-    });
+  const rowsAll = [...filtrado].reverse().map(r => {
+    const status = r.glicemia<54?'HIPO SEVERA':r.glicemia<70?'HIPO':r.glicemia<=180?'Normal':r.glicemia<=250?'Elevada':'HIPER';
+    const insulina = r.rapida>0?r.rapida+'U rapida':r.lenta>0?r.lenta+'U lenta':'-';
+    return [
+      new Date(r.dt).toLocaleString('pt-BR'),
+      r.glicemia+' mg/dL',
+      status,
+      insulina,
+      r.refeicao?ascii(r.refeicao).slice(0,30):'-'
+    ];
+  });
 
-    doc.autoTable({
-      startY: y,
-      head:[['Data/Hora','Glicemia','Status','Insulina','Refeição']],
-      body: rowsFora,
-      styles:{fontSize:8.5, textColor:[200,200,200], fillColor:[30,10,15], lineColor:[60,20,30], lineWidth:0.2},
-      headStyles:{fillColor:[100,20,30], textColor:[255,150,150], fontStyle:'bold'},
-      alternateRowStyles:{fillColor:[40,15,20]},
-      didParseCell:(data)=>{
-        if(data.column.index===1||data.column.index===2){
-          const v=parseInt(data.cell.raw);
-          data.cell.styles.textColor=v<70||data.cell.raw==='HIPO'?[255,80,100]:[255,100,50];
-        }
-      },
-      margin:{left:10,right:10}
-    });
-  }
+  doc.autoTable({
+    startY:y,
+    head:[['Data/Hora','Glicemia','Status','Insulina','Refeicao']],
+    body:rowsAll,
+    styles:{fontSize:7.5, textColor:[190,190,190], fillColor:[15,20,50], lineColor:[30,40,90], lineWidth:0.15},
+    headStyles:{fillColor:[0,50,100], textColor:[0,200,255], fontStyle:'bold', fontSize:8},
+    alternateRowStyles:{fillColor:[20,25,60]},
+    didParseCell:(data)=>{
+      if(data.column.index===1){const v=parseInt(data.cell.raw);data.cell.styles.textColor=v<54?[255,50,70]:v<70?[255,130,140]:v<=180?[0,220,120]:v<=250?[255,170,0]:[255,100,50];}
+      if(data.column.index===2){
+        const s=data.cell.raw;
+        data.cell.styles.textColor=s==='HIPO SEVERA'?[255,50,70]:s==='HIPO'?[255,130,140]:s==='Normal'?[0,220,120]:s==='Elevada'?[255,170,0]:[255,100,50];
+      }
+    },
+    margin:{left:10,right:10},
+    didDrawPage:()=>{ rodape(doc.internal.getCurrentPageInfo().pageNumber, ''); }
+  });
 
-  rodape(2);
-
+  rodape(doc.internal.getCurrentPageInfo().pageNumber, '');
   doc.save(`GlicoCare_Relatorio_${hoje.replace(/\//g,'-')}.pdf`);
 }
 
