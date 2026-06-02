@@ -752,7 +752,8 @@ function registrar() {
   if (!glicemia) { alert('Preencha a glicemia!'); return; }
 
   const dados = loadData();
-  dados.push({ id:Date.now(), dt:dtFinal, glicemia, rapida, lenta, aplicou, refeicao, refeicaoStatus });
+  const novoId = Date.now();
+  dados.push({ id:novoId, dt:dtFinal, glicemia, rapida, lenta, aplicou, refeicao, refeicaoStatus, sugRapida:null });
   dados.sort((a,b)=>new Date(a.dt)-new Date(b.dt));
   saveData(dados);
 
@@ -767,6 +768,10 @@ function registrar() {
     sugRapida = Math.max(0, bruta2 - iobR);
     sugRapida = Math.round(sugRapida * 2) / 2;
   }
+  // Atualiza o registro com a sugestão calculada
+  const dadosSug = loadData();
+  const idx = dadosSug.findIndex(r => r.id === novoId);
+  if (idx !== -1) { dadosSug[idx].sugRapida = sugRapida; saveData(dadosSug); }
   let tooltipCard = '';
   if (glicemia <= GLICEMIA_ALVO) {
     tooltipCard = `Sua glicemia está dentro do alvo (abaixo de ${GLICEMIA_ALVO} mg/dL), então não é necessário aplicar insulina agora.`;
@@ -932,7 +937,8 @@ function renderHistorico() {
     const cor = r.glicemia<70?'#ff4466':r.glicemia<=140?'#00ff99':r.glicemia<=250?'#ffaa00':'#ff6633';
     const dtFmt = new Date(r.dt).toLocaleString('pt-BR');
     const insulina = [];
-    if (r.rapida>0) insulina.push(`💉 Aplicado ${r.rapida} unidade${r.rapida===1?'':'s'} de insulina`);
+    if (r.sugRapida != null) insulina.push(`🔵 Sugerido: ${r.sugRapida}U`);
+    if (r.rapida>0) insulina.push(`💉 Aplicado: ${r.rapida}U`);
     const insulinaStr = insulina.length
       ? `<div class="hist-insulin">${insulina.join(' · ')} ✅</div>`
       : r.aplicou === false
