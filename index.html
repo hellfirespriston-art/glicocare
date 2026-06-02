@@ -514,7 +514,9 @@ setInterval(tick, 1000); tick();
 
 // ── DATETIME DEFAULT ──
 function atualizarDatetime() {
-  document.getElementById('inp-datetime').value = new Date().toISOString().slice(0,16);
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  document.getElementById('inp-datetime').value = local.toISOString().slice(0,16);
 }
 atualizarDatetime();
 setInterval(atualizarDatetime, 60000);
@@ -745,7 +747,8 @@ function registrar() {
   const refeicaoStatus = document.querySelector('input[name="refeicao-status"]:checked')?.value || '';
 
   // Se data não preenchida, usa agora
-  const dtFinal = dt || new Date().toISOString().slice(0,16);
+  const _now = new Date(); const _local = new Date(_now.getTime() - _now.getTimezoneOffset()*60000);
+  const dtFinal = dt || _local.toISOString().slice(0,16);
   if (!glicemia) { alert('Preencha a glicemia!'); return; }
 
   const dados = loadData();
@@ -790,7 +793,7 @@ function registrar() {
   document.getElementById('inp-glicemia').value='';
   document.getElementById('inp-rapida').value='';
   document.getElementById('inp-refeicao').value='';
-  document.getElementById('inp-datetime').value=new Date().toISOString().slice(0,16);
+  atualizarDatetime();
   document.getElementById('rad-sem').checked=true;
 
   atualizarStatusBar();
