@@ -477,7 +477,10 @@
       </div>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
         <span style="color:#aaa;font-size:0.95rem;white-space:nowrap;">Unidades aplicadas:</span>
-        <input type="number" id="res-inp-rapida" placeholder="0" min="0" max="80" step="1" oninput="atualizarBotaoConfirmar()" style="flex:1;background:#0a0a20;border:1px solid #2a3a6a;color:#f0f0f0;padding:10px 12px;border-radius:6px;font-size:1.1rem;width:100px;"/>
+        <div style="position:relative;display:inline-flex;align-items:center;">
+          <input type="number" id="res-inp-rapida" placeholder="0" min="0" max="80" step="1" oninput="atualizarBotaoConfirmar()" style="background:#0a0a20;border:1px solid #2a3a6a;color:#f0f0f0;padding:10px 32px 10px 12px;border-radius:6px;font-size:1.1rem;width:100px;"/>
+          <span style="position:absolute;right:10px;color:#6ab4d8;font-size:1rem;font-weight:700;pointer-events:none;">U</span>
+        </div>
       </div>
       <button class="btn btn-success" id="btn-confirmar" style="width:100%;margin-top:6px;" onclick="confirmarDose()">✅ Confirmar 0U aplicadas</button>
       <div class="res-doses-hint">* Edite os valores se necessário antes de confirmar</div>
