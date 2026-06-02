@@ -262,7 +262,7 @@
         </div>
         <div class="form-row">
           <label>Data e Hora</label>
-          <input type="datetime-local" id="inp-datetime"/>
+          <input type="datetime-local" id="inp-datetime" readonly style="pointer-events:none;opacity:0.7;cursor:default;"/>
         </div>
       </div>
       <div class="form-row">
@@ -299,9 +299,7 @@
         <div id="sug-aviso-iob" class="sug-warn" style="display:none;margin-top:8px">
           ⚠️ Insulina ainda ativa! Dose reduzida para evitar hipoglicemia.
         </div>
-        <div style="font-size:0.8rem;color:#555;margin-top:10px;line-height:1.5;">
-          * <strong style="color:#666">IOB (Insulin On Board)</strong> = insulina que ainda está ativa no corpo das doses anteriores. O app desconta esse valor da nova sugestão para evitar hipoglicemia por excesso de insulina.
-        </div>
+        <div id="sug-explicacao" style="font-size:0.82rem;color:#6a9fbf;margin-top:10px;line-height:1.7;background:#0a1520;border-radius:8px;padding:10px 12px;display:none;"></div>
       </div>
 
       <!-- DOSES — aparece só após calcular -->
@@ -318,7 +316,6 @@
 
       <div class="btn-row">
         <button class="btn btn-success" onclick="registrar()">💾 Registrar e Calcular</button>
-        <button class="btn btn-danger btn-sm" onclick="desfazerUltimo()">↩️ Desfazer último</button>
       </div>
 
       <!-- PRÓXIMA MEDIÇÃO -->
@@ -469,7 +466,8 @@
         <span style="color:#aaa;font-size:0.95rem;white-space:nowrap;">🔵 Aplicada (U)</span>
         <input type="number" id="res-inp-rapida" placeholder="0" min="0" max="80" step="1" style="flex:1;background:#0a0a20;border:1px solid #2a3a6a;color:#f0f0f0;padding:10px 12px;border-radius:6px;font-size:1.1rem;width:100px;"/>
       </div>
-      <button class="btn btn-success" style="width:100%;margin-top:6px;" onclick="confirmarDose()">✅ Confirmar doses aplicadas</button>
+      <div id="res-sug-explicacao" style="font-size:0.82rem;color:#6a9fbf;margin-bottom:10px;line-height:1.7;background:#0a1520;border-radius:8px;padding:10px 12px;display:none;"></div>
+      <button class="btn btn-success" style="width:100%;margin-top:6px;" onclick="confirmarDose()">✅ Confirmar dose aplicada</button>
       <div class="res-doses-hint">* Edite os valores se necessário antes de confirmar</div>
     </div>
     <button class="res-fechar" onclick="fecharResultado()">✕ Fechar</button>
@@ -500,7 +498,11 @@ function tick() {
 setInterval(tick, 1000); tick();
 
 // ── DATETIME DEFAULT ──
-document.getElementById('inp-datetime').value = new Date().toISOString().slice(0,16);
+function atualizarDatetime() {
+  document.getElementById('inp-datetime').value = new Date().toISOString().slice(0,16);
+}
+atualizarDatetime();
+setInterval(atualizarDatetime, 60000);
 
 // ── TABS ──
 function switchTab(id, el) {
@@ -574,11 +576,28 @@ function calcularSugestao() {
     sugLenta = dados.length > 0 ? (calcMediaLenta(dados) || 0) : 0;
   }
 
+  // Monta explicação do porquê da sugestão
+  const bruta = (glicemia - GLICEMIA_ALVO) / fator;
+  let explicacao = '';
+  if (glicemia <= GLICEMIA_ALVO) {
+    explicacao = `✅ Glicemia de ${glicemia} mg/dL está no alvo (≤${GLICEMIA_ALVO} mg/dL). Nenhuma correção necessária.`;
+  } else {
+    explicacao = `📐 Glicemia ${glicemia} mg/dL − alvo ${GLICEMIA_ALVO} mg/dL = <strong style="color:#fff">${(glicemia-GLICEMIA_ALVO)} mg/dL acima</strong><br>`;
+    explicacao += `➗ Fator de sensibilidade: 1U reduz ~${fator.toFixed(0)} mg/dL → dose bruta: <strong style="color:#fff">${bruta.toFixed(1)}U</strong><br>`;
+    if (iobR > 0) {
+      explicacao += `⏳ IOB ativo: −${iobR.toFixed(1)}U já em circulação → dose final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)}U</strong>`;
+    } else {
+      explicacao += `💉 Sem IOB ativo → dose final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)}U</strong>`;
+    }
+  }
+
   // Exibe sugestão
   document.getElementById('sugestao-box').style.display = 'block';
   document.getElementById('sug-rapida').textContent = sugRapida > 0 ? sugRapida.toFixed(1) + ' U' : '0 U (não necessária)';
   document.getElementById('sug-lenta').textContent = sugLenta > 0 ? sugLenta.toFixed(1) + ' U' : '0 U (IOB ativo)';
   document.getElementById('sug-iob-desc').textContent = iobR.toFixed(1) + ' U rápida + ' + iobL.toFixed(1) + ' U lenta';
+  const expEl = document.getElementById('sug-explicacao');
+  expEl.innerHTML = explicacao; expEl.style.display = 'block';
 
   // Mostra campos de dose e preenche com sugestão
   document.getElementById('doses-box').style.display = 'block';
@@ -654,23 +673,22 @@ function calcProximaMedicao(glicemia, sugRapida) {
 }
 
 // Chamado pelo registrar para preencher sugestão no card
-function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL) {
+function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, explicacao) {
   document.getElementById('res-doses-box').style.display = 'block';
   document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? sugRapida.toFixed(1) + ' U' : '0 U (não necessária)';
-  document.getElementById('res-sug-lenta').textContent = sugLenta > 0 ? sugLenta.toFixed(1) + ' U' : '0 U';
-  document.getElementById('res-sug-iob').textContent = iobR.toFixed(1) + ' U rápida + ' + iobL.toFixed(1) + ' U lenta';
-  document.getElementById('res-inp-rapida').value = sugRapida > 0 ? sugRapida.toFixed(1) : '';
-  document.getElementById('res-inp-lenta').value = sugLenta > 0 ? sugLenta.toFixed(1) : '';
+  document.getElementById('res-inp-rapida').value = sugRapida > 0 ? Math.round(sugRapida) : '';
+  const expEl = document.getElementById('res-sug-explicacao');
+  if (explicacao) { expEl.innerHTML = explicacao; expEl.style.display = 'block'; }
+  else expEl.style.display = 'none';
 }
 
 function confirmarDose() {
   const rapida = parseFloat(document.getElementById('res-inp-rapida').value)||0;
-  if (rapida === 0) { fecharResultado(); return; }
   // Atualiza o último registro com as doses confirmadas
   const dados = loadData();
   if (dados.length) {
     dados[dados.length-1].rapida = rapida;
-    dados[dados.length-1].aplicou = true;
+    dados[dados.length-1].aplicou = rapida > 0;
     saveData(dados);
   }
   atualizarStatusBar();
@@ -718,14 +736,25 @@ function registrar() {
   const iobL = calcIOB(dadosAtual,'lenta');
   const fator = getFatorSens(dadosAtual);
   let sugRapida = 0;
-  if (glicemia > 100) {
-    sugRapida = Math.max(0, ((glicemia - 100) / fator) - iobR);
+  const bruta2 = glicemia > GLICEMIA_ALVO ? (glicemia - GLICEMIA_ALVO) / fator : 0;
+  if (glicemia > GLICEMIA_ALVO) {
+    sugRapida = Math.max(0, bruta2 - iobR);
     sugRapida = Math.round(sugRapida * 2) / 2;
+  }
+  let expCard = '';
+  if (glicemia <= GLICEMIA_ALVO) {
+    expCard = `✅ Glicemia de ${glicemia} mg/dL está no alvo (≤${GLICEMIA_ALVO} mg/dL). Nenhuma correção necessária.`;
+  } else {
+    expCard = `📐 ${glicemia} − ${GLICEMIA_ALVO} = <strong style="color:#fff">${glicemia-GLICEMIA_ALVO} mg/dL acima</strong><br>`;
+    expCard += `➗ Fator: 1U reduz ~${fator.toFixed(0)} mg/dL → bruta: <strong style="color:#fff">${bruta2.toFixed(1)}U</strong><br>`;
+    expCard += iobR > 0
+      ? `⏳ IOB: −${iobR.toFixed(1)}U → final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)}U</strong>`
+      : `💉 Sem IOB → final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)}U</strong>`;
   }
 
   atualizarDisplayGlicemia(glicemia);
   calcProximaMedicao(glicemia, sugRapida);
-  preencherSugestaoCard(sugRapida, 0, iobR, iobL);
+  preencherSugestaoCard(sugRapida, 0, iobR, iobL, expCard);
   // Esconde boxes do form
   document.getElementById('sugestao-box').style.display='none';
   document.getElementById('doses-box').style.display='none';
@@ -874,12 +903,17 @@ function renderHistorico() {
     const cor = r.glicemia<70?'#ff4466':r.glicemia<=140?'#00ff99':r.glicemia<=250?'#ffaa00':'#ff6633';
     const dtFmt = new Date(r.dt).toLocaleString('pt-BR');
     const insulina = [];
-    if (r.rapida>0) insulina.push(`🔵 Rápida: ${r.rapida}U`);
+    if (r.rapida>0) insulina.push(`💉 Aplicado ${r.rapida} unidade${r.rapida===1?'':'s'} de insulina`);
+    const insulinaStr = insulina.length
+      ? `<div class="hist-insulin">${insulina.join(' · ')} ✅</div>`
+      : r.aplicou === false
+        ? `<div class="hist-insulin" style="color:#666;">💉 Sem insulina aplicada</div>`
+        : '';
     html += `<div class="hist-item">
       <div class="hist-left">
         <div class="hist-glicemia" style="color:${cor}">${r.glicemia} <small style="font-size:0.5em;color:#555">mg/dL</small></div>
         <div class="hist-meta">${dtFmt}</div>
-        ${insulina.length?`<div class="hist-insulin">${insulina.join(' · ')}${r.aplicou?' ✅':' (não confirmado)'}</div>`:''}
+        ${insulinaStr}
         ${r.refeicao?`<div class="hist-refeicao">🍽️ ${r.refeicao}${r.refeicaoStatus==='vai_comer'?' <span style="color:#ffaa00;font-size:0.75rem">(vai comer)</span>':r.refeicaoStatus==='ja_comi'?' <span style="color:#00ff99;font-size:0.75rem">(já comeu)</span>':''}</div>`:''}
       </div>
       <button class="badge-del" onclick="deletar(${r.id})">✕</button>
