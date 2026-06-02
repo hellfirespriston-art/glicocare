@@ -142,6 +142,13 @@
     .hist-refeicao { color:#ffaa00; font-size:0.78rem; font-style:italic; margin-top:2px; }
     .badge-del { background:rgba(255,50,50,0.1); border:1px solid #ff444433; color:#ff6666; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; }
 
+    /* TOOLTIP */
+    .tooltip-wrap { position:relative; display:inline-flex; align-items:center; }
+    .tooltip-icon { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:#1a3a5a; color:#6ab4d8; font-size:0.72rem; font-weight:700; cursor:pointer; border:1px solid #2a5a7a; user-select:none; }
+    .tooltip-balao { display:none; position:absolute; bottom:calc(100% + 8px); right:0; width:240px; background:#0d1e30; border:1px solid #2a5a7a; border-radius:10px; padding:12px 14px; font-size:0.82rem; color:#c8e0f0; line-height:1.6; z-index:9999; box-shadow:0 4px 20px rgba(0,0,0,0.6); }
+    .tooltip-balao::after { content:''; position:absolute; bottom:-6px; right:10px; width:10px; height:10px; background:#0d1e30; border-right:1px solid #2a5a7a; border-bottom:1px solid #2a5a7a; transform:rotate(45deg); }
+    .tooltip-wrap:hover .tooltip-balao, .tooltip-wrap.ativo .tooltip-balao { display:block; }
+
     /* HBA1C */
     .hba1c-box { background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a; border-radius:12px; padding:20px; }
     .hba1c-valor { font-size:2.5rem; font-weight:700; margin:10px 0 4px; }
@@ -460,13 +467,18 @@
       <div class="res-doses-title">💉 Sugestão de Insulina</div>
       <div class="res-doses-sug">
         <span style="color:#aaa;">🔵 Sugerida</span>
-        <span id="res-sug-rapida" style="color:#00e5ff;font-weight:700;">—</span>
+        <span style="display:flex;align-items:center;gap:6px;">
+          <span id="res-sug-rapida" style="color:#00e5ff;font-weight:700;">—</span>
+          <span class="tooltip-wrap">
+            <span class="tooltip-icon" id="res-tooltip-icon">?</span>
+            <span class="tooltip-balao" id="res-tooltip-text"></span>
+          </span>
+        </span>
       </div>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
         <span style="color:#aaa;font-size:0.95rem;white-space:nowrap;">🔵 Aplicada (U)</span>
         <input type="number" id="res-inp-rapida" placeholder="0" min="0" max="80" step="1" style="flex:1;background:#0a0a20;border:1px solid #2a3a6a;color:#f0f0f0;padding:10px 12px;border-radius:6px;font-size:1.1rem;width:100px;"/>
       </div>
-      <div id="res-sug-explicacao" style="font-size:0.82rem;color:#6a9fbf;margin-bottom:10px;line-height:1.7;background:#0a1520;border-radius:8px;padding:10px 12px;display:none;"></div>
       <button class="btn btn-success" style="width:100%;margin-top:6px;" onclick="confirmarDose()">✅ Confirmar dose aplicada</button>
       <div class="res-doses-hint">* Edite os valores se necessário antes de confirmar</div>
     </div>
@@ -673,13 +685,14 @@ function calcProximaMedicao(glicemia, sugRapida) {
 }
 
 // Chamado pelo registrar para preencher sugestão no card
-function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, explicacao) {
+function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
   document.getElementById('res-doses-box').style.display = 'block';
-  document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? sugRapida.toFixed(1) + ' U' : '0 U (não necessária)';
+  document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? sugRapida.toFixed(1) + ' U' : '0 U';
   document.getElementById('res-inp-rapida').value = sugRapida > 0 ? Math.round(sugRapida) : '';
-  const expEl = document.getElementById('res-sug-explicacao');
-  if (explicacao) { expEl.innerHTML = explicacao; expEl.style.display = 'block'; }
-  else expEl.style.display = 'none';
+  const icon = document.getElementById('res-tooltip-icon');
+  const balao = document.getElementById('res-tooltip-text');
+  if (tooltipTexto) { balao.textContent = tooltipTexto; icon.style.display = 'inline-flex'; }
+  else { icon.style.display = 'none'; }
 }
 
 function confirmarDose() {
@@ -741,20 +754,23 @@ function registrar() {
     sugRapida = Math.max(0, bruta2 - iobR);
     sugRapida = Math.round(sugRapida * 2) / 2;
   }
-  let expCard = '';
+  let tooltipCard = '';
   if (glicemia <= GLICEMIA_ALVO) {
-    expCard = `✅ Glicemia de ${glicemia} mg/dL está no alvo (≤${GLICEMIA_ALVO} mg/dL). Nenhuma correção necessária.`;
+    tooltipCard = `Sua glicemia está dentro do alvo (abaixo de ${GLICEMIA_ALVO} mg/dL), então não é necessário aplicar insulina agora.`;
   } else {
-    expCard = `📐 ${glicemia} − ${GLICEMIA_ALVO} = <strong style="color:#fff">${glicemia-GLICEMIA_ALVO} mg/dL acima</strong><br>`;
-    expCard += `➗ Fator: 1U reduz ~${fator.toFixed(0)} mg/dL → bruta: <strong style="color:#fff">${bruta2.toFixed(1)}U</strong><br>`;
-    expCard += iobR > 0
-      ? `⏳ IOB: −${iobR.toFixed(1)}U → final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)}U</strong>`
-      : `💉 Sem IOB → final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)}U</strong>`;
+    const acima = glicemia - GLICEMIA_ALVO;
+    tooltipCard = `Sua glicemia está ${acima} mg/dL acima do alvo (${GLICEMIA_ALVO} mg/dL). `;
+    tooltipCard += `Como 1 unidade de insulina reduz cerca de ${fator.toFixed(0)} mg/dL no seu caso, seriam necessárias ${bruta2.toFixed(1)} unidades para corrigir. `;
+    if (iobR > 0) {
+      tooltipCard += `Mas você ainda tem ${iobR.toFixed(1)} unidade(s) ativa(s) no corpo de aplicações anteriores, então foram descontadas — resultando em ${sugRapida.toFixed(1)} unidade(s) sugerida(s).`;
+    } else {
+      tooltipCard += `Como não há insulina ativa no seu corpo no momento, a sugestão é de ${sugRapida.toFixed(1)} unidade(s).`;
+    }
   }
 
   atualizarDisplayGlicemia(glicemia);
   calcProximaMedicao(glicemia, sugRapida);
-  preencherSugestaoCard(sugRapida, 0, iobR, iobL, expCard);
+  preencherSugestaoCard(sugRapida, 0, iobR, iobL, tooltipCard);
   // Esconde boxes do form
   document.getElementById('sugestao-box').style.display='none';
   document.getElementById('doses-box').style.display='none';
