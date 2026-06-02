@@ -95,8 +95,12 @@
     .btn { padding:11px 22px; border:none; border-radius:8px; cursor:pointer; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
     .btn-primary { background:linear-gradient(135deg,#0066cc,#004499); color:white; }
     .btn-primary:hover { background:linear-gradient(135deg,#0077ee,#0055bb); transform:translateY(-1px); }
-    .btn-success { background:linear-gradient(135deg,#006633,#004422); color:#00ff99; }
-    .btn-success:hover { background:linear-gradient(135deg,#007744,#005533); transform:translateY(-1px); }
+    @keyframes pulso-verde {
+      0%,100% { box-shadow: 0 0 8px #00ff99aa, 0 0 0px #00ff9944; }
+      50%      { box-shadow: 0 0 20px #00ff99ff, 0 0 32px #00ff9966; }
+    }
+    .btn-success { background:linear-gradient(135deg,#007a3d,#004422); color:#00ff99; font-size:1.05rem; padding:14px 28px; animation:pulso-verde 2s ease-in-out infinite; }
+    .btn-success:hover { background:linear-gradient(135deg,#009950,#006633); transform:translateY(-2px); animation:none; box-shadow:0 0 28px #00ff99cc; }
     .btn-danger { background:linear-gradient(135deg,#660022,#440011); color:#ff6688; }
     .btn-sm { padding:6px 14px; font-size:0.8rem; }
     .btn-row { display:flex; gap:10px; flex-wrap:wrap; }
