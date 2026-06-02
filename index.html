@@ -60,7 +60,8 @@
     .tab { padding:13px 22px; cursor:pointer; color:#888; font-size:0.92rem; border-bottom:2px solid transparent; transition:all 0.2s; }
     .tab:hover { color:#00e5ff; }
     .tab.active { color:#00e5ff; border-bottom-color:#00e5ff; }
-    .tab.active[onclick*="registrar"] { color:#00ff99; border-bottom-color:#00ff99; animation:pulso-tab-verde 2s ease-in-out infinite; }
+    .tab[onclick*="registrar"] { color:#00ff99; animation:pulso-tab-verde 2s ease-in-out infinite; }
+    .tab.active[onclick*="registrar"] { border-bottom-color:#00ff99; }
 
     /* CONTENT */
     .content { display:none; padding:20px; }
