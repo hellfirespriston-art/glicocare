@@ -1448,20 +1448,20 @@ function atualizarStatusBar() {
   atualizarDisplayGlicemia(ultimo.glicemia);
 
   // Recalcula próxima medição silenciosamente (sem abrir card de resultado)
-  const glicemia = ultimo.glicemia;
-  const sugRapida = ultimo.rapida || 0;
-  let horas = 4;
-  if (glicemia < 70) horas = 0.5;
-  else if (glicemia < 100) horas = 2;
-  else if (glicemia <= 140) horas = 4;
-  else if (glicemia <= 250) horas = 2;
-  else horas = 1;
-  if (sugRapida > 0) horas = Math.min(horas, 2);
-  const proxima = new Date(Date.now() + horas * 3600000);
-  const proxStr = proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) + ' (' + (horas < 1 ? '30min' : horas + 'h') + ')';
-  proximaHoraAlarme = proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  const _glic = ultimo.glicemia;
+  const _sug = ultimo.rapida || 0;
+  let _horas = 4;
+  if (_glic < 70) _horas = 0.5;
+  else if (_glic < 100) _horas = 2;
+  else if (_glic <= 140) _horas = 4;
+  else if (_glic <= 250) _horas = 2;
+  else _horas = 1;
+  if (_sug > 0) _horas = Math.min(_horas, 2);
+  const _proxima = new Date(Date.now() + _horas * 3600000);
+  const _proxStr = _proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) + ' (' + (_horas < 1 ? '30min' : _horas + 'h') + ')';
+  proximaHoraAlarme = _proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
   document.getElementById('proxima-box').style.display = 'block';
-  document.getElementById('prox-time').textContent = proxStr;
+  document.getElementById('prox-time').textContent = _proxStr;
   document.getElementById('sb-proxima').textContent = proximaHoraAlarme;
   document.getElementById('sb-proxima').style.color = '#00ff99';
   if (document.getElementById('alarme-toggle').checked) {
