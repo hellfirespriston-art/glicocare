@@ -1644,106 +1644,92 @@ function gerarPDF() {
 
   // ── CORES ──
   const C = {
-    azul:[0,180,220], azulEsc:[0,100,180], branco:[255,255,255],
-    cinza:[160,160,160], cinzaEsc:[80,80,100], escuro:[12,14,30],
-    vermelho:[220,50,70], vermelhoClaro:[255,100,120],
-    verde:[0,180,100], verdeClaro:[0,220,130],
-    amarelo:[220,160,0], laranja:[230,100,0],
-    roxo:[160,80,220], rosa:[220,80,160],
-    cinzaFundo:[18,22,48], cinzaFundo2:[22,28,58],
+    azul:[30,30,30], azulEsc:[50,50,50], branco:[255,255,255],
+    cinza:[100,100,100], cinzaEsc:[70,70,70], escuro:[30,30,30],
+    vermelho:[40,40,40], vermelhoClaro:[80,80,80],
+    verde:[60,60,60], verdeClaro:[50,50,50],
+    amarelo:[110,110,110], laranja:[90,90,90],
+    roxo:[80,80,80], rosa:[100,100,100],
+    cinzaFundo:[240,240,240], cinzaFundo2:[230,230,230],
   };
-  const corGlicemia = v => v==null?C.cinza:v<54?C.vermelho:v<70?C.rosa:v<=180?C.verde:v<=250?C.amarelo:C.laranja;
-  const corGMI = v => v<6?C.verdeClaro:v<7?C.verde:v<8?C.amarelo:C.vermelho;
-  const corCV  = v => v<=36?C.verde:v<=50?C.amarelo:C.vermelho;
-
-  // ── RODAPÉ ──
-  const rodape = (pag, total) => {
-    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
-    doc.text('GlicoCare v1.0  -  Relatorio gerado em '+hoje, 14, 292);
-    doc.text('Pagina '+pag+(total?' de '+total:''), 196, 292, {align:'right'});
-    doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.2);
-    doc.line(10, 288, 200, 288);
-  };
+  const corGlicemia = v => v==null?C.cinza:v<54?[40,40,40]:v<70?[80,80,80]:v<=180?[60,60,60]:v<=250?[110,110,110]:[90,90,90];
+  const corGMI = v => [60,60,60];
+  const corCV  = v => [60,60,60];
 
   // ══════════════════════════════════════════════
-  // PÁG 1 — PAINEL EXECUTIVO (estilo AGP)
+  // PÁG 1 — PAINEL EXECUTIVO
   // ══════════════════════════════════════════════
 
-  // Cabeçalho
-  doc.setFillColor(...C.escuro); doc.rect(0,0,210,38,'F');
-  doc.setTextColor(...C.azul); doc.setFontSize(18); doc.setFont('helvetica','bold');
-  doc.text('GlicoCare - Relatorio de Controle Glicemico', 14, 15);
-  doc.setTextColor(...C.cinza); doc.setFontSize(8.5); doc.setFont('helvetica','normal');
-  doc.text(`Periodo: ${dataInicio} a ${dataFim}   |   ${n} medicoes   |   ~${(n/diasPeriodo).toFixed(1)} medicoes/dia`, 14, 24);
-  doc.text(`Insulina lenta: ${cfgAtual.insulinaTipo}h   |   Dose padrao: ${cfgAtual.doseLenta}U   |   Alvo: ${cfgAtual.glicemiaAlvo} mg/dL`, 14, 31);
+  // Cabeçalho compacto
+  doc.setFillColor(...C.escuro); doc.rect(0,0,210,26,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
+  doc.text('GlicoCare - Relatorio de Controle Glicemico', 5, 11);
+  doc.setTextColor(200,200,200); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
+  doc.text(`Periodo: ${dataInicio} a ${dataFim}  |  ${n} medicoes  |  Alvo: ${cfgAtual.glicemiaAlvo} mg/dL  |  Lenta: ${cfgAtual.doseLenta}U`, 5, 20);
 
-  let y = 44;
+  let y = 32;
 
   // ── BLOCO GMI + HbA1c + CV ──
   const blocos = [
-    { label:'GMI', valor:gmi+'%', sub: gmiNum<6?'Otimo':gmiNum<7?'Bom':gmiNum<8?'Atencao':'Alto', cor:corGMI(gmiNum), desc:'Formula ADA' },
-    { label:'HbA1c Est.', valor:hba1c+'%', sub: hbaNum<5.7?'Normal':hbaNum<6.5?'Pre-DM':'Diabetes', cor:hbaNum<5.7?C.verdeClaro:hbaNum<6.5?C.amarelo:C.vermelho, desc:'Nathan et al.' },
-    { label:'Media', valor:Math.round(media)+' mg/dL', sub:'', cor:corGlicemia(media), desc:'' },
-    { label:'CV', valor:cv.toFixed(0)+'%', sub: cv<=36?'Estavel':cv<=50?'Moderado':'Instavel', cor:corCV(cv), desc:'Meta <=36%' },
-    { label:'DP', valor:Math.round(dp)+' mg/dL', sub:'', cor:C.azul, desc:'Desvio padrao' },
+    { label:'GMI', valor:gmi+'%', sub: gmiNum<6?'Otimo':gmiNum<7?'Bom':gmiNum<8?'Atencao':'Alto', cor:corGMI(gmiNum) },
+    { label:'HbA1c Est.', valor:hba1c+'%', sub: hbaNum<5.7?'Normal':hbaNum<6.5?'Pre-DM':'Diabetes', cor:[60,60,60] },
+    { label:'Media', valor:Math.round(media)+' mg/dL', sub:'', cor:corGlicemia(media) },
+    { label:'CV', valor:cv.toFixed(0)+'%', sub: cv<=36?'Estavel':cv<=50?'Moderado':'Instavel', cor:corCV(cv) },
+    { label:'DP', valor:Math.round(dp)+' mg/dL', sub:'', cor:C.azul },
   ];
   blocos.forEach((b, i)=>{
-    const bx = 10 + i*40, bw=38, bh=28;
+    const bx = 5 + i*40, bw=38, bh=22;
     doc.setFillColor(...C.cinzaFundo); doc.roundedRect(bx,y,bw,bh,2,2,'F');
-    doc.setDrawColor(...b.cor); doc.setLineWidth(0.6); doc.roundedRect(bx,y,bw,bh,2,2,'S');
-    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6.5); doc.setFont('helvetica','normal');
-    doc.text(b.label, bx+2, y+6);
-    doc.setTextColor(...b.cor); doc.setFontSize(13); doc.setFont('helvetica','bold');
-    doc.text(b.valor, bx+2, y+17);
-    if(b.sub){ doc.setFontSize(7); doc.text(b.sub, bx+2, y+24); }
-    if(b.desc){ doc.setTextColor(...C.cinzaEsc); doc.setFontSize(5.5); doc.text(b.desc, bx+2, y+26.5); }
+    doc.setDrawColor(...b.cor); doc.setLineWidth(0.5); doc.roundedRect(bx,y,bw,bh,2,2,'S');
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6); doc.setFont('helvetica','normal');
+    doc.text(b.label, bx+2, y+5);
+    doc.setTextColor(...b.cor); doc.setFontSize(11); doc.setFont('helvetica','bold');
+    doc.text(b.valor, bx+2, y+14);
+    if(b.sub){ doc.setFontSize(6); doc.text(b.sub, bx+2, y+20); }
   });
 
-  y += 34;
+  y += 28;
 
-  // ── TIME IN RANGE — PADRÃO INTERNACIONAL ──
-  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('TIME IN RANGE - Consenso Internacional 2019 (ADA/EASD)', 14, y); y+=5;
+  // ── TIME IN RANGE ──
+  doc.setTextColor(...C.azul); doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+  doc.text('TIME IN RANGE - ADA/EASD 2019', 5, y); y+=4;
 
   const tirs = [
-    { label:'Hipo Severa  < 54 mg/dL', pct:pctH2,     cor:C.vermelho,      meta:'Meta: <'+metaHipo2+'%', ok: pctH2 <= metaHipo2 },
-    { label:'Hipo Leve   54–70 mg/dL', pct:pctH1,     cor:C.rosa,          meta:'Meta: <'+metaHipo+'%',  ok: pctH1 <= metaHipo  },
-    { label:'Alvo         70–180 mg/dL',pct:pctNormal, cor:C.verdeClaro,    meta:'Meta: >'+metaNormal+'%',ok: pctNormal >= metaNormal },
-    { label:'Elevada    180–250 mg/dL', pct:pctA1,     cor:C.amarelo,       meta:'Meta: <'+metaAlta1+'%', ok: pctA1 <= metaAlta1 },
-    { label:'Hiper Severa > 250 mg/dL', pct:pctA2,     cor:C.laranja,       meta:'Meta: <'+metaAlta2+'%', ok: pctA2 <= metaAlta2 },
+    { label:'Hipo Severa <54',  pct:pctH2,     meta:'Meta:<'+metaHipo2+'%',  ok: pctH2 <= metaHipo2 },
+    { label:'Hipo Leve 54-70',  pct:pctH1,     meta:'Meta:<'+metaHipo+'%',   ok: pctH1 <= metaHipo  },
+    { label:'Alvo 70-180',      pct:pctNormal, meta:'Meta:>'+metaNormal+'%', ok: pctNormal >= metaNormal },
+    { label:'Elevada 180-250',  pct:pctA1,     meta:'Meta:<'+metaAlta1+'%',  ok: pctA1 <= metaAlta1 },
+    { label:'Hiper >250',       pct:pctA2,     meta:'Meta:<'+metaAlta2+'%',  ok: pctA2 <= metaAlta2 },
   ];
   tirs.forEach(t => {
-    doc.setTextColor(...C.cinza); doc.setFontSize(8); doc.setFont('helvetica','normal');
-    doc.text(t.label, 14, y+5);
-    doc.setFillColor(20,24,50); doc.roundedRect(82, y, 88, 7, 1,1,'F');
-    doc.setFillColor(...t.cor); doc.roundedRect(82, y, Math.max(0.5, t.pct*0.88), 7, 1,1,'F');
-    doc.setTextColor(...t.cor); doc.setFont('helvetica','bold'); doc.text(t.pct+'%', 173, y+5.5);
-    doc.setFontSize(6.5); doc.setTextColor(...(t.ok?C.verdeClaro:C.vermelho));
-    doc.text(t.meta + (t.ok?' OK':' !'), 177, y+5.5);
-    y+=10;
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(7); doc.setFont('helvetica','normal');
+    doc.text(t.label, 5, y+4.5);
+    doc.setFillColor(220,220,220); doc.roundedRect(60, y, 110, 6, 1,1,'F');
+    doc.setFillColor(80,80,80); doc.roundedRect(60, y, Math.max(0.5, t.pct*1.1), 6, 1,1,'F');
+    doc.setTextColor(...C.azul); doc.setFont('helvetica','bold'); doc.setFontSize(7);
+    doc.text(t.pct+'%', 173, y+4.5);
+    doc.setFontSize(6); doc.setTextColor(t.ok?[50,50,50]:[30,30,30]);
+    doc.text(t.meta+(t.ok?' OK':' !'), 180, y+4.5);
+    y+=8;
   });
 
-  y += 4;
+  y += 3;
 
-  // ── GRÁFICO DE GLICEMIA NO TEMPO (cronológico) ──
-  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('GLICEMIA AO LONGO DO TEMPO', 14, y); y+=4;
+  // ── GRÁFICO ──
+  doc.setTextColor(...C.azul); doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+  doc.text('GLICEMIA AO LONGO DO TEMPO', 5, y); y+=3;
 
-  const chartX=14, chartW=182, chartH=44, chartY=y;
-  doc.setFillColor(...C.cinzaFundo); doc.rect(chartX, chartY, chartW, chartH,'F');
+  const chartX=5, chartW=200, chartH=36, chartY=y;
+  doc.setFillColor(250,250,250); doc.rect(chartX, chartY, chartW, chartH,'F');
   const gMax=400, gMin=0;
   const gy = (v) => chartY + chartH - ((Math.min(gMax,Math.max(gMin,v))-gMin)/(gMax-gMin))*chartH;
-  // faixa-alvo 70-180 (verde)
-  doc.setFillColor(0,70,38); doc.rect(chartX, gy(180), chartW, gy(70)-gy(180),'F');
-  // linhas de referência
+  doc.setFillColor(220,220,220); doc.rect(chartX, gy(180), chartW, gy(70)-gy(180),'F');
   [54,70,180,250].forEach(v=>{
-    const lc = (v===70||v===54)?C.vermelhoClaro:v===180?C.amarelo:C.laranja;
-    doc.setDrawColor(...lc); doc.setLineWidth(0.15);
+    doc.setDrawColor(140,140,140); doc.setLineWidth(0.15);
     doc.line(chartX, gy(v), chartX+chartW, gy(v));
-    doc.setTextColor(...lc); doc.setFontSize(5.5); doc.setFont('helvetica','normal');
+    doc.setTextColor(80,80,80); doc.setFontSize(5); doc.setFont('helvetica','normal');
     doc.text(v+'', chartX+chartW+1, gy(v)+1.5);
   });
-  // série cronológica (cada medição no seu instante real)
   const serie = [...filtrado].sort((a,b)=>new Date(a.dt)-new Date(b.dt));
   const t0 = new Date(serie[0].dt).getTime();
   const t1 = new Date(serie[serie.length-1].dt).getTime();
@@ -1752,107 +1738,85 @@ function gerarPDF() {
   if(serie.length>1){
     for(let i=1;i<serie.length;i++){
       const a=serie[i-1], b=serie[i];
-      doc.setDrawColor(0,160,200); doc.setLineWidth(0.4);
+      doc.setDrawColor(40,40,40); doc.setLineWidth(0.4);
       doc.line(tx(new Date(a.dt).getTime()), gy(a.glicemia), tx(new Date(b.dt).getTime()), gy(b.glicemia));
     }
   }
   serie.forEach(r=>{
     doc.setFillColor(...corGlicemia(r.glicemia));
-    doc.circle(tx(new Date(r.dt).getTime()), gy(r.glicemia), 0.9,'F');
+    doc.circle(tx(new Date(r.dt).getTime()), gy(r.glicemia), 0.7,'F');
   });
-  // eixo X (datas)
   [0,0.25,0.5,0.75,1].forEach(f=>{
     const px = chartX + f*chartW;
-    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(5.5); doc.setFont('helvetica','normal');
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(5); doc.setFont('helvetica','normal');
     const lbl = new Date(t0 + f*span).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-    doc.text(lbl, px-4, chartY+chartH+5);
+    doc.text(lbl, px-4, chartY+chartH+4);
     doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.1); doc.line(px,chartY,px,chartY+chartH);
   });
   doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.3); doc.rect(chartX,chartY,chartW,chartH);
-  y = chartY + chartH + 10;
+  y = chartY + chartH + 8;
 
   // ── MÉDIAS POR PERÍODO ──
-  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('MEDIA POR PERIODO DO DIA', 14, y); y+=5;
+  doc.setTextColor(...C.azul); doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+  doc.text('MEDIA POR PERIODO DO DIA', 5, y); y+=4;
 
   const periodos = [
-    ['Madrugada\n0h-6h', periMadrugada],
-    ['Manha\n6h-12h', periManha],
-    ['Tarde\n12h-18h', periTarde],
-    ['Noite\n18h-24h', periNoite],
+    ['Madrugada 0h-6h', periMadrugada],
+    ['Manha 6h-12h', periManha],
+    ['Tarde 12h-18h', periTarde],
+    ['Noite 18h-24h', periNoite],
   ];
   periodos.forEach(([label, val], i) => {
-    const px = 10 + i*50, pw=46, ph=24;
+    const px = 5 + i*51, pw=48, ph=18;
     doc.setFillColor(...C.cinzaFundo); doc.roundedRect(px,y,pw,ph,2,2,'F');
     if(val){
-      const cor=corGlicemia(val);
-      doc.setDrawColor(...cor); doc.setLineWidth(0.4); doc.roundedRect(px,y,pw,ph,2,2,'S');
-      doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6.5); doc.setFont('helvetica','normal');
-      doc.text(label.replace('\n',' '), px+3, y+7);
-      doc.setTextColor(...cor); doc.setFontSize(13); doc.setFont('helvetica','bold');
-      doc.text(val+' mg/dL', px+3, y+18);
+      doc.setDrawColor(...corGlicemia(val)); doc.setLineWidth(0.4); doc.roundedRect(px,y,pw,ph,2,2,'S');
+      doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6); doc.setFont('helvetica','normal');
+      doc.text(label, px+2, y+6);
+      doc.setTextColor(...corGlicemia(val)); doc.setFontSize(11); doc.setFont('helvetica','bold');
+      doc.text(val+' mg/dL', px+2, y+14);
     } else {
       doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.2); doc.roundedRect(px,y,pw,ph,2,2,'S');
-      doc.setTextColor(...C.cinzaEsc); doc.setFontSize(7); doc.setFont('helvetica','italic');
-      doc.text('Sem dados', px+3, y+14);
+      doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6.5); doc.setFont('helvetica','italic');
+      doc.text('Sem dados', px+3, y+11);
     }
   });
-  y += 30;
+  y += 24;
 
-  // ── AVISO LEGAL ──
-  doc.setFillColor(10,12,28); doc.roundedRect(10,y,190,16,2,2,'F');
-  doc.setTextColor(90,90,110); doc.setFontSize(6.5); doc.setFont('helvetica','normal');
-  const aviso = 'AVISO LEGAL: Este relatorio e de carater exclusivamente informativo e nao substitui avaliacao, diagnostico ou prescricao medica. Consulte seu endocrinologista antes de alterar doses de insulina.';
-  doc.text(doc.splitTextToSize(aviso, 184), 13, y+5.5);
-
-  rodape(1, 3);
-
-  // ══════════════════════════════════════════════
-  // PÁG 2 — INSULINA + HIPOGLICEMIAS + PADRÕES
-  // ══════════════════════════════════════════════
-  doc.addPage(); y=14;
-
-  doc.setFillColor(...C.escuro); doc.rect(0,0,210,20,'F');
-  doc.setTextColor(...C.azul); doc.setFontSize(13); doc.setFont('helvetica','bold');
-  doc.text('RESUMO DE INSULINA E ANALISE CLINICA', 14, 13);
-  y=26;
-
-  // ── PAINEL INSULINA ──
-  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('DOSES DE INSULINA NO PERIODO', 14, y); y+=5;
+  // ── INSULINA ──
+  doc.setTextColor(...C.azul); doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+  doc.text('DOSES DE INSULINA', 5, y); y+=4;
 
   const insulinaCards = [
-    { label:'Dose Total Diaria (TDD)',    valor: tdd.toFixed(1)+'U',        cor:C.azul,    desc:'Rapida + Lenta/dia' },
-    { label:'Insulina Rapida Media/dia',  valor: mediaRapidaDia+'U',        cor:C.azulEsc, desc:comRapida.length+' aplicacoes no periodo' },
-    { label:'Insulina Lenta Media/dia',   valor: mediaLentaDia+'U',         cor:C.roxo,    desc:lentas.length+' registros de lenta' },
-    { label:'Proporcao Basal/Bolus',      valor: pctBasal!=null?pctBasal+'% basal':'-', cor:C.rosa, desc:'Ideal: 48-60% basal' },
-    { label:'Fator de Sensibilidade',     valor:'1U = '+fatorAtual+' mg/dL', cor:C.verdeClaro, desc:cfgAtual.autoAprendizado?'Auto-aprendizado ativo':'Configurado manualmente' },
+    { label:'TDD (Rapida+Lenta/dia)', valor: tdd.toFixed(1)+'U' },
+    { label:'Rapida media/dia',       valor: mediaRapidaDia+'U  ('+comRapida.length+' aplic.)' },
+    { label:'Lenta media/dia',        valor: mediaLentaDia+'U  ('+lentas.length+' reg.)' },
+    { label:'Basal/Bolus',            valor: pctBasal!=null?pctBasal+'% basal (ideal 48-60%)':'-' },
+    { label:'Fator sensib.',          valor: '1U = '+fatorAtual+' mg/dL' },
   ];
   insulinaCards.forEach((c,i)=>{
-    const ix=10+(i%3)*66, iy=y+Math.floor(i/3)*22, iw=62, ih=19;
-    doc.setFillColor(...C.cinzaFundo); doc.roundedRect(ix,iy,iw,ih,2,2,'F');
-    doc.setDrawColor(...c.cor); doc.setLineWidth(0.4); doc.roundedRect(ix,iy,iw,ih,2,2,'S');
-    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6.5); doc.setFont('helvetica','normal'); doc.text(c.label, ix+2.5, iy+6);
-    doc.setTextColor(...c.cor); doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.text(c.valor, ix+2.5, iy+14);
-    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(5.5); doc.text(c.desc, ix+2.5, iy+18);
+    const ix=5+(i%5)*41, iw=39, ih=14;
+    doc.setFillColor(...C.cinzaFundo); doc.roundedRect(ix,y,iw,ih,2,2,'F');
+    doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.3); doc.roundedRect(ix,y,iw,ih,2,2,'S');
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(5.5); doc.setFont('helvetica','normal'); doc.text(c.label, ix+2, y+5);
+    doc.setTextColor(...C.azul); doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.text(c.valor, ix+2, y+11);
   });
-
-  y += 50;
+  y += 20;
 
   // ── HIPOGLICEMIAS ──
-  doc.setTextColor(...C.vermelho); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('EPISODIOS DE HIPOGLICEMIA (<70 mg/dL)', 14, y); y+=4;
+  doc.setTextColor(...C.azul); doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+  doc.text('HIPOGLICEMIAS (<70 mg/dL)', 5, y); y+=4;
 
   if(!eventos_hipo.length){
-    doc.setFillColor(10,20,12); doc.roundedRect(10,y,190,12,2,2,'F');
-    doc.setTextColor(...C.verdeClaro); doc.setFontSize(9); doc.setFont('helvetica','bold');
-    doc.text('Nenhum episodio de hipoglicemia registrado no periodo!', 14, y+8);
-    y+=16;
+    doc.setFillColor(...C.cinzaFundo); doc.roundedRect(5,y,200,10,2,2,'F');
+    doc.setTextColor(...C.azul); doc.setFontSize(8); doc.setFont('helvetica','bold');
+    doc.text('Nenhum episodio de hipoglicemia registrado no periodo!', 8, y+7);
+    y+=14;
   } else {
-    doc.setTextColor(...C.cinza); doc.setFontSize(8); doc.setFont('helvetica','normal');
-    doc.text(`${eventos_hipo.length} episodio(s) identificado(s). Episodios <54 mg/dL requerem atencao imediata.`, 14, y+4);
-    y+=8;
-    const rowsHipo = eventos_hipo.slice(0,20).map(r=>{
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(7); doc.setFont('helvetica','normal');
+    doc.text(`${eventos_hipo.length} episodio(s). Episodios <54 mg/dL requerem atencao imediata.`, 5, y+4);
+    y+=6;
+    const rowsHipo = eventos_hipo.slice(0,15).map(r=>{
       const sev = r.glicemia<54?'SEVERA':'LEVE';
       return [new Date(r.dt).toLocaleString('pt-BR'), r.glicemia+' mg/dL', sev, ascii(r.refeicao)||'-'];
     });
@@ -1860,56 +1824,52 @@ function gerarPDF() {
       startY:y,
       head:[['Data/Hora','Glicemia','Severidade','Contexto']],
       body:rowsHipo,
-      styles:{fontSize:8, textColor:[200,200,200], fillColor:[30,10,15], lineColor:[60,20,30], lineWidth:0.2},
-      headStyles:{fillColor:[100,20,30], textColor:[255,150,150], fontStyle:'bold'},
-      alternateRowStyles:{fillColor:[40,15,20]},
+      styles:{fontSize:7, textColor:[30,30,30], fillColor:[255,255,255], lineColor:[180,180,180], lineWidth:0.2, cellPadding:2},
+      headStyles:{fillColor:[40,40,40], textColor:[255,255,255], fontStyle:'bold', fontSize:7},
+      alternateRowStyles:{fillColor:[245,245,245]},
       didParseCell:(data)=>{
-        if(data.column.index===2){data.cell.styles.textColor=data.cell.raw==='SEVERA'?[255,50,70]:[255,130,140];}
-        if(data.column.index===1){data.cell.styles.textColor=[255,100,120];}
+        if(data.column.index===2){data.cell.styles.fontStyle='bold';}
+        if(data.column.index===1){data.cell.styles.fontStyle='bold';}
       },
-      margin:{left:10,right:10}
+      margin:{left:5,right:5}
     });
-    y = doc.lastAutoTable.finalY+8;
+    y = doc.lastAutoTable.finalY+5;
   }
 
-  // ── PADRÕES CLÍNICOS ──
-  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('OBSERVACOES CLINICAS', 14, y); y+=5;
+  // ── OBSERVAÇÕES CLÍNICAS ──
+  doc.setTextColor(...C.azul); doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+  doc.text('OBSERVACOES CLINICAS', 5, y); y+=4;
 
   const obs = [];
-  if (pctNormal < metaNormal) obs.push(['ATENCAO', `Tempo no alvo (70-180): ${pctNormal}% - abaixo da meta de ${metaNormal}%. Revisar terapia.`, C.amarelo]);
-  else obs.push(['OK', `Tempo no alvo (70-180): ${pctNormal}% - dentro da meta de ${metaNormal}%.`, C.verdeClaro]);
-  if (pctH2 > metaHipo2) obs.push(['RISCO', `Hipoglicemia severa (<54): ${pctH2}% - acima do limite de ${metaHipo2}%. Risco elevado.`, C.vermelho]);
-  if (pctH1 > metaHipo) obs.push(['ATENCAO', `Hipoglicemia leve (54-70): ${pctH1}% - revisar doses e horarios.`, C.rosa]);
-  if (cv > 36) obs.push(['ATENCAO', `CV=${cv.toFixed(0)}% - glicemia instavel (meta <=36%). Avaliar variabilidade.`, C.amarelo]);
-  else obs.push(['OK', `CV=${cv.toFixed(0)}% - glicemia estavel (meta <=36%).`, C.verdeClaro]);
-  if (periManha && periManha > 180) obs.push(['ATENCAO', `Glicemia matinal elevada (${periManha} mg/dL) - possivel fenomeno Dawn. Revisar dose noturna de lenta.`, C.amarelo]);
-  if (periMadrugada && periMadrugada < 80) obs.push(['ATENCAO', `Glicemia de madrugada baixa (${periMadrugada} mg/dL) - risco hipoglicemia noturna.`, C.rosa]);
-  if (pctA2 > metaAlta2) obs.push(['ATENCAO', `${pctA2}% do tempo acima de 250 mg/dL - ajuste de dose ou rotina necessario.`, C.laranja]);
-  if (pctBasal!==null && (pctBasal<40||pctBasal>65)) obs.push(['INFO', `Proporcao basal/bolus: ${pctBasal}% basal - ideal entre 48-60%. Considerar ajuste.`, C.azul]);
-  if (!obs.length) obs.push(['INFO', 'Dados insuficientes para padroes conclusivos. Continue registrando.', C.cinza]);
+  if (pctNormal < metaNormal) obs.push(['ATENCAO', `Tempo no alvo (70-180): ${pctNormal}% - abaixo da meta de ${metaNormal}%. Revisar terapia.`]);
+  else obs.push(['OK', `Tempo no alvo (70-180): ${pctNormal}% - dentro da meta de ${metaNormal}%.`]);
+  if (pctH2 > metaHipo2) obs.push(['RISCO', `Hipoglicemia severa (<54): ${pctH2}% - acima do limite de ${metaHipo2}%. Risco elevado.`]);
+  if (pctH1 > metaHipo) obs.push(['ATENCAO', `Hipoglicemia leve (54-70): ${pctH1}% - revisar doses e horarios.`]);
+  if (cv > 36) obs.push(['ATENCAO', `CV=${cv.toFixed(0)}% - glicemia instavel (meta <=36%). Avaliar variabilidade.`]);
+  else obs.push(['OK', `CV=${cv.toFixed(0)}% - glicemia estavel (meta <=36%).`]);
+  if (periManha && periManha > 180) obs.push(['ATENCAO', `Glicemia matinal elevada (${periManha} mg/dL) - possivel fenomeno Dawn.`]);
+  if (periMadrugada && periMadrugada < 80) obs.push(['ATENCAO', `Glicemia de madrugada baixa (${periMadrugada} mg/dL) - risco hipoglicemia noturna.`]);
+  if (pctA2 > metaAlta2) obs.push(['ATENCAO', `${pctA2}% do tempo acima de 250 mg/dL - ajuste necessario.`]);
+  if (pctBasal!==null && (pctBasal<40||pctBasal>65)) obs.push(['INFO', `Proporcao basal/bolus: ${pctBasal}% basal (ideal 48-60%). Considerar ajuste.`]);
+  if (!obs.length) obs.push(['INFO', 'Dados insuficientes para padroes conclusivos. Continue registrando.']);
 
-  obs.forEach(([icon, txt, cor])=>{
-    if(y > 270){ doc.addPage(); y=14; }
-    doc.setFillColor(...C.cinzaFundo2); doc.roundedRect(10,y,190,12,2,2,'F');
-    doc.setTextColor(...cor); doc.setFontSize(7.5); doc.setFont('helvetica','bold');
-    doc.text(icon, 13, y+8);
-    doc.setFont('helvetica','normal'); doc.setTextColor(...C.cinza);
-    doc.text(doc.splitTextToSize(txt, 178), 20, y+8);
-    y+=14;
+  obs.forEach(([icon, txt])=>{
+    if(y > 282){ doc.addPage(); y=8; }
+    doc.setFillColor(...C.cinzaFundo2); doc.roundedRect(5,y,200,9,1,1,'F');
+    doc.setTextColor(...C.azul); doc.setFontSize(6.5); doc.setFont('helvetica','bold');
+    doc.text(icon, 7, y+6.5);
+    doc.setFont('helvetica','normal'); doc.setTextColor(...C.cinzaEsc);
+    doc.text(doc.splitTextToSize(txt, 185), 24, y+6.5);
+    y+=11;
   });
 
-  rodape(2, 3);
-
   // ══════════════════════════════════════════════
-  // PÁG 3 — RESUMO SEMANAL + HISTÓRICO COMPLETO
+  // PÁG 2 — RESUMO SEMANAL + HISTÓRICO
   // ══════════════════════════════════════════════
-  doc.addPage(); y=14;
+  doc.addPage(); y=8;
 
-  doc.setFillColor(...C.escuro); doc.rect(0,0,210,20,'F');
-  doc.setTextColor(...C.azul); doc.setFontSize(13); doc.setFont('helvetica','bold');
-  doc.text('RESUMO SEMANAL E HISTORICO', 14, 13);
-  y=26;
+  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('RESUMO SEMANAL E HISTORICO', 5, y); y+=8;
 
   // Agrupa por semana
   const semanas = {};
@@ -1932,24 +1892,23 @@ function gerarPDF() {
 
   doc.autoTable({
     startY:y,
-    head:[['Semana','Med.','Min','Media','Max','TIR 70-180','Hipos']],
+    head:[['Semana','Med.','Min','Media','Max','TIR','Hipos']],
     body:rowsSem,
-    styles:{fontSize:8.5, textColor:[200,200,200], fillColor:[15,20,50], lineColor:[30,40,90], lineWidth:0.2},
-    headStyles:{fillColor:[0,50,100], textColor:[0,200,255], fontStyle:'bold'},
-    alternateRowStyles:{fillColor:[20,25,60]},
+    styles:{fontSize:7.5, textColor:[30,30,30], fillColor:[255,255,255], lineColor:[180,180,180], lineWidth:0.2, cellPadding:2},
+    headStyles:{fillColor:[40,40,40], textColor:[255,255,255], fontStyle:'bold', fontSize:7.5},
+    alternateRowStyles:{fillColor:[245,245,245]},
     didParseCell:(data)=>{
-      if(data.column.index===3){const v=parseInt(data.cell.raw);data.cell.styles.textColor=v<70?[255,80,100]:v<=180?[0,220,120]:v<=250?[255,170,0]:[255,100,50];}
-      if(data.column.index===5){const v=parseInt(data.cell.raw);data.cell.styles.textColor=v>=70?[0,220,120]:v>=50?[255,170,0]:[255,80,100];}
-      if(data.column.index===6&&data.cell.raw!=='—'){data.cell.styles.textColor=[255,80,100];}
+      if(data.column.index===3){data.cell.styles.fontStyle='bold';}
+      if(data.column.index===6&&data.cell.raw!=='—'){data.cell.styles.fontStyle='bold';}
     },
-    margin:{left:10,right:10}
+    margin:{left:5,right:5}
   });
 
-  y = doc.lastAutoTable.finalY + 10;
+  y = doc.lastAutoTable.finalY + 6;
 
   // Histórico completo
-  doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('HISTORICO COMPLETO DE MEDICOES', 14, y); y+=4;
+  doc.setTextColor(...C.azul); doc.setFontSize(8.5); doc.setFont('helvetica','bold');
+  doc.text('HISTORICO COMPLETO DE MEDICOES', 5, y); y+=4;
 
   const rowsAll = [...filtrado].reverse().map(r => {
     const status = r.glicemia<54?'HIPO SEVERA':r.glicemia<70?'HIPO':r.glicemia<=180?'Normal':r.glicemia<=250?'Elevada':'HIPER';
@@ -1967,21 +1926,20 @@ function gerarPDF() {
     startY:y,
     head:[['Data/Hora','Glicemia','Status','Insulina','Refeicao']],
     body:rowsAll,
-    styles:{fontSize:7.5, textColor:[190,190,190], fillColor:[15,20,50], lineColor:[30,40,90], lineWidth:0.15},
-    headStyles:{fillColor:[0,50,100], textColor:[0,200,255], fontStyle:'bold', fontSize:8},
-    alternateRowStyles:{fillColor:[20,25,60]},
+    styles:{fontSize:7, textColor:[30,30,30], fillColor:[255,255,255], lineColor:[180,180,180], lineWidth:0.15, cellPadding:1.5},
+    headStyles:{fillColor:[40,40,40], textColor:[255,255,255], fontStyle:'bold', fontSize:7},
+    alternateRowStyles:{fillColor:[245,245,245]},
     didParseCell:(data)=>{
-      if(data.column.index===1){const v=parseInt(data.cell.raw);data.cell.styles.textColor=v<54?[255,50,70]:v<70?[255,130,140]:v<=180?[0,220,120]:v<=250?[255,170,0]:[255,100,50];}
+      if(data.column.index===1){data.cell.styles.fontStyle='bold';}
       if(data.column.index===2){
         const s=data.cell.raw;
-        data.cell.styles.textColor=s==='HIPO SEVERA'?[255,50,70]:s==='HIPO'?[255,130,140]:s==='Normal'?[0,220,120]:s==='Elevada'?[255,170,0]:[255,100,50];
+        if(s==='HIPO SEVERA'||s==='HIPO'||s==='HIPER'){data.cell.styles.fontStyle='bold';}
       }
     },
-    margin:{left:10,right:10},
-    didDrawPage:()=>{ rodape(doc.internal.getCurrentPageInfo().pageNumber, ''); }
+    margin:{left:5,right:5},
+    didDrawPage:()=>{}
   });
 
-  rodape(doc.internal.getCurrentPageInfo().pageNumber, '');
   doc.save(`GlicoCare_Relatorio_${hoje.replace(/\//g,'-')}.pdf`);
 }
 
