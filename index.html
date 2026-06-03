@@ -1459,7 +1459,7 @@ function renderHistorico() {
     if (r._tipo === 'insulina lenta') insulina.push(`🟣 Insulina Lenta: ${r.lenta}U`);
     else {
       if (r.sugRapida != null && r.sugRapida > 0) insulina.push(`🔵 Sugerido: ${r.sugRapida}U`);
-      if (r.rapida>0) insulina.push(`💉 Insulina Rápida: ${r.rapida}U`);
+      if (r.rapida>0) insulina.push(`💉 Insulina Rápida Aplicada: ${r.rapida}U`);
     }
     const insulinaStr = insulina.length
       ? `<div class="hist-insulin">${insulina.join(' · ')} ✅</div>`
