@@ -173,6 +173,8 @@
     .hist-right { text-align:right; font-size:0.8rem; color:#666; }
     .hist-insulin { color:#00e5ff; font-size:0.82rem; margin-top:2px; }
     .badge-del { background:rgba(255,50,50,0.1); border:1px solid #ff444433; color:#ff6666; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; }
+    .badge-edit { background:rgba(0,229,255,0.08); border:1px solid #00e5ff44; color:#00e5ff; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; }
+    .hist-btns { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
 
     /* TOOLTIP */
     .tooltip-wrap { position:relative; display:inline-flex; align-items:center; }
@@ -390,6 +392,33 @@
 
     </div>
 
+  </div>
+</div>
+
+<!-- MODAL EDITAR REGISTRO -->
+<div id="edit-modal" style="display:none;position:fixed;inset:0;background:#000000cc;z-index:1001;justify-content:center;align-items:center;">
+  <div style="background:#0d1130;border:2px solid #00e5ff;border-radius:16px;padding:28px 24px;max-width:320px;width:90%;">
+    <div style="font-size:1.1rem;font-weight:700;color:#00e5ff;margin-bottom:16px;">✏️ Editar Registro</div>
+    <div class="form-row">
+      <label>Glicemia (mg/dL)</label>
+      <input type="number" id="edit-glicemia" min="20" max="600" placeholder="mg/dL"/>
+    </div>
+    <div class="form-row">
+      <label>Data e Hora</label>
+      <input type="datetime-local" id="edit-dt"/>
+    </div>
+    <div class="form-row">
+      <label>Insulina Rápida (U)</label>
+      <input type="number" id="edit-rapida" min="0" max="50" step="0.5" placeholder="0"/>
+    </div>
+    <div class="form-row">
+      <label>Insulina Lenta (U)</label>
+      <input type="number" id="edit-lenta" min="0" max="80" step="1" placeholder="0"/>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px;">
+      <button onclick="salvarEdicao()" style="flex:1;background:#00e5ff;color:#000;font-weight:700;padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;">💾 Salvar</button>
+      <button onclick="fecharEditModal()" style="flex:1;background:#1a1a3a;color:#aaa;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;font-size:1rem;">Cancelar</button>
+    </div>
   </div>
 </div>
 
@@ -1306,7 +1335,10 @@ function renderHistorico() {
         <div class="hist-meta">${dtFmt}</div>
         ${insulinaStr}
       </div>
-      <button class="badge-del" onclick="deletar(${r.id})">✕</button>
+      <div class="hist-btns">
+        <button class="badge-edit" onclick="abrirEditModal(${r.id})">✏️</button>
+        <button class="badge-del" onclick="deletar(${r.id})">✕</button>
+      </div>
     </div>`;
   }
   el.innerHTML = html;
@@ -1328,6 +1360,55 @@ function deletar(id) {
 
   dados = dados.filter(r=>r.id!==id);
   saveData(dados);
+  renderHistorico();
+  atualizarStatusBar();
+}
+
+// ── EDITAR REGISTRO ──
+let _editId = null;
+
+function abrirEditModal(id) {
+  const dados = loadData();
+  const r = dados.find(r => r.id === id);
+  if (!r) return;
+  _editId = id;
+  // Preenche campos
+  document.getElementById('edit-glicemia').value = r.glicemia || '';
+  // Converte dt para formato datetime-local
+  const dtLocal = new Date(new Date(r.dt).getTime() - new Date().getTimezoneOffset()*60000);
+  document.getElementById('edit-dt').value = r.dt.slice(0,16);
+  document.getElementById('edit-rapida').value = r.rapida || 0;
+  document.getElementById('edit-lenta').value = r.lenta || 0;
+  // Oculta glicemia se for registro de lenta
+  document.getElementById('edit-glicemia').closest('.form-row').style.display = r._tipo === 'insulina lenta' ? 'none' : '';
+  document.getElementById('edit-modal').style.display = 'flex';
+}
+
+function fecharEditModal() {
+  document.getElementById('edit-modal').style.display = 'none';
+  _editId = null;
+}
+
+function salvarEdicao() {
+  if (!_editId) return;
+  const dados = loadData();
+  const idx = dados.findIndex(r => r.id === _editId);
+  if (idx === -1) return;
+  const r = dados[idx];
+  const novaGlicemia = parseFloat(document.getElementById('edit-glicemia').value);
+  const novaDt = document.getElementById('edit-dt').value;
+  const novaRapida = parseFloat(document.getElementById('edit-rapida').value) || 0;
+  const novaLenta = parseFloat(document.getElementById('edit-lenta').value) || 0;
+  if (r._tipo !== 'insulina lenta' && !novaGlicemia) { alert('Informe a glicemia!'); return; }
+  if (!novaDt) { alert('Informe a data e hora!'); return; }
+  dados[idx].dt = novaDt;
+  if (r._tipo !== 'insulina lenta') dados[idx].glicemia = novaGlicemia;
+  dados[idx].rapida = novaRapida;
+  dados[idx].lenta = novaLenta;
+  dados[idx].aplicou = (novaRapida > 0 || novaLenta > 0);
+  dados.sort((a,b) => new Date(a.dt) - new Date(b.dt));
+  saveData(dados);
+  fecharEditModal();
   renderHistorico();
   atualizarStatusBar();
 }
