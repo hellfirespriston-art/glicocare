@@ -487,7 +487,7 @@
 <div id="tab-historico" class="content">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
     <div style="font-size:0.85rem;color:#555;" id="hist-count">0 registros</div>
-    <button class="btn btn-danger btn-sm" onclick="if(confirm('Apagar tudo?')){localStorage.removeItem('glicocare');location.reload();}">🗑️ Apagar tudo</button>
+    <button class="btn btn-danger btn-sm" onclick="if(confirm('Apagar tudo?')){localStorage.removeItem('glicocare');localStorage.removeItem('lenta_dia');location.reload();}">🗑️ Apagar tudo</button>
   </div>
   <div class="scroll-list" id="lista-historico">
     <div style="text-align:center;color:#333;padding:40px;">Nenhum registro ainda</div>
