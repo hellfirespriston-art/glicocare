@@ -1528,6 +1528,17 @@ function renderHistorico() {
 function deletar(id) {
   if (!confirm('Apagar este registro?')) return;
   let dados = loadData();
+  const registroApagado = dados.find(r=>r.id===id);
+
+  // Se está deletando um registro de hoje, reseta o flag da lenta pra perguntar novamente
+  if (registroApagado) {
+    const hoje = new Date().toDateString();
+    const dataRegistro = new Date(registroApagado.dt).toDateString();
+    if (dataRegistro === hoje) {
+      localStorage.removeItem('lenta_dia');
+    }
+  }
+
   dados = dados.filter(r=>r.id!==id);
   saveData(dados);
   renderHistorico();
