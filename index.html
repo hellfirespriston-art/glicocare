@@ -431,10 +431,13 @@
         <div class="lenta-modal-box">
           <div class="lenta-modal-icon">🟣</div>
           <div class="lenta-modal-title">Insulina Lenta — Manhã</div>
-          <div class="lenta-modal-sub">Você tomou insulina lenta hoje?<br>Confirme ou ajuste a dose abaixo:</div>
+          <div class="lenta-modal-sub">Você tomou insulina lenta hoje?<br>Confirme ou ajuste a dose e hora abaixo:</div>
           <div class="lenta-dose-row">
             <input type="number" id="inp-lenta-modal" value="20" min="0" max="80" step="1"/>
             <span>U</span>
+          </div>
+          <div class="lenta-dose-row">
+            <input type="time" id="inp-lenta-hora" style="flex:1; width:100%;"/>
           </div>
           <div class="lenta-btn-row">
             <button class="btn-lenta-confirmar" onclick="confirmarLentaModal()">✅ Confirmei, tomei!</button>
@@ -906,11 +909,18 @@ function verificarLentaMatinal() {
   const visto = localStorage.getItem('lenta_dia');
   if (visto === hoje) return;          // já respondeu hoje
   if (agora.getHours() < 7) return;   // só libera a partir das 7h
+
+  // Pré-preenche a hora atual no campo de hora
+  const hh = String(agora.getHours()).padStart(2, '0');
+  const mm = String(agora.getMinutes()).padStart(2, '0');
+  document.getElementById('inp-lenta-hora').value = `${hh}:${mm}`;
+
   document.getElementById('lenta-modal').classList.add('show');
 }
 
 function confirmarLentaModal() {
   const dose = parseFloat(document.getElementById('inp-lenta-modal').value) || 0;
+  const horaInput = document.getElementById('inp-lenta-hora').value; // HH:MM
   const hoje = new Date().toDateString();
   localStorage.setItem('lenta_dia', hoje);
   localStorage.setItem('lenta_dose_hoje', dose);
@@ -918,8 +928,21 @@ function confirmarLentaModal() {
 
   if (dose > 0) {
     const dados = loadData();
-    const agora = new Date();
-    const dtStr = new Date(agora.getTime() - agora.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    let dtStr;
+
+    if (horaInput) {
+      // Usa a hora que o usuário informou + data de hoje
+      const agora = new Date();
+      const ano = agora.getFullYear();
+      const mes = String(agora.getMonth() + 1).padStart(2, '0');
+      const dia = String(agora.getDate()).padStart(2, '0');
+      dtStr = `${ano}-${mes}-${dia}T${horaInput}`;
+    } else {
+      // Se não informou hora, usa agora
+      const agora = new Date();
+      dtStr = new Date(agora.getTime() - agora.getTimezoneOffset()*60000).toISOString().slice(0,16);
+    }
+
     dados.push({ id: Date.now(), dt: dtStr, glicemia: null, rapida: 0, lenta: dose, aplicou: true, refeicao: '', refeicaoStatus: 'sem', sugRapida: null, _tipo: 'insulina lenta' });
     dados.sort((a,b) => new Date(a.dt) - new Date(b.dt));
     saveData(dados);
