@@ -1337,6 +1337,12 @@ function desfazerUltimo() {
   const ultimo = dados[dados.length-1];
   const dt = new Date(ultimo.dt).toLocaleString('pt-BR');
   if (!confirm(`Remover último registro?\n\n${ultimo.glicemia} mg/dL — ${dt}`)) return;
+
+  // Se está deletando um registro de insulina lenta, reseta o flag pra perguntar novamente
+  if (ultimo.lenta && ultimo.lenta > 0) {
+    localStorage.removeItem('lenta_dia');
+  }
+
   dados.pop();
   saveData(dados);
   atualizarStatusBar();
