@@ -40,6 +40,10 @@
     .iob-label { font-size:0.72rem; color:#999; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
     .iob-track { height:6px; background:#1a1a3a; border-radius:3px; overflow:hidden; }
     .iob-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#00e5ff,#0066cc); transition:width 0.5s; }
+    .iob-fill-lenta { height:100%; border-radius:3px; background:linear-gradient(90deg,#cc44ff,#7a1fa0); transition:width 0.5s; }
+    .iob-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:3px; }
+    .iob-row .iob-label { margin-bottom:0; }
+    .iob-row .iob-val { font-size:0.8rem; font-weight:700; }
 
     /* ALERTA */
     .alerta {
@@ -301,13 +305,17 @@
     <span class="status-label">Próxima Medição</span>
     <span class="status-value" id="sb-proxima" style="color:#00ff99">—</span>
   </div>
-  <div class="status-item">
-    <span class="status-label">IOB Rápida</span>
-    <span class="status-value" id="sb-iob-rapida" style="color:#00e5ff">0,0 U</span>
-  </div>
   <div class="iob-bar">
-    <div class="iob-label">Insulina Ativa Total (IOB)</div>
+    <div class="iob-row">
+      <span class="iob-label">💉 Rápida ativa</span>
+      <span class="iob-val" id="sb-iob-rapida" style="color:#00e5ff">0,0 U</span>
+    </div>
     <div class="iob-track"><div class="iob-fill" id="iob-fill" style="width:0%"></div></div>
+    <div class="iob-row" style="margin-top:10px">
+      <span class="iob-label">🟣 Lenta ativa</span>
+      <span class="iob-val" id="sb-iob-lenta" style="color:#cc44ff">0,0 U</span>
+    </div>
+    <div class="iob-track"><div class="iob-fill-lenta" id="iob-fill-lenta" style="width:0%"></div></div>
     <div style="font-size:0.92rem;color:#666;margin-top:4px;">Insulina ainda em circulação no corpo</div>
   </div>
 </div>
@@ -663,6 +671,12 @@
     <button class="config-save" onclick="salvarConfig()">💾 Salvar Configurações</button>
     <div id="cfg-salvo-msg" style="text-align:center;color:#00ff99;font-size:0.85rem;margin-top:10px;display:none;">✅ Configurações salvas!</div>
 
+    <div style="margin-top:32px;border-top:1px solid #222;padding-top:20px;">
+      <div style="font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🧪 Dados de Teste</div>
+      <button onclick="simularDados()" style="width:100%;background:#1a1a2a;border:1px solid #444;color:#888;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;">Gerar 30 dias de dados simulados</button>
+      <button onclick="limparDados()" style="width:100%;background:#1a1a2a;border:1px solid #440000;color:#cc4444;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;margin-top:8px;">🗑️ Apagar todos os registros</button>
+    </div>
+
   </div>
 </div>
 
@@ -743,6 +757,33 @@ function initConfig() {
   document.getElementById('cfg-silencioso-badge').textContent = cfg.silenciosoAtivo ? 'Ligado' : 'Desligado';
   document.getElementById('cfg-silencioso-badge').className   = 'config-badge ' + (cfg.silenciosoAtivo ? 'badge-auto' : 'badge-manual');
   document.getElementById('cfg-silencioso-horario').style.display = cfg.silenciosoAtivo ? 'block' : 'none';
+}
+
+function simularDados() {
+  if (!confirm('Isso VAI APAGAR os registros atuais e gerar 30 dias de dados simulados. Continuar?')) return;
+  const cfg = loadConfig();
+  const now = Date.now();
+  const dados = [];
+  for (let d = 30; d >= 0; d--) {
+    [7,12,18,22].forEach((h,idx) => {
+      const dt = new Date(now - d*86400000); dt.setHours(h, Math.floor(Math.random()*20), 0, 0);
+      const base = [140,190,165,125][idx];
+      const g = Math.max(60, Math.round(base + (Math.random()*90-45)));
+      dados.push({ id: dt.getTime()+idx, dt: dt.toISOString().slice(0,16), glicemia: g, rapida: idx===0?0:Math.round(4+Math.random()*4), lenta:0, aplicou: idx!==0, refeicao:['','Almoço com arroz e feijão','Jantar','Ceia'][idx], refeicaoStatus:'ja_comi', sugRapida:5 });
+    });
+    const dl = new Date(now - d*86400000); dl.setHours(7,5,0,0);
+    dados.push({ id:dl.getTime()+99, dt:dl.toISOString().slice(0,16), glicemia:null, rapida:0, lenta:cfg.doseLenta||20, aplicou:true, refeicao:'', refeicaoStatus:'sem', sugRapida:null, _tipo:'insulina lenta' });
+  }
+  saveData(dados);
+  atualizarStatusBar();
+  alert('30 dias de dados simulados gerados!');
+}
+
+function limparDados() {
+  if (!confirm('Apagar TODOS os registros? Essa ação não pode ser desfeita.')) return;
+  localStorage.removeItem('glicocare');
+  atualizarStatusBar();
+  alert('Registros apagados.');
 }
 
 function salvarConfig() {
@@ -1354,11 +1395,13 @@ function atualizarStatusBar() {
 
   const iobR = calcIOB(dados,'rapida');
   const iobL = calcIOB(dados,'lenta');
-  const iobTotal = iobR + iobL;
   const iobMax = 30;
+  const iobMaxLenta = 40;
 
   document.getElementById('sb-iob-rapida').textContent = iobR.toFixed(1) + ' U';
   document.getElementById('iob-fill').style.width = Math.min(100, (iobR/iobMax)*100) + '%';
+  document.getElementById('sb-iob-lenta').textContent = iobL.toFixed(1) + ' U';
+  document.getElementById('iob-fill-lenta').style.width = Math.min(100, (iobL/iobMaxLenta)*100) + '%';
 
   atualizarDisplayGlicemia(ultimo.glicemia);
 }
@@ -1675,51 +1718,54 @@ function gerarPDF() {
     doc.setFillColor(20,24,50); doc.roundedRect(82, y, 88, 7, 1,1,'F');
     doc.setFillColor(...t.cor); doc.roundedRect(82, y, Math.max(0.5, t.pct*0.88), 7, 1,1,'F');
     doc.setTextColor(...t.cor); doc.setFont('helvetica','bold'); doc.text(t.pct+'%', 173, y+5.5);
-    doc.setFontSize(6.5); doc.setTextColor(t.ok?C.verdeClaro:C.vermelho);
+    doc.setFontSize(6.5); doc.setTextColor(...(t.ok?C.verdeClaro:C.vermelho));
     doc.text(t.meta + (t.ok?' OK':' !'), 177, y+5.5);
     y+=10;
   });
 
   y += 4;
 
-  // ── PERFIL POR HORA (AGP simplificado) ──
+  // ── GRÁFICO DE GLICEMIA NO TEMPO (cronológico) ──
   doc.setTextColor(...C.azul); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('PERFIL MEDIO POR HORA DO DIA (AGP)', 14, y); y+=4;
+  doc.text('GLICEMIA AO LONGO DO TEMPO', 14, y); y+=4;
 
-  const chartX=14, chartW=182, chartH=36, chartY=y;
+  const chartX=14, chartW=182, chartH=44, chartY=y;
   doc.setFillColor(...C.cinzaFundo); doc.rect(chartX, chartY, chartW, chartH,'F');
-  // faixas de referência
   const gMax=400, gMin=0;
-  const gy = (v) => chartY + chartH - ((v-gMin)/(gMax-gMin))*chartH;
-  // zona verde 70-180
-  doc.setFillColor(0,80,40); doc.rect(chartX, gy(180), chartW, gy(70)-gy(180),'F');
+  const gy = (v) => chartY + chartH - ((Math.min(gMax,Math.max(gMin,v))-gMin)/(gMax-gMin))*chartH;
+  // faixa-alvo 70-180 (verde)
+  doc.setFillColor(0,70,38); doc.rect(chartX, gy(180), chartW, gy(70)-gy(180),'F');
   // linhas de referência
-  [70,140,180,250].forEach(v=>{
-    const lc = v===70?C.vermelhoClaro:v===180?C.amarelo:C.cinzaEsc;
-    doc.setDrawColor(...lc); doc.setLineWidth(0.2);
+  [54,70,180,250].forEach(v=>{
+    const lc = (v===70||v===54)?C.vermelhoClaro:v===180?C.amarelo:C.laranja;
+    doc.setDrawColor(...lc); doc.setLineWidth(0.15);
     doc.line(chartX, gy(v), chartX+chartW, gy(v));
     doc.setTextColor(...lc); doc.setFontSize(5.5); doc.setFont('helvetica','normal');
     doc.text(v+'', chartX+chartW+1, gy(v)+1.5);
   });
-  // pontos e linha
-  const validos = porHora.map((v,h)=>({h,v})).filter(p=>p.v!==null);
-  if(validos.length>1){
-    validos.forEach((p,i)=>{
-      const px = chartX + (p.h/23)*chartW;
-      const py = gy(p.v);
-      if(i>0){
-        const prev=validos[i-1];
-        const ppx=chartX+(prev.h/23)*chartW, ppy=gy(prev.v);
-        doc.setDrawColor(...corGlicemia(p.v)); doc.setLineWidth(1); doc.line(ppx,ppy,px,py);
-      }
-      doc.setFillColor(...corGlicemia(p.v)); doc.circle(px,py,1,'F');
-    });
+  // série cronológica (cada medição no seu instante real)
+  const serie = [...filtrado].sort((a,b)=>new Date(a.dt)-new Date(b.dt));
+  const t0 = new Date(serie[0].dt).getTime();
+  const t1 = new Date(serie[serie.length-1].dt).getTime();
+  const span = Math.max(1, t1 - t0);
+  const tx = (t) => chartX + ((t - t0)/span)*chartW;
+  if(serie.length>1){
+    for(let i=1;i<serie.length;i++){
+      const a=serie[i-1], b=serie[i];
+      doc.setDrawColor(0,160,200); doc.setLineWidth(0.4);
+      doc.line(tx(new Date(a.dt).getTime()), gy(a.glicemia), tx(new Date(b.dt).getTime()), gy(b.glicemia));
+    }
   }
-  // eixo X (horas)
-  [0,6,12,18,23].forEach(h=>{
-    const px=chartX+(h/23)*chartW;
-    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(6); doc.setFont('helvetica','normal');
-    doc.text(h+'h', px-2, chartY+chartH+5);
+  serie.forEach(r=>{
+    doc.setFillColor(...corGlicemia(r.glicemia));
+    doc.circle(tx(new Date(r.dt).getTime()), gy(r.glicemia), 0.9,'F');
+  });
+  // eixo X (datas)
+  [0,0.25,0.5,0.75,1].forEach(f=>{
+    const px = chartX + f*chartW;
+    doc.setTextColor(...C.cinzaEsc); doc.setFontSize(5.5); doc.setFont('helvetica','normal');
+    const lbl = new Date(t0 + f*span).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    doc.text(lbl, px-4, chartY+chartH+5);
     doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.1); doc.line(px,chartY,px,chartY+chartH);
   });
   doc.setDrawColor(...C.cinzaEsc); doc.setLineWidth(0.3); doc.rect(chartX,chartY,chartW,chartH);
