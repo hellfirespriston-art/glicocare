@@ -31,8 +31,9 @@
     /* STATUS BAR */
     .statusbar {
       background:#0a0a20; border-bottom:1px solid #1a1a3a;
-      padding:10px 24px; display:flex; gap:24px; flex-wrap:wrap; align-items:center;
+      padding:10px 24px; display:flex; flex-direction:column; gap:10px;
     }
+    .statusbar-row { display:flex; gap:24px; align-items:center; flex-wrap:wrap; }
     .status-item { display:flex; flex-direction:column; }
     .status-label { font-size:0.72rem; color:#888; text-transform:uppercase; letter-spacing:1px; }
     .status-value { font-size:1.05rem; font-weight:700; }
@@ -293,18 +294,21 @@
 
 <!-- STATUS BAR -->
 <div class="statusbar">
-  <div class="status-item">
-    <span class="status-label">Última Glicemia</span>
-    <span class="status-value" id="sb-glicemia" style="color:#00e5ff">—</span>
+  <div class="statusbar-row">
+    <div class="status-item">
+      <span class="status-label">Última Glicemia</span>
+      <span class="status-value" id="sb-glicemia" style="color:#00e5ff">—</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Há quanto tempo</span>
+      <span class="status-value" id="sb-tempo" style="color:#888">—</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">Próxima Medição</span>
+      <span class="status-value" id="sb-proxima" style="color:#00ff99">—</span>
+    </div>
   </div>
-  <div class="status-item">
-    <span class="status-label">Há quanto tempo</span>
-    <span class="status-value" id="sb-tempo" style="color:#888">—</span>
-  </div>
-  <div class="status-item">
-    <span class="status-label">Próxima Medição</span>
-    <span class="status-value" id="sb-proxima" style="color:#00ff99">—</span>
-  </div>
+  <div class="statusbar-row">
   <div class="iob-bar">
     <div class="iob-row">
       <span class="iob-label">💉 Rápida ativa</span>
@@ -317,6 +321,7 @@
     </div>
     <div class="iob-track"><div class="iob-fill-lenta" id="iob-fill-lenta" style="width:0%"></div></div>
     <div style="font-size:0.92rem;color:#666;margin-top:4px;">Insulina ainda em circulação no corpo</div>
+  </div>
   </div>
 </div>
 
@@ -334,7 +339,7 @@
   <div class="grid2">
 
     <!-- NOVA MEDIÇÃO -->
-    <div class="card">
+    <div class="card" style="grid-column:1/-1;">
       <h3>Nova Medição</h3>
       <div class="form-inline">
         <div class="form-row">
