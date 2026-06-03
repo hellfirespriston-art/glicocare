@@ -672,9 +672,13 @@
     <div id="cfg-salvo-msg" style="text-align:center;color:#00ff99;font-size:0.85rem;margin-top:10px;display:none;">✅ Configurações salvas!</div>
 
     <div style="margin-top:32px;border-top:1px solid #222;padding-top:20px;">
-      <div style="font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🧪 Dados de Teste</div>
-      <button onclick="simularDados()" style="width:100%;background:#1a1a2a;border:1px solid #444;color:#888;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;">Gerar 30 dias de dados simulados</button>
-      <button onclick="limparDados()" style="width:100%;background:#1a1a2a;border:1px solid #440000;color:#cc4444;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;margin-top:8px;">🗑️ Apagar todos os registros</button>
+      <details>
+        <summary style="font-size:0.75rem;color:#333;text-transform:uppercase;letter-spacing:1px;cursor:pointer;user-select:none;">🛠️ Ferramentas do Desenvolvedor</summary>
+        <div style="margin-top:12px;">
+          <button onclick="simularDados()" style="width:100%;background:#1a1a2a;border:1px solid #444;color:#888;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;">Gerar 30 dias de dados simulados</button>
+          <button onclick="limparDados()" style="width:100%;background:#1a1a2a;border:1px solid #440000;color:#cc4444;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;margin-top:8px;">🗑️ Apagar todos os registros</button>
+        </div>
+      </details>
     </div>
 
   </div>
