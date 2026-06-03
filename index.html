@@ -71,6 +71,11 @@
     /* CONTENT */
     .content { display:none; padding:20px; }
     .content.active { display:block; }
+    @media(max-width:600px){
+      .content { padding:12px 0; }
+      .card { border-radius:0; }
+      .grid2 { gap:0; }
+    }
 
     /* GRID 2 COL */
     .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
