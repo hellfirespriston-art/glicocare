@@ -1446,6 +1446,9 @@ function atualizarStatusBar() {
   document.getElementById('iob-fill-lenta').style.width = Math.min(100, (iobL/iobMaxLenta)*100) + '%';
 
   atualizarDisplayGlicemia(ultimo.glicemia);
+
+  // Recalcula próxima medição e mostra alarme se aplicável
+  calcProximaMedicao(ultimo.glicemia, ultimo.rapida || 0);
 }
 
 // ── GRÁFICO ──
