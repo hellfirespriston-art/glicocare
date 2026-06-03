@@ -141,40 +141,6 @@
     .proxima-box .prox-time { font-size:1.5rem; font-weight:700; color:#00ff99; margin-top:4px; }
     .proxima-box .prox-motivo { font-size:0.88rem; color:#bbb; margin-top:4px; }
 
-    /* ALARME TOGGLE */
-    .alarme-row { display:flex; align-items:center; gap:10px; margin-top:12px; }
-    .alarme-label { font-size:0.85rem; color:#aaa; }
-    .toggle-switch { position:relative; width:46px; height:26px; cursor:pointer; }
-    .toggle-switch input { opacity:0; width:0; height:0; }
-    .toggle-slider {
-      position:absolute; inset:0; background:#222; border-radius:26px;
-      transition:0.3s; border:1px solid #444;
-    }
-    .toggle-slider:before {
-      content:''; position:absolute; width:18px; height:18px;
-      left:3px; top:3px; background:#666; border-radius:50%; transition:0.3s;
-    }
-    .toggle-switch input:checked + .toggle-slider { background:#006633; border-color:#00ff99; }
-    .toggle-switch input:checked + .toggle-slider:before { background:#00ff99; transform:translateX(20px); }
-    .alarme-status { font-size:0.8rem; color:#555; }
-    .alarme-status.on { color:#00ff99; }
-
-    /* MODAL ALARME */
-    .alarme-modal {
-      display:none; position:fixed; inset:0; background:#000000cc;
-      z-index:999; justify-content:center; align-items:center;
-    }
-    .alarme-modal.show { display:flex; }
-    .alarme-modal-box {
-      background:#0d1f0d; border:2px solid #00ff99; border-radius:16px;
-      padding:32px 28px; text-align:center; max-width:300px; width:90%;
-    }
-    @keyframes pulso-alarme { 0%,100%{opacity:1} 50%{opacity:0.4} }
-    .alarme-modal-icon { font-size:3rem; animation:pulso-alarme 0.8s infinite; }
-    .alarme-modal-title { font-size:1.2rem; font-weight:700; color:#00ff99; margin:10px 0 6px; }
-    .alarme-modal-msg { font-size:0.9rem; color:#aaa; margin-bottom:20px; }
-    .btn-parar { background:#00ff99; color:#000; font-weight:700; font-size:1rem;
-      padding:12px 28px; border:none; border-radius:8px; cursor:pointer; width:100%; }
 
     /* MODAL INSULINA LENTA */
     .lenta-modal { display:none; position:fixed; inset:0; background:#000000cc; z-index:1000; justify-content:center; align-items:center; }
@@ -416,14 +382,6 @@
         <div class="prox-title">⏰ Próxima medição recomendada</div>
         <div class="prox-time" id="prox-time">—</div>
         <div class="prox-motivo" id="prox-motivo"></div>
-        <div class="alarme-row">
-          <span class="alarme-label">🔔 Alarme</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="alarme-toggle" onchange="toggleAlarme(this.checked)">
-            <span class="toggle-slider"></span>
-          </label>
-          <span class="alarme-status" id="alarme-status">Desligado</span>
-        </div>
       </div>
 
       <!-- MODAL INSULINA LENTA (uma vez por dia) -->
@@ -446,15 +404,6 @@
         </div>
       </div>
 
-      <!-- MODAL ALARME -->
-      <div class="alarme-modal" id="alarme-modal">
-        <div class="alarme-modal-box">
-          <div class="alarme-modal-icon">⏰</div>
-          <div class="alarme-modal-title">Hora de medir!</div>
-          <div class="alarme-modal-msg" id="alarme-modal-msg">Verifique sua glicemia agora.</div>
-          <button class="btn-parar" onclick="pararAlarme()">✋ Parar Alarme</button>
-        </div>
-      </div>
     </div>
 
   </div>
@@ -625,40 +574,6 @@
       </div>
     </div>
 
-    <!-- HORÁRIO SILENCIOSO -->
-    <div class="config-section">
-      <h3>🔕 Horário Silencioso</h3>
-      <div class="config-row">
-        <div class="config-label">Ativar horário silencioso
-          <small>O alarme de medição não toca nesse intervalo</small>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <label class="toggle-switch">
-            <input type="checkbox" id="cfg-silencioso-ativo" onchange="onSilenciosoChange()">
-            <span class="toggle-slider"></span>
-          </label>
-          <span class="config-badge badge-manual" id="cfg-silencioso-badge">Desligado</span>
-        </div>
-      </div>
-      <div id="cfg-silencioso-horario" style="display:none;">
-        <div class="config-row">
-          <div class="config-label">Início do silêncio
-            <small>Alarme para de tocar a partir deste horário</small>
-          </div>
-          <input type="time" class="config-input" id="cfg-silencioso-inicio" value="23:00"/>
-        </div>
-        <div class="config-row">
-          <div class="config-label">Fim do silêncio
-            <small>Alarme volta a funcionar a partir daqui</small>
-          </div>
-          <input type="time" class="config-input" id="cfg-silencioso-fim" value="07:00"/>
-        </div>
-        <div class="aprendizado-info" style="display:block;">
-          🔕 Durante o horário silencioso o alarme sonoro fica bloqueado. Hipoglicemias (<54 mg/dL) sempre tocam, independente do horário.
-        </div>
-      </div>
-    </div>
-
     <button class="config-save" onclick="salvarConfig()">💾 Salvar Configurações</button>
     <div id="cfg-salvo-msg" style="text-align:center;color:#00ff99;font-size:0.85rem;margin-top:10px;display:none;">✅ Configurações salvas!</div>
 
@@ -745,13 +660,6 @@ function initConfig() {
   document.getElementById('cfg-badge-auto').className      = 'config-badge ' + (cfg.autoAprendizado ? 'badge-auto' : 'badge-manual');
   document.getElementById('cfg-aprendizado-info').style.display = cfg.autoAprendizado ? 'block' : 'none';
   document.getElementById('inp-lenta-modal').value = cfg.doseLenta;
-  // Silencioso
-  document.getElementById('cfg-silencioso-ativo').checked  = !!cfg.silenciosoAtivo;
-  document.getElementById('cfg-silencioso-inicio').value   = cfg.silenciosoInicio || '23:00';
-  document.getElementById('cfg-silencioso-fim').value      = cfg.silenciosoFim    || '07:00';
-  document.getElementById('cfg-silencioso-badge').textContent = cfg.silenciosoAtivo ? 'Ligado' : 'Desligado';
-  document.getElementById('cfg-silencioso-badge').className   = 'config-badge ' + (cfg.silenciosoAtivo ? 'badge-auto' : 'badge-manual');
-  document.getElementById('cfg-silencioso-horario').style.display = cfg.silenciosoAtivo ? 'block' : 'none';
 }
 
 function simularDados() {
@@ -788,9 +696,6 @@ function salvarConfig() {
   cfg.glicemiaAlvo   = parseFloat(document.getElementById('cfg-glicemia-alvo').value) || 100;
   if (!cfg.autoAprendizado) cfg.fatorSens = parseFloat(document.getElementById('cfg-fator-manual').value) || 40;
   cfg.autoAprendizado    = document.getElementById('cfg-auto-aprendizado').checked;
-  cfg.silenciosoAtivo    = document.getElementById('cfg-silencioso-ativo').checked;
-  cfg.silenciosoInicio   = document.getElementById('cfg-silencioso-inicio').value || '23:00';
-  cfg.silenciosoFim      = document.getElementById('cfg-silencioso-fim').value    || '07:00';
   saveConfig(cfg);
   document.getElementById('cfg-fator-display').textContent = Math.round(cfg.fatorSens);
   const msg = document.getElementById('cfg-salvo-msg');
@@ -804,27 +709,6 @@ function onFatorManualChange() {
   // desativa auto ao editar manualmente
   document.getElementById('cfg-auto-aprendizado').checked = false;
   onAutoAprendizadoChange();
-}
-
-function onSilenciosoChange() {
-  const on = document.getElementById('cfg-silencioso-ativo').checked;
-  document.getElementById('cfg-silencioso-badge').textContent  = on ? 'Ligado' : 'Desligado';
-  document.getElementById('cfg-silencioso-badge').className    = 'config-badge ' + (on ? 'badge-auto' : 'badge-manual');
-  document.getElementById('cfg-silencioso-horario').style.display = on ? 'block' : 'none';
-}
-
-function estaNoSilencio() {
-  const cfg = loadConfig();
-  if (!cfg.silenciosoAtivo) return false;
-  const agora = new Date();
-  const [hI, mI] = (cfg.silenciosoInicio||'23:00').split(':').map(Number);
-  const [hF, mF] = (cfg.silenciosoFim||'07:00').split(':').map(Number);
-  const minAgora = agora.getHours()*60 + agora.getMinutes();
-  const minInicio = hI*60 + mI;
-  const minFim    = hF*60 + mF;
-  // Suporte a intervalo que cruza meia-noite (ex: 23h–7h)
-  if (minInicio > minFim) return minAgora >= minInicio || minAgora < minFim;
-  return minAgora >= minInicio && minAgora < minFim;
 }
 
 function onAutoAprendizadoChange() {
@@ -867,9 +751,6 @@ const FATOR_SENS_DEFAULT = 40; // fallback
 // ── STORAGE ──
 function loadData() { return JSON.parse(localStorage.getItem('glicocare') || '[]'); }
 function saveData(d) { localStorage.setItem('glicocare', JSON.stringify(d)); }
-
-// ── ALARME (declaração antecipada para evitar TDZ no tick) ──
-let proximaHoraAlarme = null;
 
 // ── RELÓGIO ──
 function tick() {
@@ -1085,97 +966,6 @@ function calcMediaLenta(dados) {
   return lentas.reduce((a,b)=>a+b,0)/lentas.length;
 }
 
-// ── ALARME ──
-let alarmeTimeout = null;
-let alarmeAudioCtx = null;
-let alarmeInterval = null;
-let alarmeAtivo = false;
-
-function toggleAlarme(ligado) {
-  const status = document.getElementById('alarme-status');
-  if (ligado) {
-    status.textContent = proximaHoraAlarme ? 'Agendado para ' + proximaHoraAlarme : 'Ligado';
-    status.className = 'alarme-status on';
-    agendarAlarme();
-  } else {
-    status.textContent = 'Desligado';
-    status.className = 'alarme-status';
-    cancelarAlarme();
-  }
-}
-
-function agendarAlarme() {
-  cancelarAlarme();
-  if (!proximaHoraAlarme) return;
-  const agora = new Date();
-  const [h, m] = proximaHoraAlarme.split(':').map(Number);
-  const alvo = new Date(agora);
-  alvo.setHours(h, m, 0, 0);
-  if (alvo <= agora) alvo.setDate(alvo.getDate() + 1);
-  const diff = alvo - agora;
-  alarmeTimeout = setTimeout(() => dispararAlarme(), diff);
-}
-
-function cancelarAlarme() {
-  if (alarmeTimeout) { clearTimeout(alarmeTimeout); alarmeTimeout = null; }
-  pararSomAlarme();
-}
-
-function dispararAlarme() {
-  // Bloqueia durante horário silencioso, exceto se última glicemia foi hipo severa
-  const ultimaGlic = loadData().filter(r=>r.glicemia!=null).slice(-1)[0]?.glicemia;
-  const hipoSevera = ultimaGlic && ultimaGlic < 54;
-  if (estaNoSilencio() && !hipoSevera) {
-    // Reagenda para o fim do silêncio
-    const cfg = loadConfig();
-    const [hF, mF] = (cfg.silenciosoFim||'07:00').split(':').map(Number);
-    const agora = new Date();
-    const alvo = new Date(agora); alvo.setHours(hF, mF, 0, 0);
-    if (alvo <= agora) alvo.setDate(alvo.getDate()+1);
-    alarmeTimeout = setTimeout(() => dispararAlarme(), alvo - agora);
-    return;
-  }
-  alarmeAtivo = true;
-  document.getElementById('alarme-modal').classList.add('show');
-  const motivo = document.getElementById('prox-motivo').textContent;
-  document.getElementById('alarme-modal-msg').textContent = (hipoSevera ? '⚠️ ATENÇÃO — Hipoglicemia severa registrada! ' : '') + (motivo || 'Verifique sua glicemia agora.');
-  tocarSomAlarme();
-}
-
-function tocarSomAlarme() {
-  try {
-    alarmeAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    let bip = 0;
-    alarmeInterval = setInterval(() => {
-      if (!alarmeAtivo) return;
-      const osc = alarmeAudioCtx.createOscillator();
-      const gain = alarmeAudioCtx.createGain();
-      osc.connect(gain); gain.connect(alarmeAudioCtx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(bip % 2 === 0 ? 880 : 660, alarmeAudioCtx.currentTime);
-      gain.gain.setValueAtTime(0.6, alarmeAudioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, alarmeAudioCtx.currentTime + 0.3);
-      osc.start(); osc.stop(alarmeAudioCtx.currentTime + 0.3);
-      bip++;
-    }, 600);
-  } catch(e) {}
-}
-
-function pararSomAlarme() {
-  alarmeAtivo = false;
-  if (alarmeInterval) { clearInterval(alarmeInterval); alarmeInterval = null; }
-  if (alarmeAudioCtx) { try { alarmeAudioCtx.close(); } catch(e){} alarmeAudioCtx = null; }
-}
-
-function pararAlarme() {
-  pararSomAlarme();
-  document.getElementById('alarme-modal').classList.remove('show');
-  // Desliga o toggle automaticamente
-  document.getElementById('alarme-toggle').checked = false;
-  document.getElementById('alarme-status').textContent = 'Desligado';
-  document.getElementById('alarme-status').className = 'alarme-status';
-}
-
 // ── PRÓXIMA MEDIÇÃO ──
 function calcProximaMedicao(glicemia, sugRapida) {
   let horas = 4, motivo = '';
@@ -1189,13 +979,6 @@ function calcProximaMedicao(glicemia, sugRapida) {
 
   const proxima = new Date(Date.now() + horas * 3600000);
   const proxStr = proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) + ' (' + (horas < 1 ? '30min' : horas + 'h') + ')';
-
-  // Salva horário para o alarme
-  proximaHoraAlarme = proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
-  if (document.getElementById('alarme-toggle').checked) {
-    document.getElementById('alarme-status').textContent = 'Agendado para ' + proximaHoraAlarme;
-    agendarAlarme();
-  }
 
   // Atualiza box pequeno
   document.getElementById('proxima-box').style.display = 'block';
@@ -1451,7 +1234,7 @@ function atualizarStatusBar() {
   atualizarProximaBox(ultimo.glicemia, ultimo.rapida || 0);
 }
 
-// Mostra proxima-box e alarme sem abrir card de resultado
+// Mostra proxima-box sem abrir card de resultado
 function atualizarProximaBox(glic, sug) {
   // Usa o timestamp salvo no momento do registro; só recalcula se não houver salvo
   var proxTs = parseInt(localStorage.getItem('proximaMedicaoTs') || '0');
@@ -1473,15 +1256,11 @@ function atualizarProximaBox(glic, sug) {
   var diffH = diffMs / 3600000;
   var duracaoStr = diffMs <= 0 ? 'agora' : diffH < 1 ? Math.round(diffMs/60000) + 'min' : Math.round(diffH * 10) / 10 + 'h';
   var proxStr = prox.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) + ' (' + duracaoStr + ')';
-  proximaHoraAlarme = prox.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  var proxHora = prox.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
   document.getElementById('proxima-box').style.display = 'block';
   document.getElementById('prox-time').textContent = proxStr;
-  document.getElementById('sb-proxima').textContent = proximaHoraAlarme;
+  document.getElementById('sb-proxima').textContent = proxHora;
   document.getElementById('sb-proxima').style.color = '#00ff99';
-  if (document.getElementById('alarme-toggle').checked) {
-    document.getElementById('alarme-status').textContent = 'Agendado para ' + proximaHoraAlarme;
-    agendarAlarme();
-  }
 }
 
 // ── GRÁFICO ──
