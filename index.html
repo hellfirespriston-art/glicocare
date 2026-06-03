@@ -933,12 +933,11 @@ function pularLentaModal() {
   document.getElementById('lenta-modal').classList.remove('show');
 }
 
-// Mostra modal após 1 segundo (deixa o app carregar primeiro)
+// Modal de insulina lenta agora aparece apenas após a primeira medição (não ao carregar)
+// Atualiza dose padrão quando a página carrega
 setTimeout(() => {
-  // Atualiza dose padrão com o valor configurado antes de mostrar
   document.getElementById('inp-lenta-modal').value = loadConfig().doseLenta;
-  verificarLentaMatinal();
-}, 1000);
+}, 500);
 
 // ── TABS ──
 function switchTab(id, el) {
@@ -1326,6 +1325,9 @@ function registrar() {
   document.getElementById('rad-sem').checked=true;
 
   atualizarStatusBar();
+
+  // Mostra modal de insulina lenta após a primeira medição do dia (se houver)
+  verificarLentaMatinal();
 }
 
 // ── DESFAZER ÚLTIMO ──
