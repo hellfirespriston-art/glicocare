@@ -1222,16 +1222,8 @@ function fecharResultado() {
   document.getElementById('res-doses-box').style.display = 'none';
 }
 
-// ── DISPLAY GLICEMIA ──
-function atualizarDisplayGlicemia(v) {
-  const el = document.getElementById('glicemia-display');
-  const st = document.getElementById('glicemia-status');
-  el.textContent = v;
-  if (v < 70)       { el.style.color='#ff4466'; st.textContent='🔴 HIPOGLICEMIA'; st.style.color='#ff4466'; }
-  else if (v <= 140){ el.style.color='#00ff99'; st.textContent='✅ Normal';        st.style.color='#00ff99'; }
-  else if (v <= 250){ el.style.color='#ffaa00'; st.textContent='⚠️ Elevada';       st.style.color='#ffaa00'; }
-  else              { el.style.color='#ff6633'; st.textContent='🔴 HIPERGLICEMIA'; st.style.color='#ff6633'; }
-}
+// ── DISPLAY GLICEMIA ── (card removido, função mantida como no-op)
+function atualizarDisplayGlicemia(v) {}
 
 // ── REGISTRAR ──
 function registrar() {
@@ -1393,7 +1385,7 @@ function atualizarStatusBar() {
 }
 
 // ── GRÁFICO ──
-let chartInst = null;
+var chartInst = null;
 function renderGrafico() {
   const dados = loadData();
   const horas = parseInt(document.getElementById('sel-periodo').value)||9999;
