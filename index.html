@@ -878,6 +878,12 @@ function tick() {
     elProx.style.color = '#ff4466';
     elProx.style.animation = 'pulseRed 1s infinite';
   } else if (proxTs && Date.now() <= proxTs) {
+    elProx.textContent = new Date(proxTs).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    elProx.style.color = '#00ff99';
+    elProx.style.animation = '';
+  } else {
+    elProx.textContent = '—';
+    elProx.style.color = '';
     elProx.style.animation = '';
   }
 }
