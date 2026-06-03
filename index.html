@@ -1712,7 +1712,7 @@ function gerarPDF() {
     doc.setFillColor(80,80,80); doc.roundedRect(60, y, Math.max(0.5, t.pct*1.1), 6, 1,1,'F');
     doc.setTextColor(...C.azul); doc.setFont('helvetica','bold'); doc.setFontSize(7);
     doc.text(t.pct+'%', 173, y+4.5);
-    doc.setFontSize(6); doc.setTextColor(t.ok?[50,50,50]:[30,30,30]);
+    doc.setFontSize(6); doc.setTextColor(...(t.ok?[50,50,50]:[30,30,30]));
     doc.text(t.meta+(t.ok?' OK':' !'), 180, y+4.5);
     y+=8;
   });
