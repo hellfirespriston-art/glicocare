@@ -868,6 +868,9 @@ const FATOR_SENS_DEFAULT = 40; // fallback
 function loadData() { return JSON.parse(localStorage.getItem('glicocare') || '[]'); }
 function saveData(d) { localStorage.setItem('glicocare', JSON.stringify(d)); }
 
+// ── ALARME (declaração antecipada para evitar TDZ no tick) ──
+let proximaHoraAlarme = null;
+
 // ── RELÓGIO ──
 function tick() {
   const n = new Date();
@@ -1087,7 +1090,6 @@ let alarmeTimeout = null;
 let alarmeAudioCtx = null;
 let alarmeInterval = null;
 let alarmeAtivo = false;
-let proximaHoraAlarme = null;
 
 function toggleAlarme(ligado) {
   const status = document.getElementById('alarme-status');
