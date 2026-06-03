@@ -1446,22 +1446,23 @@ function atualizarStatusBar() {
   document.getElementById('iob-fill-lenta').style.width = Math.min(100, (iobL/iobMaxLenta)*100) + '%';
 
   atualizarDisplayGlicemia(ultimo.glicemia);
+  atualizarProximaBox(ultimo.glicemia, ultimo.rapida || 0);
+}
 
-  // Recalcula próxima medição silenciosamente (sem abrir card de resultado)
-  const _glic = ultimo.glicemia;
-  const _sug = ultimo.rapida || 0;
-  let _horas = 4;
-  if (_glic < 70) _horas = 0.5;
-  else if (_glic < 100) _horas = 2;
-  else if (_glic <= 140) _horas = 4;
-  else if (_glic <= 250) _horas = 2;
-  else _horas = 1;
-  if (_sug > 0) _horas = Math.min(_horas, 2);
-  const _proxima = new Date(Date.now() + _horas * 3600000);
-  const _proxStr = _proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) + ' (' + (_horas < 1 ? '30min' : _horas + 'h') + ')';
-  proximaHoraAlarme = _proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+// Mostra proxima-box e alarme sem abrir card de resultado
+function atualizarProximaBox(glic, sug) {
+  var h = 4;
+  if (glic < 70) h = 0.5;
+  else if (glic < 100) h = 2;
+  else if (glic <= 140) h = 4;
+  else if (glic <= 250) h = 2;
+  else h = 1;
+  if (sug > 0) h = Math.min(h, 2);
+  var prox = new Date(Date.now() + h * 3600000);
+  var proxStr = prox.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) + ' (' + (h < 1 ? '30min' : h + 'h') + ')';
+  proximaHoraAlarme = prox.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
   document.getElementById('proxima-box').style.display = 'block';
-  document.getElementById('prox-time').textContent = _proxStr;
+  document.getElementById('prox-time').textContent = proxStr;
   document.getElementById('sb-proxima').textContent = proximaHoraAlarme;
   document.getElementById('sb-proxima').style.color = '#00ff99';
   if (document.getElementById('alarme-toggle').checked) {
