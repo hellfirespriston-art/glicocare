@@ -185,8 +185,7 @@
     .btn-lenta-pular { flex:1; background:#1a1a2a; color:#888; font-size:0.9rem; padding:11px; border:1px solid #333; border-radius:8px; cursor:pointer; }
 
     /* GRAFICO */
-    .chart-box { background:linear-gradient(135deg,#080818,#0d1130); border:1px solid #1e2a5a; border-radius:12px; padding:16px; }
-    #grafico-glicemia { width:100% !important; height:260px !important; display:block; }
+    .chart-box { background:linear-gradient(135deg,#080818,#0d1130); border:1px solid #1e2a5a; border-radius:12px; padding:16px; height:280px; position:relative; }
     .chart-controls { display:flex; gap:12px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
     .chart-controls select { width:auto; }
 
@@ -924,7 +923,7 @@ function switchTab(id, el) {
   document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('tab-'+id).classList.add('active');
-  if(id==='grafico') setTimeout(renderGrafico,100);
+  if(id==='grafico') setTimeout(()=>{ renderGrafico(); if(chartInst) chartInst.resize(); },200);
   if(id==='historico') renderHistorico();
   if(id==='analise') renderAnalise();
 }
