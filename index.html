@@ -55,6 +55,7 @@
     .alerta-hipo { background:rgba(255,50,50,0.15); border:1px solid #ff3232; color:#ff6666; }
     .alerta-hiper { background:rgba(255,170,0,0.12); border:1px solid #ffaa00; color:#ffcc44; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+    @keyframes pulseRed { 0%,100%{opacity:1;color:#ff4466} 50%{opacity:0.5;color:#ff0033} }
 
     /* TABS */
     @keyframes pulso-tab-verde {
@@ -869,6 +870,16 @@ function tick() {
   const n = new Date();
   document.getElementById('clock').textContent = n.toLocaleTimeString('pt-BR');
   atualizarStatusBar();
+  // Verifica se horário da próxima medição passou
+  const proxTs = parseInt(localStorage.getItem('proximaMedicaoTs')||'0');
+  const elProx = document.getElementById('sb-proxima');
+  if (proxTs && Date.now() > proxTs) {
+    elProx.textContent = '⚠️ Medir agora!';
+    elProx.style.color = '#ff4466';
+    elProx.style.animation = 'pulseRed 1s infinite';
+  } else if (proxTs && Date.now() <= proxTs) {
+    elProx.style.animation = '';
+  }
 }
 setInterval(tick, 1000); tick();
 
@@ -1160,7 +1171,9 @@ function calcProximaMedicao(glicemia, sugRapida) {
   document.getElementById('proxima-box').style.display = 'block';
   document.getElementById('prox-time').textContent = proxStr;
   document.getElementById('prox-motivo').textContent = motivo;
+  localStorage.setItem('proximaMedicaoTs', proxima.getTime());
   document.getElementById('sb-proxima').textContent = proxima.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('sb-proxima').style.color = '#00ff99';
 
   // Abre card resultado
   const cor = glicemia < 70 ? '#ff4466' : glicemia <= 140 ? '#00ff99' : glicemia <= 250 ? '#ffaa00' : '#ff6633';
