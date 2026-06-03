@@ -1459,11 +1459,11 @@ function renderHistorico() {
     if (r._tipo === 'insulina lenta') insulina.push(`🟣 Insulina Lenta: ${r.lenta}U`);
     else {
       if (r.sugRapida != null && r.sugRapida > 0) insulina.push(`🔵 Sugerido: ${r.sugRapida}U`);
-      if (r.rapida>0) insulina.push(`💉 Insulina Rápida Aplicada: ${r.rapida}U`);
+      if (r.rapida>0) insulina.push(`💉 Insulina Rápida Aplicada: ${r.rapida}U ✅`);
     }
     const insulinaStr = insulina.length
-      ? `<div class="hist-insulin">${insulina.join(' · ')} ✅</div>`
-      : r.aplicou === false
+      ? `<div class="hist-insulin">${insulina.join(' · ')}</div>`
+      : r.aplicou === false || r.aplicou == null
         ? `<div class="hist-insulin" style="color:#666;">💉 Sem insulina aplicada</div>`
         : '';
     const glicemiaDisplay = r._tipo === 'insulina lenta'
