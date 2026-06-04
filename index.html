@@ -420,6 +420,9 @@
         <button class="btn btn-success" onclick="registrar()">💾 Registrar e Calcular</button>
         <button class="btn" style="background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;border:1px solid #00ff9944;" onclick="abrirVouComer()">🍽️ Vou Comer</button>
       </div>
+      <div style="font-size:0.75rem;color:#555;margin-top:8px;line-height:1.5;">
+        💡 <em>Vou Comer</em>: informe a glicemia atual e o app avisa se pode tomar a dose de insulina prescrita antes da refeição — ou se precisa esperar/reduzir para não causar hipoglicemia.
+      </div>
 
       <!-- PRÓXIMA MEDIÇÃO -->
       <div class="proxima-box" id="proxima-box">
@@ -636,6 +639,20 @@
         <div style="display:flex;align-items:center;gap:6px;">
           <input type="number" class="config-input" id="cfg-dose-lenta" value="20" min="1" max="80" step="1"/>
           <span style="color:#cc44ff;font-weight:700;">U</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HORA RESET LENTA -->
+    <div class="config-section">
+      <h3>🕐 Horário da Pergunta de Insulina Lenta</h3>
+      <div class="config-row">
+        <div class="config-label">Hora de início
+          <small>O app pergunta sobre a insulina lenta uma vez por dia, a partir deste horário. Útil se a aplicação for mais cedo ou mais tarde do que 7h da manhã.</small>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="number" class="config-input" id="cfg-hora-reset-lenta" value="7" min="0" max="23" step="1" style="width:70px;"/>
+          <span style="color:#aaa;font-size:0.85rem;">h</span>
         </div>
       </div>
     </div>
@@ -859,7 +876,7 @@ function mostrarSeletorPerfil() {
 
 // ── CONFIG ──
 function loadConfig() {
-  const def = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false };
+  const def = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false, horaResetLenta: 7 };
   return Object.assign(def, JSON.parse(localStorage.getItem('gc_cfg_' + activeProfileId()) || '{}'));
 }
 function saveConfig(cfg) { localStorage.setItem('gc_cfg_' + activeProfileId(), JSON.stringify(cfg)); }
@@ -879,6 +896,7 @@ function initConfig() {
   document.getElementById('cfg-badge-auto').textContent    = cfg.autoAprendizado ? 'Auto' : 'Manual';
   document.getElementById('cfg-badge-auto').className      = 'config-badge ' + (cfg.autoAprendizado ? 'badge-auto' : 'badge-manual');
   document.getElementById('cfg-aprendizado-info').style.display = cfg.autoAprendizado ? 'block' : 'none';
+  document.getElementById('cfg-hora-reset-lenta').value = cfg.horaResetLenta;
   document.getElementById('inp-lenta-modal').value = cfg.doseLenta;
 }
 
@@ -917,6 +935,7 @@ function salvarConfig() {
   cfg.glicemiaAlvo   = parseFloat(document.getElementById('cfg-glicemia-alvo').value) || 100;
   if (!cfg.autoAprendizado) cfg.fatorSens = parseFloat(document.getElementById('cfg-fator-manual').value) || 40;
   cfg.autoAprendizado    = document.getElementById('cfg-auto-aprendizado').checked;
+  cfg.horaResetLenta     = parseInt(document.getElementById('cfg-hora-reset-lenta').value) || 7;
   saveConfig(cfg);
   document.getElementById('cfg-fator-display').textContent = Math.round(cfg.fatorSens);
   const msg = document.getElementById('cfg-salvo-msg');
@@ -1026,7 +1045,7 @@ function verificarLentaMatinal() {
   const hoje = new Date().toDateString();
   const visto = localStorage.getItem('gc_lenta_' + activeProfileId());
   if (visto === hoje) return;          // já respondeu hoje
-  if (agora.getHours() < 7) return;   // só libera a partir das 7h
+  if (agora.getHours() < loadConfig().horaResetLenta) return; // só libera a partir da hora configurada
 
   // Pré-preenche a hora atual no campo de hora
   const hh = String(agora.getHours()).padStart(2, '0');
@@ -1396,11 +1415,9 @@ function desfazerUltimo() {
   const dt = new Date(ultimo.dt).toLocaleString('pt-BR');
   if (!confirm(`Remover último registro?\n\n${ultimo.glicemia} mg/dL — ${dt}`)) return;
 
-  // Se está deletando um registro de hoje, reseta o flag da lenta pra perguntar novamente
-  const hoje = new Date().toDateString();
-  const dataRegistro = new Date(ultimo.dt).toDateString();
-  if (dataRegistro === hoje) {
-    localStorage.removeItem('lenta_dia');
+  // Reseta flag da lenta só se estiver apagando o próprio registro de lenta
+  if (ultimo._tipo === 'insulina lenta') {
+    localStorage.removeItem('gc_lenta_' + activeProfileId());
   }
 
   dados.pop();
@@ -1591,13 +1608,9 @@ function deletar(id) {
   let dados = loadData();
   const registroApagado = dados.find(r=>r.id===id);
 
-  // Se está deletando um registro de hoje, reseta o flag da lenta pra perguntar novamente
-  if (registroApagado) {
-    const hoje = new Date().toDateString();
-    const dataRegistro = new Date(registroApagado.dt).toDateString();
-    if (dataRegistro === hoje) {
-      localStorage.removeItem('gc_lenta_' + activeProfileId());
-    }
+  // Reseta flag da lenta só se estiver apagando o próprio registro de lenta
+  if (registroApagado && registroApagado._tipo === 'insulina lenta') {
+    localStorage.removeItem('gc_lenta_' + activeProfileId());
   }
 
   dados = dados.filter(r=>r.id!==id);
