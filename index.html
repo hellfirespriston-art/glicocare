@@ -1945,7 +1945,7 @@ function gerarPDF() {
   doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
   doc.text('GlicoCare - Relatorio de Controle Glicemico', 5, 11);
   doc.setTextColor(200,200,200); doc.setFontSize(7.5); doc.setFont('helvetica','normal');
-  doc.text(`Periodo: ${dataInicio} a ${dataFim}  |  ${n} medicoes  |  Alvo: ${cfgAtual.glicemiaAlvo} mg/dL  |  Lenta: ${cfgAtual.doseLenta}U`, 5, 20);
+  doc.text(`Periodo: ${dataInicio} a ${dataFim}  |  ${n} medicoes  |  Alvo: ${cfgAtual.glicemiaAlvo} mg/dL  |  Lenta: ${cfgAtual.doseLenta} U`, 5, 20);
 
   let y = 32;
 
