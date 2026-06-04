@@ -191,6 +191,17 @@
     .hba1c-tabela tr td { padding:6px 10px; border-bottom:1px solid #1a1a3a; }
     .hba1c-tabela tr td:first-child { color:#aaa; }
 
+    /* SELETOR DE PERFIS */
+    #perfil-overlay { display:none; position:fixed; inset:0; background:#060612; z-index:2000; flex-direction:column; justify-content:center; align-items:center; padding:24px; }
+    #perfil-overlay.show { display:flex; }
+    .perfil-logo { font-size:2.2rem; font-weight:700; color:#00e5ff; margin-bottom:4px; text-shadow:0 0 20px rgba(0,229,255,0.4); }
+    .perfil-sub { font-size:0.85rem; color:#555; margin-bottom:36px; }
+    .perfil-lista { display:flex; flex-direction:column; gap:12px; width:100%; max-width:320px; }
+    .perfil-btn { background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a; border-radius:12px; padding:18px 20px; cursor:pointer; text-align:left; transition:all 0.2s; }
+    .perfil-btn:hover { border-color:#00e5ff; transform:translateY(-2px); }
+    .perfil-btn .pb-name { font-size:1.05rem; font-weight:700; color:#f0f0f0; }
+    .perfil-btn .pb-alvo { font-size:0.78rem; color:#888; margin-top:3px; }
+
     /* MODAL VOU COMER */
     .vcomer-modal { display:none; position:fixed; inset:0; background:#000000dd; z-index:1050; justify-content:center; align-items:center; }
     .vcomer-modal.show { display:flex; }
@@ -274,6 +285,33 @@
   </style>
 </head>
 <body>
+
+<!-- SELETOR DE PERFIS -->
+<div id="perfil-overlay">
+  <div class="perfil-logo">💉 GlicoCare</div>
+  <div class="perfil-sub">Quem vai usar agora?</div>
+  <div class="perfil-lista" id="perfil-lista"></div>
+  <button onclick="abrirCriarPerfil()" style="margin-top:20px;background:transparent;border:1px dashed #333;color:#555;padding:12px 24px;border-radius:10px;cursor:pointer;font-size:0.88rem;">+ Novo perfil</button>
+</div>
+
+<!-- MODAL CRIAR PERFIL -->
+<div class="dup-modal" id="criar-perfil-modal">
+  <div class="dup-box" style="border-color:#00e5ff;">
+    <div style="font-size:1rem;font-weight:700;color:#00e5ff;margin-bottom:16px;">👤 Novo Perfil</div>
+    <div class="form-row" style="margin-bottom:12px;">
+      <label>Nome</label>
+      <input type="text" id="np-nome" placeholder="Ex: Mãe, João..." style="background:#0d0d25;border:1px solid #2a3a6a;color:#f0f0f0;padding:11px 14px;border-radius:8px;font-size:1rem;width:100%;"/>
+    </div>
+    <div class="form-row" style="margin-bottom:18px;">
+      <label>Glicemia alvo (mg/dL)</label>
+      <input type="number" id="np-alvo" placeholder="Ex: 190" min="70" max="300" step="5" style="background:#0d0d25;border:1px solid #2a3a6a;color:#f0f0f0;padding:11px 14px;border-radius:8px;font-size:1rem;width:100%;"/>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="criarPerfil()" style="flex:1;background:#00e5ff;color:#000;font-weight:700;padding:12px;border:none;border-radius:8px;cursor:pointer;">Criar</button>
+      <button onclick="document.getElementById('criar-perfil-modal').classList.remove('show')" style="flex:1;background:#1a1a3a;color:#aaa;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <div class="hero" onclick="switchTab('registrar', document.querySelector('.tab[onclick*=registrar]'))" style="cursor:pointer">
   <div class="hero-content">
@@ -505,7 +543,7 @@
 <div id="tab-historico" class="content">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
     <div style="font-size:0.85rem;color:#555;" id="hist-count">0 registros</div>
-    <button class="btn btn-danger btn-sm" onclick="if(confirm('Apagar tudo?')){localStorage.removeItem('glicocare');localStorage.removeItem('lenta_dia');location.reload();}">🗑️ Apagar tudo</button>
+    <button class="btn btn-danger btn-sm" onclick="if(confirm('Apagar tudo?')){const pid=activeProfileId();['gc_data_','gc_lenta_','gc_lentadose_','gc_proxts_'].forEach(k=>localStorage.removeItem(k+pid));location.reload();}">🗑️ Apagar tudo</button>
   </div>
   <div class="scroll-list" id="lista-historico">
     <div style="text-align:center;color:#333;padding:40px;">Nenhum registro ainda</div>
@@ -568,6 +606,14 @@
 <!-- ══════════ CONFIG ══════════ -->
 <div id="tab-config" class="content">
   <div style="max-width:700px;margin:0 auto;padding:20px;">
+
+    <!-- PERFIS -->
+    <div class="config-section">
+      <h3>👤 Perfis de Usuário</h3>
+      <div id="cfg-perfil-atual" style="margin-bottom:14px;font-size:0.88rem;color:#aaa;"></div>
+      <div id="cfg-perfil-lista" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+      <button onclick="abrirCriarPerfil()" style="width:100%;background:#0a1520;border:1px dashed #2a5a7a;color:#6ab4d8;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;">+ Criar novo perfil</button>
+    </div>
 
     <!-- INSULINA LENTA -->
     <div class="config-section">
@@ -706,12 +752,117 @@
 //  GLICOCARE v1.0 — Engine
 // ══════════════════════════════════════════════
 
+// ── PERFIS ──
+function loadPerfis() { return JSON.parse(localStorage.getItem('gc_profiles') || '[]'); }
+function savePerfis(p) { localStorage.setItem('gc_profiles', JSON.stringify(p)); }
+function activeProfileId() { return localStorage.getItem('gc_active') || 'default'; }
+
+function migrarParaPerfis() {
+  if (localStorage.getItem('gc_profiles')) return; // já migrado
+  const dadosAntigos = localStorage.getItem('glicocare');
+  const cfgAntiga    = localStorage.getItem('glicocare_cfg');
+  const lentaDia     = localStorage.getItem('lenta_dia');
+  const lentaDose    = localStorage.getItem('lenta_dose_hoje');
+  const proxTs       = localStorage.getItem('proximaMedicaoTs');
+  const pid = 'p' + Date.now();
+  const perfis = [{ id: pid, name: 'Principal', alvo: 200 }];
+  if (cfgAntiga) {
+    const cfg = JSON.parse(cfgAntiga);
+    if (cfg.glicemiaAlvo) perfis[0].alvo = cfg.glicemiaAlvo;
+    localStorage.setItem('gc_cfg_' + pid, cfgAntiga);
+  }
+  if (dadosAntigos) localStorage.setItem('gc_data_' + pid, dadosAntigos);
+  if (lentaDia)     localStorage.setItem('gc_lenta_' + pid, lentaDia);
+  if (lentaDose)    localStorage.setItem('gc_lentadose_' + pid, lentaDose);
+  if (proxTs)       localStorage.setItem('gc_proxts_' + pid, proxTs);
+  savePerfis(perfis);
+  localStorage.setItem('gc_active', pid);
+}
+
+function selecionarPerfil(id) {
+  localStorage.setItem('gc_active', id);
+  document.getElementById('perfil-overlay').classList.remove('show');
+  initApp();
+}
+
+function abrirCriarPerfil() {
+  document.getElementById('np-nome').value = '';
+  document.getElementById('np-alvo').value = '';
+  document.getElementById('criar-perfil-modal').classList.add('show');
+  setTimeout(() => document.getElementById('np-nome').focus(), 100);
+}
+
+function criarPerfil() {
+  const nome = document.getElementById('np-nome').value.trim();
+  const alvo = parseFloat(document.getElementById('np-alvo').value);
+  if (!nome) { alert('Digite um nome para o perfil!'); return; }
+  if (!alvo || alvo < 70) { alert('Informe a glicemia alvo (mínimo 70)!'); return; }
+  const pid = 'p' + Date.now();
+  const perfis = loadPerfis();
+  perfis.push({ id: pid, name: nome, alvo });
+  savePerfis(perfis);
+  // config inicial com o alvo informado
+  const cfgDef = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: alvo, fatorSens: 40, autoAprendizado: false };
+  localStorage.setItem('gc_cfg_' + pid, JSON.stringify(cfgDef));
+  document.getElementById('criar-perfil-modal').classList.remove('show');
+  selecionarPerfil(pid);
+}
+
+function excluirPerfil(id) {
+  const perfis = loadPerfis();
+  const p = perfis.find(x => x.id === id);
+  if (!p) return;
+  if (perfis.length <= 1) { alert('Não é possível excluir o único perfil.'); return; }
+  if (!confirm(`Excluir o perfil "${p.name}" e todos os seus dados?`)) return;
+  ['gc_data_','gc_cfg_','gc_lenta_','gc_lentadose_','gc_proxts_'].forEach(k => localStorage.removeItem(k + id));
+  const novos = perfis.filter(x => x.id !== id);
+  savePerfis(novos);
+  if (activeProfileId() === id) {
+    localStorage.setItem('gc_active', novos[0].id);
+    location.reload();
+  } else {
+    renderCfgPerfis();
+  }
+}
+
+function renderCfgPerfis() {
+  const perfis = loadPerfis();
+  const ativo  = activeProfileId();
+  const atual  = perfis.find(p => p.id === ativo);
+  document.getElementById('cfg-perfil-atual').innerHTML =
+    atual ? `Perfil ativo: <strong style="color:#00e5ff">${atual.name}</strong> (alvo: ${atual.alvo} mg/dL)` : '';
+  const lista = document.getElementById('cfg-perfil-lista');
+  lista.innerHTML = perfis.map(p => `
+    <div style="display:flex;justify-content:space-between;align-items:center;background:#0a0a20;border:1px solid ${p.id===ativo?'#00e5ff44':'#1e2a5a'};border-radius:8px;padding:10px 14px;">
+      <div>
+        <div style="font-weight:600;color:${p.id===ativo?'#00e5ff':'#ccc'}">${p.name}${p.id===ativo?' ✓':''}</div>
+        <div style="font-size:0.75rem;color:#666;">Alvo: ${p.alvo} mg/dL</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        ${p.id!==ativo?`<button onclick="selecionarPerfil('${p.id}')" style="background:#0a1a2a;border:1px solid #00e5ff44;color:#00e5ff;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.78rem;">Usar</button>`:''}
+        ${perfis.length>1?`<button onclick="excluirPerfil('${p.id}')" style="background:rgba(255,50,50,0.08);border:1px solid #ff444433;color:#ff6666;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.78rem;">✕</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function mostrarSeletorPerfil() {
+  const perfis = loadPerfis();
+  if (perfis.length <= 1) return; // só um perfil: entra direto
+  const lista = document.getElementById('perfil-lista');
+  lista.innerHTML = perfis.map(p => `
+    <button class="perfil-btn" onclick="selecionarPerfil('${p.id}')">
+      <div class="pb-name">${p.name}</div>
+      <div class="pb-alvo">Alvo: ${p.alvo} mg/dL</div>
+    </button>`).join('');
+  document.getElementById('perfil-overlay').classList.add('show');
+}
+
 // ── CONFIG ──
 function loadConfig() {
   const def = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false };
-  return Object.assign(def, JSON.parse(localStorage.getItem('glicocare_cfg') || '{}'));
+  return Object.assign(def, JSON.parse(localStorage.getItem('gc_cfg_' + activeProfileId()) || '{}'));
 }
-function saveConfig(cfg) { localStorage.setItem('glicocare_cfg', JSON.stringify(cfg)); }
+function saveConfig(cfg) { localStorage.setItem('gc_cfg_' + activeProfileId(), JSON.stringify(cfg)); }
 
 function getFatorSensAtual() { return loadConfig().fatorSens; }
 function getDurLenta()       { return loadConfig().insulinaTipo; }
@@ -753,7 +904,8 @@ function simularDados() {
 
 function limparDados() {
   if (!confirm('Apagar TODOS os registros? Essa ação não pode ser desfeita.')) return;
-  localStorage.removeItem('glicocare');
+  const pid = activeProfileId();
+  ['gc_data_','gc_lenta_','gc_lentadose_','gc_proxts_'].forEach(k => localStorage.removeItem(k + pid));
   atualizarStatusBar();
   alert('Registros apagados.');
 }
@@ -818,8 +970,8 @@ const GLICEMIA_ALVO = 100; // fallback
 const FATOR_SENS_DEFAULT = 40; // fallback
 
 // ── STORAGE ──
-function loadData() { return JSON.parse(localStorage.getItem('glicocare') || '[]'); }
-function saveData(d) { localStorage.setItem('glicocare', JSON.stringify(d)); }
+function loadData() { return JSON.parse(localStorage.getItem('gc_data_' + activeProfileId()) || '[]'); }
+function saveData(d) { localStorage.setItem('gc_data_' + activeProfileId(), JSON.stringify(d)); }
 
 // ── RELÓGIO ──
 function tick() {
@@ -827,7 +979,7 @@ function tick() {
   document.getElementById('clock').textContent = n.toLocaleTimeString('pt-BR');
   atualizarStatusBar();
   // Verifica se horário da próxima medição passou
-  const proxTs = parseInt(localStorage.getItem('proximaMedicaoTs')||'0');
+  const proxTs = parseInt(localStorage.getItem('gc_proxts_' + activeProfileId())||'0');
   const elProx = document.getElementById('sb-proxima');
   if (proxTs && Date.now() > proxTs) {
     elProx.textContent = '⚠️ Medir agora!';
@@ -851,15 +1003,28 @@ function atualizarDatetime() {
   const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
   document.getElementById('inp-datetime').value = local.toISOString().slice(0,16);
 }
+// ── INICIALIZAÇÃO ──
+migrarParaPerfis();
+mostrarSeletorPerfil();
+
+function initApp() {
+  atualizarDatetime();
+  initConfig();
+  renderCfgPerfis();
+  atualizarStatusBar();
+  renderHistorico();
+}
+
 atualizarDatetime();
 setInterval(atualizarDatetime, 60000);
 initConfig();
+renderCfgPerfis();
 
 // ── INSULINA LENTA MATINAL ──
 function verificarLentaMatinal() {
   const agora = new Date();
   const hoje = new Date().toDateString();
-  const visto = localStorage.getItem('lenta_dia');
+  const visto = localStorage.getItem('gc_lenta_' + activeProfileId());
   if (visto === hoje) return;          // já respondeu hoje
   if (agora.getHours() < 7) return;   // só libera a partir das 7h
 
@@ -875,8 +1040,8 @@ function confirmarLentaModal() {
   const dose = parseFloat(document.getElementById('inp-lenta-modal').value) || 0;
   const horaInput = document.getElementById('inp-lenta-hora').value; // HH:MM
   const hoje = new Date().toDateString();
-  localStorage.setItem('lenta_dia', hoje);
-  localStorage.setItem('lenta_dose_hoje', dose);
+  localStorage.setItem('gc_lenta_' + activeProfileId(), hoje);
+  localStorage.setItem('gc_lentadose_' + activeProfileId(), dose);
   document.getElementById('lenta-modal').classList.remove('show');
 
   if (dose > 0) {
@@ -904,8 +1069,8 @@ function confirmarLentaModal() {
 
 function pularLentaModal() {
   const hoje = new Date().toDateString();
-  localStorage.setItem('lenta_dia', hoje);
-  localStorage.setItem('lenta_dose_hoje', 0);
+  localStorage.setItem('gc_lenta_' + activeProfileId(), hoje);
+  localStorage.setItem('gc_lentadose_' + activeProfileId(), 0);
   document.getElementById('lenta-modal').classList.remove('show');
 }
 
@@ -924,6 +1089,7 @@ function switchTab(id, el) {
   if(id==='grafico') setTimeout(()=>{ renderGrafico(); if(chartInst) chartInst.resize(); },200);
   if(id==='historico') renderHistorico();
   if(id==='analise') renderAnalise();
+  if(id==='config') renderCfgPerfis();
 }
 
 // ── IOB CALCULADO ──
@@ -1053,7 +1219,7 @@ function calcProximaMedicao(glicemia, sugRapida) {
   document.getElementById('proxima-box').style.display = 'block';
   document.getElementById('prox-time').textContent = proxStr;
   document.getElementById('prox-motivo').textContent = motivo;
-  localStorage.setItem('proximaMedicaoTs', proxima.getTime());
+  localStorage.setItem('gc_proxts_' + activeProfileId(), proxima.getTime());
   document.getElementById('sb-proxima').textContent = proxima.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   document.getElementById('sb-proxima').style.color = '#00ff99';
 
@@ -1315,7 +1481,7 @@ function atualizarStatusBar() {
 // Mostra proxima-box sem abrir card de resultado
 function atualizarProximaBox(glic, sug) {
   // Usa o timestamp salvo no momento do registro; só recalcula se não houver salvo
-  var proxTs = parseInt(localStorage.getItem('proximaMedicaoTs') || '0');
+  var proxTs = parseInt(localStorage.getItem('gc_proxts_' + activeProfileId()) || '0');
   var prox;
   if (proxTs) {
     prox = new Date(proxTs);
@@ -1328,7 +1494,7 @@ function atualizarProximaBox(glic, sug) {
     else h = 1;
     if (sug > 0) h = Math.min(h, 2);
     prox = new Date(Date.now() + h * 3600000);
-    localStorage.setItem('proximaMedicaoTs', prox.getTime());
+    localStorage.setItem('gc_proxts_' + activeProfileId(), prox.getTime());
   }
   var diffMs = prox - Date.now();
   var diffH = diffMs / 3600000;
@@ -1430,7 +1596,7 @@ function deletar(id) {
     const hoje = new Date().toDateString();
     const dataRegistro = new Date(registroApagado.dt).toDateString();
     if (dataRegistro === hoje) {
-      localStorage.removeItem('lenta_dia');
+      localStorage.removeItem('gc_lenta_' + activeProfileId());
     }
   }
 
