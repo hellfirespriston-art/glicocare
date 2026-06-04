@@ -477,8 +477,9 @@
       <div class="vcomer-rec" id="vcomer-rec"></div>
       <div class="vcomer-exp" id="vcomer-exp"></div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:20px;">
-      <button onclick="fecharVouComer()" style="flex:1;background:#1a1a3a;color:#aaa;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;font-size:0.95rem;">Fechar</button>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+      <button onclick="fecharVouComer()" style="flex:1;min-width:80px;background:#1a1a3a;color:#aaa;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;font-size:0.95rem;">Fechar</button>
+      <button id="vcomer-btn-anotar" onclick="anotarDoseRefeicao()" style="flex:2;min-width:0;display:none;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;padding:12px;border:1px solid #00ff9955;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">💉 Anotar <span id="vcomer-btn-dose">5</span> U tomadas</button>
     </div>
   </div>
 </div>
@@ -1723,6 +1724,7 @@ function salvarEdicao() {
 function abrirVouComer() {
   document.getElementById('vcomer-glicemia').value = '';
   document.getElementById('vcomer-result').style.display = 'none';
+  document.getElementById('vcomer-btn-anotar').style.display = 'none';
   document.getElementById('vcomer-modal').classList.add('show');
   setTimeout(()=>document.getElementById('vcomer-glicemia').focus(), 100);
 }
@@ -1774,6 +1776,43 @@ function calcularBolusComer() {
   document.getElementById('vcomer-emoji').textContent = emoji;
   document.getElementById('vcomer-rec').textContent = rec;
   document.getElementById('vcomer-exp').textContent = exp;
+
+  // Botão "Anotar dose tomada" — só aparece quando faz sentido tomar alguma dose
+  const btnAnotar = document.getElementById('vcomer-btn-anotar');
+  const podeTomar = !(g < 70 || g < alvo - 40);
+  if (podeTomar) {
+    const doseAnotar = (g < alvo) ? Math.ceil(dose / 2) : dose;
+    btnAnotar.dataset.dose = doseAnotar;
+    btnAnotar.disabled = false;
+    btnAnotar.style.background = 'linear-gradient(135deg,#004d22,#002211)';
+    btnAnotar.style.color = '#00ff99';
+    btnAnotar.style.border = '1px solid #00ff9955';
+    document.getElementById('vcomer-btn-dose').textContent = doseAnotar;
+    btnAnotar.style.display = 'block';
+  } else {
+    btnAnotar.style.display = 'none';
+  }
+}
+
+function anotarDoseRefeicao() {
+  const doseAnotar = parseFloat(document.getElementById('vcomer-btn-anotar').dataset.dose) || getDoseRefeicao();
+  const dados = loadData();
+  const comGlic = dados.filter(r => r.glicemia != null).sort((a,b) => new Date(b.dt) - new Date(a.dt));
+  if (!comGlic.length) { alert('Nenhuma medição encontrada para atualizar.'); return; }
+  const ultima = comGlic[0];
+  const idx = dados.findIndex(r => r.id === ultima.id);
+  dados[idx].rapida = (dados[idx].rapida || 0) + doseAnotar;
+  dados[idx].aplicou = true;
+  saveData(dados);
+  atualizarStatusBar();
+  renderHistorico();
+  const hora = new Date(ultima.dt).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+  const btn = document.getElementById('vcomer-btn-anotar');
+  btn.innerHTML = `✅ ${doseAnotar} U anotadas (med. ${hora})`;
+  btn.style.background = 'linear-gradient(135deg,#007a3d,#004422)';
+  btn.style.border = '1px solid #00ff9988';
+  btn.disabled = true;
+  setTimeout(() => fecharVouComer(), 1800);
 }
 
 // ── PROTEÇÃO ENTRADA DUPLICADA ──
