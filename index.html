@@ -331,7 +331,7 @@
   <span id="sb-glicemia" style="display:none"></span>
   <span id="sb-tempo" style="display:none"></span>
   <span id="sb-proxima" style="display:none"></span>
-  <div class="statusbar-row">
+  <div class="statusbar-row" id="iob-statusbar-row">
   <div class="iob-bar">
     <div class="iob-row">
       <span class="iob-label">💉 Rápida ativa</span>
@@ -1093,6 +1093,7 @@ function switchTab(id, el) {
   document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('iob-statusbar-row').style.display = (id === 'registrar' || id === 'grafico') ? '' : 'none';
   if(id==='grafico') setTimeout(()=>{ renderGrafico(); if(chartInst) chartInst.resize(); },200);
   if(id==='historico') renderHistorico();
   if(id==='analise') renderAnalise();
