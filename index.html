@@ -1093,7 +1093,7 @@ function switchTab(id, el) {
   document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('tab-'+id).classList.add('active');
-  document.getElementById('iob-statusbar-row').style.display = (id === 'registrar' || id === 'grafico') ? '' : 'none';
+  document.getElementById('iob-statusbar-row').style.display = id === 'registrar' ? '' : 'none';
   if(id==='grafico') setTimeout(()=>{ renderGrafico(); if(chartInst) chartInst.resize(); },200);
   if(id==='historico') renderHistorico();
   if(id==='analise') renderAnalise();
