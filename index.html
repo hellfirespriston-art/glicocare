@@ -9,42 +9,40 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',sans-serif; background:#060612; color:#f0f0f0; min-height:100vh; font-size:15px; }
+    body { font-family:'Segoe UI',sans-serif; background:#060612; color:#f0f0f0; min-height:100vh; font-size:16px; }
 
     /* HERO */
     .hero {
-      position:relative; height:160px;
-      background: url('img/bg.jpg') center/cover no-repeat;
-      display:flex; align-items:center; padding:0 30px; overflow:hidden;
+      position:relative; height:72px;
+      background:#080818;
+      border-bottom:1px solid #1a1a3a;
+      display:flex; align-items:center; padding:0 20px; overflow:hidden;
     }
-    .hero::before {
-      content:''; position:absolute; inset:0;
-      background:linear-gradient(135deg,rgba(0,0,20,0.9) 0%,rgba(0,60,100,0.7) 100%);
-    }
-    .hero-content { position:relative; z-index:1; }
-    .hero h1 { font-size:1.9rem; font-weight:700; color:#00e5ff; text-shadow:0 0 20px rgba(0,229,255,0.4); }
-    .hero p { color:#888; font-size:0.85rem; margin-top:3px; }
-    .hero-right { position:absolute; right:30px; top:50%; transform:translateY(-50%); z-index:1; text-align:right; }
-    .hero-right .clock { font-size:1.7rem; color:#00e5ff; font-weight:300; }
-    .hero-right .datestr { font-size:0.78rem; color:#666; }
+    .hero::before { display:none; }
+    .hero-content { position:relative; z-index:1; display:flex; align-items:center; gap:10px; }
+    .hero h1 { font-size:1.25rem; font-weight:700; color:#00e5ff; text-shadow:0 0 14px rgba(0,229,255,0.35); }
+    .hero p { display:none; }
+    .hero-right { position:absolute; right:16px; top:50%; transform:translateY(-50%); z-index:1; text-align:right; }
+    .hero-right .clock { font-size:1.3rem; color:#00e5ff; font-weight:400; }
+    .hero-right .datestr { font-size:0.72rem; color:#555; }
 
     /* STATUS BAR */
     .statusbar {
       background:#0a0a20; border-bottom:1px solid #1a1a3a;
-      padding:10px 24px; display:flex; flex-direction:column; gap:10px;
+      padding:12px 20px; display:flex; flex-direction:column; gap:10px;
     }
-    .statusbar-row { display:flex; gap:24px; align-items:center; flex-wrap:wrap; }
+    .statusbar-row { display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
     .status-item { display:flex; flex-direction:column; }
-    .status-label { font-size:0.65rem; color:#888; text-transform:uppercase; letter-spacing:0.5px; }
-    .status-value { font-size:0.9rem; font-weight:700; }
+    .status-label { font-size:0.72rem; color:#888; text-transform:uppercase; letter-spacing:0.5px; }
+    .status-value { font-size:1.05rem; font-weight:700; }
     .iob-bar { flex:1; min-width:200px; }
-    .iob-label { font-size:0.72rem; color:#999; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
-    .iob-track { height:6px; background:#1a1a3a; border-radius:3px; overflow:hidden; }
-    .iob-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#00e5ff,#0066cc); transition:width 0.5s; }
-    .iob-fill-lenta { height:100%; border-radius:3px; background:linear-gradient(90deg,#cc44ff,#7a1fa0); transition:width 0.5s; }
-    .iob-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:3px; }
+    .iob-label { font-size:0.78rem; color:#999; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+    .iob-track { height:10px; background:#1a1a3a; border-radius:5px; overflow:hidden; }
+    .iob-fill { height:100%; border-radius:5px; background:linear-gradient(90deg,#00e5ff,#0066cc); transition:width 0.5s; }
+    .iob-fill-lenta { height:100%; border-radius:5px; background:linear-gradient(90deg,#cc44ff,#7a1fa0); transition:width 0.5s; }
+    .iob-row { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; }
     .iob-row .iob-label { margin-bottom:0; }
-    .iob-row .iob-val { font-size:0.8rem; font-weight:700; }
+    .iob-row .iob-val { font-size:0.92rem; font-weight:700; }
 
     /* ALERTA */
     .alerta {
@@ -63,7 +61,7 @@
       50%      { box-shadow: inset 0 -3px 0 #00ff99ff, 0 0 28px #00ff99bb; }
     }
     .tabs { display:flex; background:#0a0a20; border-bottom:1px solid #1a1a3a; }
-    .tab { flex:1; padding:13px 4px; cursor:pointer; color:#888; font-size:0.8rem; border-bottom:2px solid transparent; transition:all 0.2s; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .tab { flex:1; padding:15px 4px; cursor:pointer; color:#888; font-size:0.85rem; border-bottom:3px solid transparent; transition:all 0.2s; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .tab:hover { color:#00e5ff; }
     .tab.active { color:#00e5ff; border-bottom-color:#00e5ff; }
     .tab[onclick*="registrar"] { color:#00ff99; animation:pulso-tab-verde 2s ease-in-out infinite; }
@@ -92,11 +90,11 @@
     .card h3 { font-size:0.82rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
 
     /* FORM */
-    .form-row { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
-    label { font-size:0.88rem; color:#bbb; font-weight:500; }
+    .form-row { display:flex; flex-direction:column; gap:7px; margin-bottom:16px; }
+    label { font-size:1rem; color:#ccc; font-weight:600; }
     input, select, textarea {
       background:#0d0d25; border:1px solid #2a3a6a; color:#f0f0f0;
-      padding:11px 14px; border-radius:8px; font-size:1rem; width:100%;
+      padding:13px 16px; border-radius:10px; font-size:1.05rem; width:100%;
       transition:border 0.2s;
     }
     input:focus, select:focus, textarea:focus { outline:none; border-color:#00e5ff; }
@@ -105,17 +103,17 @@
 
     /* CHECKBOX */
     .check-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; cursor:pointer; }
-    .check-row input[type=checkbox] { width:18px; height:18px; accent-color:#00e5ff; cursor:pointer; }
-    .check-row span { font-size:0.85rem; color:#aaa; }
+    .check-row input[type=checkbox] { width:22px; height:22px; accent-color:#00e5ff; cursor:pointer; }
+    .check-row span { font-size:0.95rem; color:#aaa; }
 
     /* BTN */
-    .btn { padding:11px 22px; border:none; border-radius:8px; cursor:pointer; font-size:0.9rem; font-weight:600; transition:all 0.2s; }
+    .btn { padding:14px 22px; border:none; border-radius:10px; cursor:pointer; font-size:1rem; font-weight:600; transition:all 0.2s; }
     .btn-primary { background:linear-gradient(135deg,#0066cc,#004499); color:white; }
     .btn-primary:hover { background:linear-gradient(135deg,#0077ee,#0055bb); transform:translateY(-1px); }
-    .btn-success { background:linear-gradient(135deg,#007a3d,#004422); color:#00ff99; font-size:1.05rem; padding:14px 28px; }
+    .btn-success { background:linear-gradient(135deg,#007a3d,#004422); color:#00ff99; font-size:1.1rem; padding:16px 28px; }
     .btn-success:hover { background:linear-gradient(135deg,#009950,#006633); transform:translateY(-2px); }
     .btn-danger { background:linear-gradient(135deg,#660022,#440011); color:#ff6688; }
-    .btn-sm { padding:6px 14px; font-size:0.8rem; }
+    .btn-sm { padding:9px 16px; font-size:0.85rem; }
     .btn-row { display:flex; gap:10px; flex-wrap:wrap; }
 
     /* SUGESTAO */
@@ -134,27 +132,27 @@
     /* PROXIMA MEDICAO */
     .proxima-box {
       background:linear-gradient(135deg,#0a1520,#0f1f35);
-      border:1px solid #00ff9933; border-radius:10px; padding:14px;
-      margin-top:14px; display:none;
+      border:1px solid #00ff9933; border-radius:12px; padding:16px;
+      margin-top:16px; display:none;
     }
-    .proxima-box .prox-title { font-size:0.82rem; color:#999; text-transform:uppercase; letter-spacing:1px; }
-    .proxima-box .prox-time { font-size:1.5rem; font-weight:700; color:#00ff99; margin-top:4px; }
-    .proxima-box .prox-motivo { font-size:0.88rem; color:#bbb; margin-top:4px; }
+    .proxima-box .prox-title { font-size:0.85rem; color:#999; text-transform:uppercase; letter-spacing:1px; }
+    .proxima-box .prox-time { font-size:1.9rem; font-weight:700; color:#00ff99; margin-top:6px; }
+    .proxima-box .prox-motivo { font-size:0.92rem; color:#bbb; margin-top:4px; }
 
 
     /* MODAL INSULINA LENTA */
     .lenta-modal { display:none; position:fixed; inset:0; background:#000000cc; z-index:1000; justify-content:center; align-items:center; }
     .lenta-modal.show { display:flex; }
-    .lenta-modal-box { background:#12001f; border:2px solid #cc44ff; border-radius:16px; padding:28px 24px; text-align:center; max-width:320px; width:90%; }
-    .lenta-modal-icon { font-size:2.6rem; }
-    .lenta-modal-title { font-size:1.1rem; font-weight:700; color:#cc44ff; margin:10px 0 4px; }
-    .lenta-modal-sub { font-size:0.85rem; color:#aaa; margin-bottom:18px; }
+    .lenta-modal-box { background:#12001f; border:2px solid #cc44ff; border-radius:16px; padding:32px 24px; text-align:center; max-width:340px; width:92%; }
+    .lenta-modal-icon { font-size:3rem; }
+    .lenta-modal-title { font-size:1.25rem; font-weight:700; color:#cc44ff; margin:12px 0 6px; }
+    .lenta-modal-sub { font-size:0.95rem; color:#aaa; margin-bottom:20px; line-height:1.5; }
     .lenta-dose-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:20px; }
-    .lenta-dose-row input { background:#0a0a20; border:1px solid #cc44ff; color:#f0f0f0; padding:10px 14px; border-radius:8px; font-size:1.4rem; font-weight:700; width:90px; text-align:center; }
-    .lenta-dose-row span { color:#cc44ff; font-size:1.1rem; font-weight:700; }
+    .lenta-dose-row input { background:#0a0a20; border:1px solid #cc44ff; color:#f0f0f0; padding:12px 14px; border-radius:8px; font-size:1.7rem; font-weight:700; width:100px; text-align:center; }
+    .lenta-dose-row span { color:#cc44ff; font-size:1.2rem; font-weight:700; }
     .lenta-btn-row { display:flex; gap:10px; }
-    .btn-lenta-confirmar { flex:1; background:#cc44ff; color:#000; font-weight:700; font-size:0.95rem; padding:11px; border:none; border-radius:8px; cursor:pointer; }
-    .btn-lenta-pular { flex:1; background:#1a1a2a; color:#888; font-size:0.9rem; padding:11px; border:1px solid #333; border-radius:8px; cursor:pointer; }
+    .btn-lenta-confirmar { flex:1; background:#cc44ff; color:#000; font-weight:700; font-size:1rem; padding:15px; border:none; border-radius:10px; cursor:pointer; }
+    .btn-lenta-pular { flex:1; background:#1a1a2a; color:#888; font-size:0.95rem; padding:15px; border:1px solid #333; border-radius:10px; cursor:pointer; }
 
     /* GRAFICO */
     .chart-box { background:linear-gradient(135deg,#080818,#0d1130); border:1px solid #1e2a5a; border-radius:12px; padding:16px; }
@@ -165,16 +163,16 @@
     /* HISTORICO */
     .hist-item {
       background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a;
-      border-radius:10px; padding:14px 18px; margin-bottom:10px;
-      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
+      border-radius:12px; padding:16px 18px; margin-bottom:12px;
+      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
     }
-    .hist-left .hist-glicemia { font-size:1.3rem; font-weight:700; }
-    .hist-left .hist-meta { font-size:0.75rem; color:#ccc; margin-top:2px; }
-    .hist-right { text-align:right; font-size:0.8rem; color:#666; }
-    .hist-insulin { color:#00e5ff; font-size:0.82rem; margin-top:2px; }
-    .badge-del { background:rgba(255,50,50,0.1); border:1px solid #ff444433; color:#ff6666; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; }
-    .badge-edit { background:rgba(0,229,255,0.08); border:1px solid #00e5ff44; color:#00e5ff; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:0.75rem; }
-    .hist-btns { display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+    .hist-left .hist-glicemia { font-size:1.6rem; font-weight:700; }
+    .hist-left .hist-meta { font-size:0.85rem; color:#ccc; margin-top:3px; }
+    .hist-right { text-align:right; font-size:0.85rem; color:#666; }
+    .hist-insulin { color:#00e5ff; font-size:0.88rem; margin-top:3px; }
+    .badge-del { background:rgba(255,50,50,0.1); border:1px solid #ff444433; color:#ff6666; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.82rem; }
+    .badge-edit { background:rgba(0,229,255,0.08); border:1px solid #00e5ff44; color:#00e5ff; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.82rem; }
+    .hist-btns { display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
 
     /* TOOLTIP */
     .tooltip-wrap { position:relative; display:inline-flex; align-items:center; }
@@ -192,29 +190,29 @@
     .hba1c-tabela tr td:first-child { color:#aaa; }
 
     /* SELETOR DE PERFIS */
-    #perfil-overlay { display:none; position:fixed; inset:0; background:#060612; z-index:2000; flex-direction:column; justify-content:center; align-items:center; padding:24px; }
+    #perfil-overlay { display:none; position:fixed; inset:0; background:#060612; z-index:2000; flex-direction:column; justify-content:center; align-items:center; padding:28px; }
     #perfil-overlay.show { display:flex; }
-    .perfil-logo { font-size:2.2rem; font-weight:700; color:#00e5ff; margin-bottom:4px; text-shadow:0 0 20px rgba(0,229,255,0.4); }
-    .perfil-sub { font-size:0.85rem; color:#555; margin-bottom:36px; }
-    .perfil-lista { display:flex; flex-direction:column; gap:12px; width:100%; max-width:320px; }
-    .perfil-btn { background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a; border-radius:12px; padding:18px 20px; cursor:pointer; text-align:left; transition:all 0.2s; }
+    .perfil-logo { font-size:2rem; font-weight:700; color:#00e5ff; margin-bottom:6px; text-shadow:0 0 20px rgba(0,229,255,0.4); }
+    .perfil-sub { font-size:1.05rem; color:#666; margin-bottom:32px; }
+    .perfil-lista { display:flex; flex-direction:column; gap:14px; width:100%; max-width:340px; }
+    .perfil-btn { background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a; border-radius:14px; padding:22px 24px; cursor:pointer; text-align:left; transition:all 0.2s; }
     .perfil-btn:hover { border-color:#00e5ff; transform:translateY(-2px); }
-    .perfil-btn .pb-name { font-size:1.05rem; font-weight:700; color:#f0f0f0; }
-    .perfil-btn .pb-alvo { font-size:0.78rem; color:#888; margin-top:3px; }
+    .perfil-btn .pb-name { font-size:1.3rem; font-weight:700; color:#f0f0f0; }
+    .perfil-btn .pb-alvo { font-size:0.92rem; color:#888; margin-top:5px; }
 
     /* MODAL VOU COMER */
     .vcomer-modal { display:none; position:fixed; inset:0; background:#000000dd; z-index:1050; justify-content:center; align-items:center; }
     .vcomer-modal.show { display:flex; }
-    .vcomer-box { background:#0d1130; border:2px solid #00ff99; border-radius:16px; padding:28px 24px; max-width:340px; width:92%; }
-    .vcomer-title { font-size:1.1rem; font-weight:700; color:#00ff99; margin-bottom:6px; }
-    .vcomer-sub { font-size:0.82rem; color:#888; margin-bottom:18px; }
+    .vcomer-box { background:#0d1130; border:2px solid #00ff99; border-radius:16px; padding:28px 24px; max-width:360px; width:92%; }
+    .vcomer-title { font-size:1.2rem; font-weight:700; color:#00ff99; margin-bottom:6px; }
+    .vcomer-sub { font-size:0.92rem; color:#888; margin-bottom:18px; line-height:1.5; }
     .vcomer-result { border-radius:12px; padding:16px; margin-top:16px; display:none; }
     .vcomer-result.ok { background:rgba(0,255,153,0.08); border:1px solid #00ff9955; }
     .vcomer-result.warn { background:rgba(255,170,0,0.1); border:1px solid #ffaa0055; }
     .vcomer-result.danger { background:rgba(255,50,50,0.1); border:1px solid #ff445555; }
-    .vcomer-emoji { font-size:2rem; margin-bottom:8px; }
-    .vcomer-rec { font-size:1rem; font-weight:700; margin-bottom:6px; }
-    .vcomer-exp { font-size:0.82rem; color:#aaa; line-height:1.6; }
+    .vcomer-emoji { font-size:2.4rem; margin-bottom:8px; }
+    .vcomer-rec { font-size:1.1rem; font-weight:700; margin-bottom:8px; }
+    .vcomer-exp { font-size:0.92rem; color:#aaa; line-height:1.6; }
 
     /* MODAL ENTRADA DUPLICADA */
     .dup-modal { display:none; position:fixed; inset:0; background:#000000dd; z-index:1050; justify-content:center; align-items:center; }
@@ -268,20 +266,24 @@
 
     /* CONFIG */
     .config-section { background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a; border-radius:12px; padding:20px; margin-bottom:16px; }
-    .config-section h3 { font-size:0.95rem; color:#00e5ff; margin-bottom:16px; text-transform:uppercase; letter-spacing:1px; }
-    .config-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+    .config-section h3 { font-size:1rem; color:#00e5ff; margin-bottom:16px; text-transform:uppercase; letter-spacing:1px; }
+    .config-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
     .config-row:last-child { margin-bottom:0; }
-    .config-label { font-size:0.9rem; color:#f0f0f0; flex:1; min-width:180px; }
-    .config-label small { display:block; font-size:0.75rem; color:#aaa; margin-top:2px; }
-    .config-input { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:8px 12px; border-radius:6px; font-size:0.95rem; width:130px; text-align:center; }
-    .config-select { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:8px 20px 8px 12px; border-radius:6px; font-size:0.9rem; width:230px; }
-    .config-badge { font-size:0.8rem; padding:4px 10px; border-radius:20px; font-weight:600; }
+    .config-label { font-size:0.95rem; color:#f0f0f0; flex:1; min-width:180px; }
+    .config-label small { display:block; font-size:0.8rem; color:#aaa; margin-top:3px; line-height:1.4; }
+    .config-input { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:10px 12px; border-radius:8px; font-size:1rem; width:130px; text-align:center; }
+    .config-select { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:10px 20px 10px 12px; border-radius:8px; font-size:0.95rem; width:240px; }
+    .config-badge { font-size:0.85rem; padding:5px 12px; border-radius:20px; font-weight:600; }
     .badge-auto { background:#003322; color:#00ff99; border:1px solid #00ff9955; }
     .badge-manual { background:#1a1a00; color:#ffaa00; border:1px solid #ffaa0055; }
-    .fator-display { font-size:1.4rem; font-weight:700; color:#00e5ff; text-align:center; min-width:60px; }
-    .config-save { background:linear-gradient(135deg,#0066cc,#004499); color:white; border:none; padding:11px 28px; border-radius:8px; font-size:0.95rem; font-weight:600; cursor:pointer; width:100%; margin-top:8px; }
+    .fator-display { font-size:1.5rem; font-weight:700; color:#00e5ff; text-align:center; min-width:60px; }
+    .config-save { background:linear-gradient(135deg,#0066cc,#004499); color:white; border:none; padding:14px 28px; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; width:100%; margin-top:8px; }
     .config-save:hover { background:linear-gradient(135deg,#0077ee,#0055bb); }
-    .aprendizado-info { font-size:0.82rem; color:#aaa; margin-top:8px; line-height:1.5; }
+    .aprendizado-info { font-size:0.88rem; color:#aaa; margin-top:10px; line-height:1.55; }
+
+    /* INPUT GLICEMIA — destaque especial */
+    #inp-glicemia { font-size:1.6rem; font-weight:700; padding:16px; text-align:center; letter-spacing:1px; border-color:#2a3a6a; }
+    #inp-glicemia:focus { border-color:#00e5ff; box-shadow:0 0 0 3px rgba(0,229,255,0.12); }
   </style>
 </head>
 <body>
@@ -358,11 +360,11 @@
 
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('registrar',this)">➕ Registrar</div>
+  <div class="tab active" onclick="switchTab('registrar',this)">➕ Medir</div>
   <div class="tab" onclick="switchTab('grafico',this)">📈 Gráfico</div>
   <div class="tab" onclick="switchTab('historico',this)">📋 Histórico</div>
   <div class="tab" onclick="switchTab('analise',this)">🧠 Análise</div>
-  <div class="tab" onclick="switchTab('config',this)">⚙️ Config</div>
+  <div class="tab" onclick="switchTab('config',this)">⚙️ Ajustes</div>
 </div>
 
 <!-- ══════════ REGISTRAR ══════════ -->
@@ -372,15 +374,13 @@
     <!-- NOVA MEDIÇÃO -->
     <div class="card" style="grid-column:1/-1;">
       <h3>Nova Medição</h3>
-      <div class="form-inline">
-        <div class="form-row">
-          <label>Glicemia (mg/dL)</label>
-          <input type="number" id="inp-glicemia" placeholder="Ex: 140" min="20" max="600"/>
-        </div>
-        <div class="form-row">
-          <label>Data e Hora</label>
-          <input type="datetime-local" id="inp-datetime" readonly style="pointer-events:none;opacity:0.7;cursor:default;"/>
-        </div>
+      <div class="form-row" style="margin-bottom:8px;">
+        <label style="font-size:1.05rem;color:#aaa;font-weight:400;">Digite o valor do glicosímetro (mg/dL)</label>
+        <input type="number" id="inp-glicemia" placeholder="Ex: 140" min="20" max="600" inputmode="numeric"/>
+      </div>
+      <div class="form-row" style="margin-bottom:6px;">
+        <label style="font-size:0.82rem;color:#555;">Data e Hora (preenchida automaticamente)</label>
+        <input type="datetime-local" id="inp-datetime" readonly style="pointer-events:none;opacity:0.45;cursor:default;font-size:0.88rem;padding:8px 12px;"/>
       </div>
 
       <!-- SUGESTÃO IOB -->
