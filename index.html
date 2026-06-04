@@ -467,7 +467,7 @@
 <div class="vcomer-modal" id="vcomer-modal">
   <div class="vcomer-box">
     <div class="vcomer-title">🍽️ Verificar Bolus de Refeição</div>
-    <div class="vcomer-sub">Informe sua glicemia atual antes de comer para saber se deve tomar as 5 U prescritas.</div>
+    <div class="vcomer-sub">Informe sua glicemia atual antes de comer para saber se deve tomar as <span id="vcomer-dose-label">5</span> U prescritas.</div>
     <div class="form-row">
       <label>Glicemia atual (mg/dL)</label>
       <input type="number" id="vcomer-glicemia" placeholder="Ex: 120" min="20" max="600" oninput="calcularBolusComer()"/>
@@ -646,6 +646,20 @@
         <div style="display:flex;align-items:center;gap:6px;">
           <input type="number" class="config-input" id="cfg-dose-lenta" value="20" min="1" max="80" step="1"/>
           <span style="color:#cc44ff;font-weight:700;">U</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOSE REFEIÇÃO -->
+    <div class="config-section">
+      <h3>🍽️ Dose de Insulina para Refeições</h3>
+      <div class="config-row">
+        <div class="config-label">Unidades antes de comer
+          <small>Dose prescrita pelo médico para ser tomada antes das refeições. Usada pelo botão "Vou Comer".</small>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="number" class="config-input" id="cfg-dose-refeicao" value="5" min="1" max="30" step="0.5" style="width:70px;"/>
+          <span style="color:#aaa;font-size:0.85rem;">U</span>
         </div>
       </div>
     </div>
@@ -882,7 +896,7 @@ function mostrarSeletorPerfil() {
 
 // ── CONFIG ──
 function loadConfig() {
-  const def = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false, horaResetLenta: 7 };
+  const def = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false, horaResetLenta: 7, doseRefeicao: 5 };
   return Object.assign(def, JSON.parse(localStorage.getItem('gc_cfg_' + activeProfileId()) || '{}'));
 }
 function saveConfig(cfg) { localStorage.setItem('gc_cfg_' + activeProfileId(), JSON.stringify(cfg)); }
@@ -890,6 +904,7 @@ function saveConfig(cfg) { localStorage.setItem('gc_cfg_' + activeProfileId(), J
 function getFatorSensAtual() { return loadConfig().fatorSens; }
 function getDurLenta()       { return loadConfig().insulinaTipo; }
 function getGlicemiaAlvo()   { return loadConfig().glicemiaAlvo; }
+function getDoseRefeicao()   { return loadConfig().doseRefeicao ?? 5; }
 
 function initConfig() {
   const cfg = loadConfig();
@@ -903,6 +918,7 @@ function initConfig() {
   document.getElementById('cfg-badge-auto').className      = 'config-badge ' + (cfg.autoAprendizado ? 'badge-auto' : 'badge-manual');
   document.getElementById('cfg-aprendizado-info').style.display = cfg.autoAprendizado ? 'block' : 'none';
   document.getElementById('cfg-hora-reset-lenta').value = cfg.horaResetLenta;
+  document.getElementById('cfg-dose-refeicao').value    = cfg.doseRefeicao ?? 5;
   document.getElementById('inp-lenta-modal').value = cfg.doseLenta;
 }
 
@@ -942,6 +958,7 @@ function salvarConfig() {
   if (!cfg.autoAprendizado) cfg.fatorSens = parseFloat(document.getElementById('cfg-fator-manual').value) || 40;
   cfg.autoAprendizado    = document.getElementById('cfg-auto-aprendizado').checked;
   cfg.horaResetLenta     = parseInt(document.getElementById('cfg-hora-reset-lenta').value) || 7;
+  cfg.doseRefeicao       = parseFloat(document.getElementById('cfg-dose-refeicao').value) || 5;
   saveConfig(cfg);
   document.getElementById('cfg-fator-display').textContent = Math.round(cfg.fatorSens);
   const msg = document.getElementById('cfg-salvo-msg');
@@ -1039,6 +1056,7 @@ function initApp() {
   renderCfgPerfis();
   atualizarStatusBar();
   renderHistorico();
+  document.getElementById('vcomer-dose-label').textContent = getDoseRefeicao();
 }
 
 atualizarDatetime();
@@ -1717,7 +1735,9 @@ function calcularBolusComer() {
   if (!g || g < 20) { res.style.display='none'; return; }
   res.style.display = 'block';
   res.className = 'vcomer-result';
-  const alvo = getGlicemiaAlvo(); // respeita o alvo configurado no app
+  const alvo = getGlicemiaAlvo();
+  const dose = getDoseRefeicao();
+  document.getElementById('vcomer-dose-label').textContent = dose;
   let emoji, rec, exp, cls;
   if (g < 70) {
     cls = 'danger';
@@ -1727,28 +1747,28 @@ function calcularBolusComer() {
   } else if (g < alvo - 40) {
     cls = 'danger';
     emoji = '🚫';
-    rec = 'Não tome as 5 U — glicemia abaixo do seu alvo';
-    exp = `Glicemia em ${g} mg/dL, bem abaixo do seu alvo configurado de ${alvo} mg/dL. Tomar 5 U agora causaria hipoglicemia. Coma normalmente sem insulina e monitore.`;
+    rec = `Não tome as ${dose} U — glicemia abaixo do seu alvo`;
+    exp = `Glicemia em ${g} mg/dL, bem abaixo do seu alvo configurado de ${alvo} mg/dL. Tomar ${dose} U agora causaria hipoglicemia. Coma normalmente sem insulina e monitore.`;
   } else if (g < alvo) {
     cls = 'warn';
     emoji = '⚠️';
-    rec = 'Tome no máximo 2 U — ou não tome';
-    exp = `Glicemia em ${g} mg/dL — abaixo do seu alvo de ${alvo} mg/dL. As 5 U completas vão derrubar demais. Se quiser tomar algo, reduza para 1-2 U e fique atenta a sintomas de baixa.`;
+    rec = `Tome no máximo ${Math.ceil(dose/2)} U — ou não tome`;
+    exp = `Glicemia em ${g} mg/dL — abaixo do seu alvo de ${alvo} mg/dL. As ${dose} U completas vão derrubar demais. Se quiser tomar algo, reduza para ${Math.ceil(dose/2)} U e fique atenta a sintomas de baixa.`;
   } else if (g <= alvo + 60) {
     cls = 'ok';
     emoji = '✅';
-    rec = 'Pode tomar as 5 U normalmente';
-    exp = `Glicemia em ${g} mg/dL — próxima ao seu alvo de ${alvo} mg/dL. Dose de refeição liberada. Tome as 5 U e bom apetite!`;
+    rec = `Pode tomar as ${dose} U normalmente`;
+    exp = `Glicemia em ${g} mg/dL — próxima ao seu alvo de ${alvo} mg/dL. Dose de refeição liberada. Tome as ${dose} U e bom apetite!`;
   } else if (g <= alvo + 120) {
     cls = 'warn';
     emoji = '📈';
-    rec = 'Tome as 5 U + monitore após comer';
-    exp = `Glicemia em ${g} mg/dL — acima do alvo (${alvo} mg/dL). Tome as 5 U normais, mas meça novamente 2h depois da refeição.`;
+    rec = `Tome as ${dose} U + monitore após comer`;
+    exp = `Glicemia em ${g} mg/dL — acima do alvo (${alvo} mg/dL). Tome as ${dose} U normais, mas meça novamente 2h depois da refeição.`;
   } else {
     cls = 'danger';
     emoji = '🔴';
-    rec = 'Tome as 5 U, mas avise seu médico';
-    exp = `Glicemia em ${g} mg/dL — muito acima do alvo (${alvo} mg/dL). Tome as 5 U prescritas, considere uma refeição mais leve e avise seu médico sobre este episódio.`;
+    rec = `Tome as ${dose} U, mas avise seu médico`;
+    exp = `Glicemia em ${g} mg/dL — muito acima do alvo (${alvo} mg/dL). Tome as ${dose} U prescritas, considere uma refeição mais leve e avise seu médico sobre este episódio.`;
   }
   res.classList.add(cls);
   document.getElementById('vcomer-emoji').textContent = emoji;
