@@ -163,7 +163,7 @@
     /* HISTORICO */
     .hist-item {
       background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a;
-      border-radius:12px; padding:16px 18px; margin-bottom:12px;
+      border-radius:12px; padding:12px 16px; margin-bottom:8px;
       display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
     }
     .hist-left .hist-glicemia { font-size:1.6rem; font-weight:700; }
@@ -259,7 +259,7 @@
     .dot { width:10px; height:10px; border-radius:50%; }
 
     /* SCROLLABLE */
-    .scroll-list { max-height:400px; overflow-y:auto; }
+    .scroll-list { max-height:calc(100dvh - 210px); overflow-y:auto; }
     .scroll-list::-webkit-scrollbar { width:4px; }
     .scroll-list::-webkit-scrollbar-track { background:#0a0a20; }
     .scroll-list::-webkit-scrollbar-thumb { background:#1e2a5a; border-radius:2px; }
