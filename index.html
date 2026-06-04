@@ -1505,32 +1505,38 @@ function calcularBolusComer() {
   if (!g || g < 20) { res.style.display='none'; return; }
   res.style.display = 'block';
   res.className = 'vcomer-result';
+  const alvo = getGlicemiaAlvo(); // respeita o alvo configurado no app
   let emoji, rec, exp, cls;
   if (g < 70) {
     cls = 'danger';
     emoji = '🚨';
     rec = 'NÃO tome a insulina agora!';
-    exp = `Sua glicemia está em ${g} mg/dL — você está em hipoglicemia. Tome um suco ou carboidrato rápido imediatamente, aguarde 15 minutos e meça de novo. Só tome a insulina quando a glicemia estiver acima de 100.`;
-  } else if (g < 100) {
+    exp = `Glicemia em ${g} mg/dL — hipoglicemia. Tome um suco ou carboidrato rápido, aguarde 15 min e meça de novo. Só tome insulina quando estiver acima de 100 mg/dL.`;
+  } else if (g < alvo - 40) {
+    cls = 'danger';
+    emoji = '🚫';
+    rec = 'Não tome as 5U — glicemia abaixo do seu alvo';
+    exp = `Glicemia em ${g} mg/dL, bem abaixo do seu alvo configurado de ${alvo} mg/dL. Tomar 5U agora causaria hipoglicemia. Coma normalmente sem insulina e monitore.`;
+  } else if (g < alvo) {
     cls = 'warn';
     emoji = '⚠️';
-    rec = 'Tome 2-3U no máximo (ou não tome)';
-    exp = `Sua glicemia está em ${g} mg/dL — abaixo do ideal para tomar a dose completa. Tome no máximo metade da dose (2-3U) e monitore bem. Se sentir qualquer tontura, trate imediatamente.`;
-  } else if (g <= 180) {
+    rec = 'Tome no máximo 2U — ou não tome';
+    exp = `Glicemia em ${g} mg/dL — abaixo do seu alvo de ${alvo} mg/dL. As 5U completas vão derrubar demais. Se quiser tomar algo, reduza para 1-2U e fique atenta a sintomas de baixa.`;
+  } else if (g <= alvo + 60) {
     cls = 'ok';
     emoji = '✅';
     rec = 'Pode tomar as 5U normalmente';
-    exp = `Sua glicemia está em ${g} mg/dL — dentro da faixa segura para a dose de refeição prescrita. Tome as 5U e bom apetite!`;
-  } else if (g <= 250) {
+    exp = `Glicemia em ${g} mg/dL — próxima ao seu alvo de ${alvo} mg/dL. Dose de refeição liberada. Tome as 5U e bom apetite!`;
+  } else if (g <= alvo + 120) {
     cls = 'warn';
     emoji = '📈';
     rec = 'Tome as 5U + monitore após comer';
-    exp = `Sua glicemia está em ${g} mg/dL — elevada antes da refeição. Tome as 5U normais, mas meça novamente 2h após a refeição. Se continuar alta, fale com seu médico sobre ajuste de dose.`;
+    exp = `Glicemia em ${g} mg/dL — acima do alvo (${alvo} mg/dL). Tome as 5U normais, mas meça novamente 2h depois da refeição.`;
   } else {
     cls = 'danger';
     emoji = '🔴';
     rec = 'Tome as 5U, mas avise seu médico';
-    exp = `Sua glicemia está em ${g} mg/dL — muito alta antes de comer. Tome as 5U prescritas, mas considere adiar a refeição ou comer algo leve. Avise seu médico sobre este episódio.`;
+    exp = `Glicemia em ${g} mg/dL — muito acima do alvo (${alvo} mg/dL). Tome as 5U prescritas, considere uma refeição mais leve e avise seu médico sobre este episódio.`;
   }
   res.classList.add(cls);
   document.getElementById('vcomer-emoji').textContent = emoji;
