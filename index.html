@@ -24,7 +24,7 @@
     .hero p { display:none; }
     .hero-right { position:absolute; right:16px; top:50%; transform:translateY(-50%); z-index:1; text-align:right; }
     .hero-right .clock { font-size:1.3rem; color:#00e5ff; font-weight:400; }
-    .hero-right .datestr { font-size:0.72rem; color:#555; }
+    .hero-right .datestr { font-size:0.78rem; color:#888; margin-top:2px; }
 
     /* STATUS BAR */
     .statusbar {
@@ -322,6 +322,7 @@
   </div>
   <div class="hero-right">
     <div class="clock" id="clock">--:--:--</div>
+    <div class="datestr" id="hero-date"></div>
   </div>
 </div>
 
@@ -378,10 +379,7 @@
         <label style="font-size:1.05rem;color:#aaa;font-weight:400;">Digite o valor do glicosímetro (mg/dL)</label>
         <input type="number" id="inp-glicemia" placeholder="Ex: 140" min="20" max="600" inputmode="numeric"/>
       </div>
-      <div class="form-row" style="margin-bottom:6px;">
-        <label style="font-size:0.82rem;color:#555;">Data e Hora (preenchida automaticamente)</label>
-        <input type="datetime-local" id="inp-datetime" readonly style="pointer-events:none;opacity:0.45;cursor:default;font-size:0.88rem;padding:8px 12px;"/>
-      </div>
+      <input type="datetime-local" id="inp-datetime" readonly style="display:none;"/>
 
       <!-- SUGESTÃO IOB -->
       <div class="sugestao-box" id="sugestao-box">
@@ -996,6 +994,7 @@ function saveData(d) { localStorage.setItem('gc_data_' + activeProfileId(), JSON
 function tick() {
   const n = new Date();
   document.getElementById('clock').textContent = n.toLocaleTimeString('pt-BR');
+  document.getElementById('hero-date').textContent = n.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'});
   atualizarStatusBar();
   // Verifica se horário da próxima medição passou
   const proxTs = parseInt(localStorage.getItem('gc_proxts_' + activeProfileId())||'0');
