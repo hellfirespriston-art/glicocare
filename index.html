@@ -191,6 +191,25 @@
     .hba1c-tabela tr td { padding:6px 10px; border-bottom:1px solid #1a1a3a; }
     .hba1c-tabela tr td:first-child { color:#aaa; }
 
+    /* MODAL VOU COMER */
+    .vcomer-modal { display:none; position:fixed; inset:0; background:#000000dd; z-index:1050; justify-content:center; align-items:center; }
+    .vcomer-modal.show { display:flex; }
+    .vcomer-box { background:#0d1130; border:2px solid #00ff99; border-radius:16px; padding:28px 24px; max-width:340px; width:92%; }
+    .vcomer-title { font-size:1.1rem; font-weight:700; color:#00ff99; margin-bottom:6px; }
+    .vcomer-sub { font-size:0.82rem; color:#888; margin-bottom:18px; }
+    .vcomer-result { border-radius:12px; padding:16px; margin-top:16px; display:none; }
+    .vcomer-result.ok { background:rgba(0,255,153,0.08); border:1px solid #00ff9955; }
+    .vcomer-result.warn { background:rgba(255,170,0,0.1); border:1px solid #ffaa0055; }
+    .vcomer-result.danger { background:rgba(255,50,50,0.1); border:1px solid #ff445555; }
+    .vcomer-emoji { font-size:2rem; margin-bottom:8px; }
+    .vcomer-rec { font-size:1rem; font-weight:700; margin-bottom:6px; }
+    .vcomer-exp { font-size:0.82rem; color:#aaa; line-height:1.6; }
+
+    /* MODAL ENTRADA DUPLICADA */
+    .dup-modal { display:none; position:fixed; inset:0; background:#000000dd; z-index:1050; justify-content:center; align-items:center; }
+    .dup-modal.show { display:flex; }
+    .dup-box { background:#0d1130; border:2px solid #ffaa00; border-radius:16px; padding:28px 24px; max-width:340px; width:92%; }
+
     /* CARD RESULTADO */
     .resultado-card {
       display:none; position:fixed; top:0; left:0; right:0; z-index:999;
@@ -361,6 +380,7 @@
 
       <div class="btn-row">
         <button class="btn btn-success" onclick="registrar()">💾 Registrar e Calcular</button>
+        <button class="btn" style="background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;border:1px solid #00ff9944;" onclick="abrirVouComer()">🍽️ Vou Comer</button>
       </div>
 
       <!-- PRÓXIMA MEDIÇÃO -->
@@ -392,6 +412,42 @@
 
     </div>
 
+  </div>
+</div>
+
+<!-- MODAL VOU COMER -->
+<div class="vcomer-modal" id="vcomer-modal">
+  <div class="vcomer-box">
+    <div class="vcomer-title">🍽️ Verificar Bolus de Refeição</div>
+    <div class="vcomer-sub">Informe sua glicemia atual antes de comer para saber se deve tomar as 5U prescritas.</div>
+    <div class="form-row">
+      <label>Glicemia atual (mg/dL)</label>
+      <input type="number" id="vcomer-glicemia" placeholder="Ex: 120" min="20" max="600" oninput="calcularBolusComer()"/>
+    </div>
+    <div class="vcomer-result" id="vcomer-result">
+      <div class="vcomer-emoji" id="vcomer-emoji"></div>
+      <div class="vcomer-rec" id="vcomer-rec"></div>
+      <div class="vcomer-exp" id="vcomer-exp"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button onclick="fecharVouComer()" style="flex:1;background:#1a1a3a;color:#aaa;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;font-size:0.95rem;">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ENTRADA DUPLICADA -->
+<div class="dup-modal" id="dup-modal">
+  <div class="dup-box">
+    <div style="font-size:1.8rem;text-align:center;margin-bottom:10px;">⚠️</div>
+    <div style="font-size:1.05rem;font-weight:700;color:#ffaa00;margin-bottom:10px;text-align:center;">Medição muito recente!</div>
+    <div style="font-size:0.88rem;color:#ccc;line-height:1.7;margin-bottom:16px;" id="dup-msg"></div>
+    <div style="background:rgba(0,229,255,0.07);border:1px solid #00e5ff33;border-radius:10px;padding:12px;font-size:0.82rem;color:#6ab4d8;line-height:1.6;margin-bottom:18px;">
+      💡 <strong>Se a medição anterior foi um erro</strong>, use o botão <strong>✏️</strong> no Histórico para editá-la em vez de criar uma nova entrada. Isso garante que os cálculos de IOB e próxima medição continuem corretos.
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="fecharDupModal()" style="flex:1;background:#1a1a3a;color:#aaa;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;">Entendi, vou editar</button>
+      <button onclick="registrarMesmoAssim()" style="flex:1;background:rgba(255,100,0,0.15);color:#ffaa66;padding:12px;border:1px solid #ff660033;border-radius:8px;cursor:pointer;font-size:0.82rem;">Registrar mesmo assim</button>
+    </div>
   </div>
 </div>
 
@@ -1085,6 +1141,26 @@ function registrar() {
   const dtFinal = dt || _local.toISOString().slice(0,16);
   if (!glicemia) { alert('Preencha a glicemia!'); return; }
 
+  // Proteção contra entrada duplicada (exceto se o usuário confirmou)
+  if (!_pendingRegistrar) {
+    const dadosExist = loadData();
+    const glicemiaRecords = dadosExist.filter(r => r._tipo !== 'insulina lenta' && r.glicemia);
+    if (glicemiaRecords.length > 0) {
+      const ultimo = glicemiaRecords[glicemiaRecords.length - 1];
+      const minAtras = (Date.now() - new Date(ultimo.dt).getTime()) / 60000;
+      if (minAtras < MINUTOS_BLOQUEIO) {
+        const minRestantes = Math.ceil(MINUTOS_BLOQUEIO - minAtras);
+        const minPassados = Math.floor(minAtras);
+        document.getElementById('dup-msg').innerHTML =
+          `Você já registrou uma medição há <strong style="color:#ffaa00">${minPassados} minuto${minPassados!==1?'s':''}</strong> (${ultimo.glicemia} mg/dL às ${new Date(ultimo.dt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}).<br><br>` +
+          `Registrar de novo tão cedo não traz informações úteis — a glicemia não muda significativamente em ${minPassados} min — e pode bagunçar os cálculos de IOB e tempo entre medições.`;
+        document.getElementById('dup-modal').classList.add('show');
+        return;
+      }
+    }
+  }
+  _pendingRegistrar = false;
+
   const dados = loadData();
   const novoId = Date.now();
   dados.push({ id:novoId, dt:dtFinal, glicemia, rapida, lenta, aplicou, sugRapida:null });
@@ -1411,6 +1487,68 @@ function salvarEdicao() {
   fecharEditModal();
   renderHistorico();
   atualizarStatusBar();
+}
+
+// ── VOU COMER ──
+function abrirVouComer() {
+  document.getElementById('vcomer-glicemia').value = '';
+  document.getElementById('vcomer-result').style.display = 'none';
+  document.getElementById('vcomer-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('vcomer-glicemia').focus(), 100);
+}
+function fecharVouComer() {
+  document.getElementById('vcomer-modal').classList.remove('show');
+}
+function calcularBolusComer() {
+  const g = parseFloat(document.getElementById('vcomer-glicemia').value);
+  const res = document.getElementById('vcomer-result');
+  if (!g || g < 20) { res.style.display='none'; return; }
+  res.style.display = 'block';
+  res.className = 'vcomer-result';
+  let emoji, rec, exp, cls;
+  if (g < 70) {
+    cls = 'danger';
+    emoji = '🚨';
+    rec = 'NÃO tome a insulina agora!';
+    exp = `Sua glicemia está em ${g} mg/dL — você está em hipoglicemia. Tome um suco ou carboidrato rápido imediatamente, aguarde 15 minutos e meça de novo. Só tome a insulina quando a glicemia estiver acima de 100.`;
+  } else if (g < 100) {
+    cls = 'warn';
+    emoji = '⚠️';
+    rec = 'Tome 2-3U no máximo (ou não tome)';
+    exp = `Sua glicemia está em ${g} mg/dL — abaixo do ideal para tomar a dose completa. Tome no máximo metade da dose (2-3U) e monitore bem. Se sentir qualquer tontura, trate imediatamente.`;
+  } else if (g <= 180) {
+    cls = 'ok';
+    emoji = '✅';
+    rec = 'Pode tomar as 5U normalmente';
+    exp = `Sua glicemia está em ${g} mg/dL — dentro da faixa segura para a dose de refeição prescrita. Tome as 5U e bom apetite!`;
+  } else if (g <= 250) {
+    cls = 'warn';
+    emoji = '📈';
+    rec = 'Tome as 5U + monitore após comer';
+    exp = `Sua glicemia está em ${g} mg/dL — elevada antes da refeição. Tome as 5U normais, mas meça novamente 2h após a refeição. Se continuar alta, fale com seu médico sobre ajuste de dose.`;
+  } else {
+    cls = 'danger';
+    emoji = '🔴';
+    rec = 'Tome as 5U, mas avise seu médico';
+    exp = `Sua glicemia está em ${g} mg/dL — muito alta antes de comer. Tome as 5U prescritas, mas considere adiar a refeição ou comer algo leve. Avise seu médico sobre este episódio.`;
+  }
+  res.classList.add(cls);
+  document.getElementById('vcomer-emoji').textContent = emoji;
+  document.getElementById('vcomer-rec').textContent = rec;
+  document.getElementById('vcomer-exp').textContent = exp;
+}
+
+// ── PROTEÇÃO ENTRADA DUPLICADA ──
+const MINUTOS_BLOQUEIO = 30;
+let _pendingRegistrar = false;
+
+function registrarMesmoAssim() {
+  fecharDupModal();
+  _pendingRegistrar = true;
+  registrar();
+}
+function fecharDupModal() {
+  document.getElementById('dup-modal').classList.remove('show');
 }
 
 // ── ANÁLISE ──
