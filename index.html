@@ -282,8 +282,12 @@
     .aprendizado-info { font-size:0.88rem; color:#aaa; margin-top:10px; line-height:1.55; }
 
     /* INPUT GLICEMIA — destaque especial */
-    #inp-glicemia { font-size:1.6rem; font-weight:700; padding:16px; text-align:center; letter-spacing:1px; border-color:#2a3a6a; }
-    #inp-glicemia:focus { border-color:#00e5ff; box-shadow:0 0 0 3px rgba(0,229,255,0.12); }
+    @keyframes pulso-input-verde {
+      0%,100% { box-shadow: 0 0 8px #00ff9966, inset 0 0 0 1px #00ff99bb; border-color:#00ff9988; }
+      50%      { box-shadow: 0 0 22px #00ff99bb, inset 0 0 0 1px #00ff99ff; border-color:#00ff99; }
+    }
+    #inp-glicemia { font-size:1.6rem; font-weight:700; padding:16px; text-align:center; letter-spacing:1px; animation:pulso-input-verde 2s ease-in-out infinite; }
+    #inp-glicemia:focus { animation:none; border-color:#00e5ff; box-shadow:0 0 0 3px rgba(0,229,255,0.2); }
   </style>
 </head>
 <body>
