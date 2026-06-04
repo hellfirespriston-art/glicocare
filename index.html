@@ -467,7 +467,7 @@
 <div class="vcomer-modal" id="vcomer-modal">
   <div class="vcomer-box">
     <div class="vcomer-title">🍽️ Verificar Bolus de Refeição</div>
-    <div class="vcomer-sub">Informe sua glicemia atual antes de comer para saber se deve tomar as 5U prescritas.</div>
+    <div class="vcomer-sub">Informe sua glicemia atual antes de comer para saber se deve tomar as 5 U prescritas.</div>
     <div class="form-row">
       <label>Glicemia atual (mg/dL)</label>
       <input type="number" id="vcomer-glicemia" placeholder="Ex: 120" min="20" max="600" oninput="calcularBolusComer()"/>
@@ -1212,11 +1212,11 @@ function calcularSugestao() {
     explicacao = `✅ Glicemia de ${glicemia} mg/dL está no alvo (≤${alvo} mg/dL). Nenhuma correção necessária.`;
   } else {
     explicacao = `📐 Glicemia ${glicemia} mg/dL − alvo ${alvo} mg/dL = <strong style="color:#fff">${(glicemia-alvo)} mg/dL acima</strong><br>`;
-    explicacao += `➗ Fator de sensibilidade: 1U reduz ~${fator.toFixed(0)} mg/dL → dose bruta: <strong style="color:#fff">${bruta.toFixed(1)}U</strong><br>`;
+    explicacao += `➗ Fator de sensibilidade: 1 U reduz ~${fator.toFixed(0)} mg/dL → dose bruta: <strong style="color:#fff">${bruta.toFixed(1)} U</strong><br>`;
     if (iobR > 0) {
-      explicacao += `⏳ IOB ativo: −${iobR.toFixed(1)}U já em circulação → dose final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)}U</strong>`;
+      explicacao += `⏳ IOB ativo: −${iobR.toFixed(1)} U já em circulação → dose final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)} U</strong>`;
     } else {
-      explicacao += `💉 Sem IOB ativo → dose final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)}U</strong>`;
+      explicacao += `💉 Sem IOB ativo → dose final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)} U</strong>`;
     }
   }
 
@@ -1727,28 +1727,28 @@ function calcularBolusComer() {
   } else if (g < alvo - 40) {
     cls = 'danger';
     emoji = '🚫';
-    rec = 'Não tome as 5U — glicemia abaixo do seu alvo';
-    exp = `Glicemia em ${g} mg/dL, bem abaixo do seu alvo configurado de ${alvo} mg/dL. Tomar 5U agora causaria hipoglicemia. Coma normalmente sem insulina e monitore.`;
+    rec = 'Não tome as 5 U — glicemia abaixo do seu alvo';
+    exp = `Glicemia em ${g} mg/dL, bem abaixo do seu alvo configurado de ${alvo} mg/dL. Tomar 5 U agora causaria hipoglicemia. Coma normalmente sem insulina e monitore.`;
   } else if (g < alvo) {
     cls = 'warn';
     emoji = '⚠️';
-    rec = 'Tome no máximo 2U — ou não tome';
-    exp = `Glicemia em ${g} mg/dL — abaixo do seu alvo de ${alvo} mg/dL. As 5U completas vão derrubar demais. Se quiser tomar algo, reduza para 1-2U e fique atenta a sintomas de baixa.`;
+    rec = 'Tome no máximo 2 U — ou não tome';
+    exp = `Glicemia em ${g} mg/dL — abaixo do seu alvo de ${alvo} mg/dL. As 5 U completas vão derrubar demais. Se quiser tomar algo, reduza para 1-2 U e fique atenta a sintomas de baixa.`;
   } else if (g <= alvo + 60) {
     cls = 'ok';
     emoji = '✅';
-    rec = 'Pode tomar as 5U normalmente';
-    exp = `Glicemia em ${g} mg/dL — próxima ao seu alvo de ${alvo} mg/dL. Dose de refeição liberada. Tome as 5U e bom apetite!`;
+    rec = 'Pode tomar as 5 U normalmente';
+    exp = `Glicemia em ${g} mg/dL — próxima ao seu alvo de ${alvo} mg/dL. Dose de refeição liberada. Tome as 5 U e bom apetite!`;
   } else if (g <= alvo + 120) {
     cls = 'warn';
     emoji = '📈';
-    rec = 'Tome as 5U + monitore após comer';
-    exp = `Glicemia em ${g} mg/dL — acima do alvo (${alvo} mg/dL). Tome as 5U normais, mas meça novamente 2h depois da refeição.`;
+    rec = 'Tome as 5 U + monitore após comer';
+    exp = `Glicemia em ${g} mg/dL — acima do alvo (${alvo} mg/dL). Tome as 5 U normais, mas meça novamente 2h depois da refeição.`;
   } else {
     cls = 'danger';
     emoji = '🔴';
-    rec = 'Tome as 5U, mas avise seu médico';
-    exp = `Glicemia em ${g} mg/dL — muito acima do alvo (${alvo} mg/dL). Tome as 5U prescritas, considere uma refeição mais leve e avise seu médico sobre este episódio.`;
+    rec = 'Tome as 5 U, mas avise seu médico';
+    exp = `Glicemia em ${g} mg/dL — muito acima do alvo (${alvo} mg/dL). Tome as 5 U prescritas, considere uma refeição mais leve e avise seu médico sobre este episódio.`;
   }
   res.classList.add(cls);
   document.getElementById('vcomer-emoji').textContent = emoji;
@@ -1818,7 +1818,7 @@ function renderAnalise() {
   if (hipos > 0) padroes.push(`⚠️ ${hipos} episódio(s) de hipoglicemia registrado(s) — atenção às doses`);
 
   const fator = getFatorSens(dados);
-  if (fator !== FATOR_SENS_DEFAULT) padroes.push(`🧠 Sensibilidade calibrada: 1U de insulina rápida reduz ~${fator.toFixed(0)} mg/dL neste perfil`);
+  if (fator !== FATOR_SENS_DEFAULT) padroes.push(`🧠 Sensibilidade calibrada: 1 U de insulina rápida reduz ~${fator.toFixed(0)} mg/dL neste perfil`);
 
   document.getElementById('padroes-box').innerHTML = padroes.length
     ? padroes.map(p=>`<div style="padding:6px 0;border-bottom:1px solid #1a1a3a;">→ ${p}</div>`).join('')
@@ -2068,11 +2068,11 @@ function gerarPDF() {
   doc.text('DOSES DE INSULINA', 5, y); y+=4;
 
   const insulinaCards = [
-    { label:'TDD (Rapida+Lenta/dia)', valor: tdd.toFixed(1)+'U' },
-    { label:'Rapida media/dia',       valor: mediaRapidaDia+'U  ('+comRapida.length+' aplic.)' },
-    { label:'Lenta media/dia',        valor: mediaLentaDia+'U  ('+lentas.length+' reg.)' },
+    { label:'TDD (Rapida+Lenta/dia)', valor: tdd.toFixed(1)+' U' },
+    { label:'Rapida media/dia',       valor: mediaRapidaDia+' U  ('+comRapida.length+' aplic.)' },
+    { label:'Lenta media/dia',        valor: mediaLentaDia+' U  ('+lentas.length+' reg.)' },
     { label:'Basal/Bolus',            valor: pctBasal!=null?pctBasal+'% basal (ideal 48-60%)':'-' },
-    { label:'Fator sensib.',          valor: '1U = '+fatorAtual+' mg/dL' },
+    { label:'Fator sensib.',          valor: '1 U = '+fatorAtual+' mg/dL' },
   ];
   insulinaCards.forEach((c,i)=>{
     const ix=5+(i%5)*41, iw=39, ih=14;
@@ -2192,7 +2192,7 @@ function gerarPDF() {
 
   const rowsAll = [...filtrado].reverse().map(r => {
     const status = r.glicemia<54?'HIPO SEVERA':r.glicemia<70?'HIPO':r.glicemia<=180?'Normal':r.glicemia<=250?'Elevada':'HIPER';
-    const insulina = r.rapida>0?r.rapida+'U rapida':r.lenta>0?r.lenta+'U lenta':'-';
+    const insulina = r.rapida>0?r.rapida+' U rápida':r.lenta>0?r.lenta+' U lenta':'-';
     return [
       new Date(r.dt).toLocaleString('pt-BR'),
       r.glicemia+' mg/dL',
