@@ -530,28 +530,29 @@
         <div class="prox-motivo" id="prox-motivo"></div>
       </div>
 
-      <!-- MODAL INSULINA LENTA (uma vez por dia) -->
-      <div class="lenta-modal" id="lenta-modal">
-        <div class="lenta-modal-box">
-          <div class="lenta-modal-icon">🟣</div>
-          <div class="lenta-modal-title">Insulina Lenta — Manhã</div>
-          <div class="lenta-modal-sub">Você tomou insulina lenta hoje?<br>Confirme ou ajuste a dose e hora abaixo:</div>
-          <div class="lenta-dose-row">
-            <input type="number" id="inp-lenta-modal" value="20" min="0" max="80" step="1"/>
-            <span>U</span>
-          </div>
-          <div class="lenta-dose-row">
-            <input type="time" id="inp-lenta-hora" style="flex:1; width:100%;"/>
-          </div>
-          <div class="lenta-btn-row">
-            <button class="btn-lenta-confirmar" onclick="confirmarLentaModal()">✅ Confirmei, tomei!</button>
-            <button class="btn-lenta-pular" onclick="pularLentaModal()">Não vou tomar</button>
-          </div>
-        </div>
-      </div>
 
     </div>
 
+  </div>
+</div>
+
+<!-- MODAL INSULINA LENTA (global — fora das tabs para funcionar em qualquer aba) -->
+<div class="lenta-modal" id="lenta-modal">
+  <div class="lenta-modal-box">
+    <div class="lenta-modal-icon">🟣</div>
+    <div class="lenta-modal-title">Insulina Lenta — Manhã</div>
+    <div class="lenta-modal-sub">Você tomou insulina lenta hoje?<br>Confirme ou ajuste a dose e hora abaixo:</div>
+    <div class="lenta-dose-row">
+      <input type="number" id="inp-lenta-modal" value="20" min="0" max="80" step="1"/>
+      <span>U</span>
+    </div>
+    <div class="lenta-dose-row">
+      <input type="time" id="inp-lenta-hora" style="flex:1; width:100%;"/>
+    </div>
+    <div class="lenta-btn-row">
+      <button class="btn-lenta-confirmar" onclick="confirmarLentaModal()">✅ Confirmei, tomei!</button>
+      <button class="btn-lenta-pular" onclick="pularLentaModal()">Não vou tomar</button>
+    </div>
   </div>
 </div>
 
