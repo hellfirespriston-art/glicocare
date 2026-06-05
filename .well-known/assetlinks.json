@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.glicocare.twa",
+        "sha256_cert_fingerprints": ["4B:A7:90:F1:51:8F:84:66:40:13:0F:BD:3F:86:74:46:6C:52:FB:3B:B8:49:59:02:FC:E8:92:16:FE:31:CA:C8"]
+      }
+    }]
