@@ -341,6 +341,21 @@
     }
     .apoie-bar-btn:hover { color:#00ff99bb; }
 
+    /* MODAL SOBRE O DEV */
+    .dev-modal { display:none; position:fixed; inset:0; background:#000000ee; z-index:2600; justify-content:center; align-items:flex-start; padding:16px; overflow-y:auto; }
+    .dev-modal.show { display:flex; }
+    .dev-modal-box { background:#06060f; border:1px solid #00e5ff22; border-radius:20px; max-width:400px; width:100%; margin:auto; overflow:hidden; }
+    .dev-foto { width:100%; display:block; filter:brightness(0.9) contrast(1.05); }
+    .dev-corpo { padding:24px 22px 28px; }
+    .dev-titulo { font-size:1.15rem; font-weight:700; color:#00e5ff; margin-bottom:4px; }
+    .dev-subtitulo { font-size:0.78rem; color:#445566; text-transform:uppercase; letter-spacing:2px; margin-bottom:20px; }
+    .dev-historia { font-size:0.91rem; color:#ccd0d8; line-height:1.8; }
+    .dev-historia p { margin-bottom:14px; }
+    .dev-historia p:last-child { margin-bottom:0; }
+    .dev-assinatura { margin-top:22px; padding-top:18px; border-top:1px solid #111827; font-size:0.78rem; color:#334455; text-align:center; line-height:1.6; }
+    .dev-fechar { display:block; width:100%; margin-top:20px; background:none; border:1px solid #1a2a3a; color:#556677; padding:12px; border-radius:10px; cursor:pointer; font-size:0.9rem; transition:all 0.3s; }
+    .dev-fechar:hover { color:#00e5ffaa; border-color:#00e5ff33; }
+
     /* MODAL APOIE */
     .apoie-modal { display:none; position:fixed; inset:0; background:#000000cc; z-index:2500; justify-content:center; align-items:center; padding:16px; }
     .apoie-modal.show { display:flex; }
@@ -842,8 +857,9 @@
       <div class="banner-anuncio-linha3">hellfirespriston@gmail.com</div>
     </div>
 
-    <div style="margin-top:24px;border-top:1px solid #222;padding-top:20px;">
+    <div style="margin-top:24px;border-top:1px solid #222;padding-top:20px;display:flex;flex-direction:column;gap:10px;">
       <button onclick="document.getElementById('aviso-legal-modal').classList.add('show')" style="width:100%;background:#0a0a20;border:1px solid #2a3a4a;color:#778899;padding:12px;border-radius:8px;cursor:pointer;font-size:0.88rem;">⚠️ Ver Aviso Legal</button>
+      <button onclick="document.getElementById('dev-modal').classList.add('show')" style="width:100%;background:#06060f;border:1px solid #00e5ff22;color:#00e5ffaa;padding:12px;border-radius:8px;cursor:pointer;font-size:0.88rem;">👨‍💻 Sobre o Desenvolvedor</button>
     </div>
 
     <div style="margin-top:12px;border-top:1px solid #222;padding-top:20px;">
@@ -908,6 +924,29 @@
       Sempre consulte seu médico antes de alterar doses de insulina.
     </div>
     <button class="aviso-legal-btn" onclick="aceitarAvisoLegal()">✅ Entendi, continuar</button>
+  </div>
+</div>
+
+<!-- MODAL SOBRE O DESENVOLVEDOR -->
+<div class="dev-modal" id="dev-modal">
+  <div class="dev-modal-box">
+    <img src="img/dev.png" alt="Mãe e filho" class="dev-foto"/>
+    <div class="dev-corpo">
+      <div class="dev-titulo">O app nasceu de uma ligação.</div>
+      <div class="dev-subtitulo">A história do GlicoCare</div>
+      <div class="dev-historia">
+        <p>Era tarde quando ela ligou. Tinha medido a glicemia, mas não sabia se podia tomar a insulina antes do jantar. Os apps que encontrou eram em inglês, pediam cadastro, ou simplesmente não faziam o que ela precisava.</p>
+        <p>Então o filho abriu o computador.</p>
+        <p>Sem saber exatamente o que estava fazendo, mas sabendo exatamente <em>por que</em> estava fazendo, passou dias desenvolvendo linha por linha — com a ajuda de uma IA como parceira de código. Cada função era testada nela. Cada aviso, pensado pra ela entender.</p>
+        <p>O GlicoCare não é um app de startup. É um filho que não queria mais ficar sem resposta quando a mãe ligasse preocupada.</p>
+        <p>A foto acima? Eles dois — traduzidos em código binário, porque foi exatamente assim que essa história foi escrita. 💙</p>
+      </div>
+      <div class="dev-assinatura">
+        Desenvolvido com ☕ e carinho<br>
+        <span style="color:#00e5ff44;">///</span> GlicoCare · 2025 <span style="color:#00e5ff44;">///</span>
+      </div>
+      <button class="dev-fechar" onclick="document.getElementById('dev-modal').classList.remove('show')">Fechar</button>
+    </div>
   </div>
 </div>
 
