@@ -221,14 +221,14 @@
     .vcomer-modal.show { display:flex; }
     .vcomer-box { background:#0d1130; border:2px solid #00ff99; border-radius:16px; padding:28px 24px; max-width:360px; width:92%; }
     .vcomer-title { font-size:1.2rem; font-weight:700; color:#00ff99; margin-bottom:6px; }
-    .vcomer-sub { font-size:0.92rem; color:#888; margin-bottom:18px; line-height:1.5; }
+    .vcomer-sub { font-size:0.92rem; color:#bbb; margin-bottom:18px; line-height:1.5; }
     .vcomer-result { border-radius:12px; padding:16px; margin-top:16px; display:none; }
     .vcomer-result.ok { background:rgba(0,255,153,0.08); border:1px solid #00ff9955; }
     .vcomer-result.warn { background:rgba(255,170,0,0.1); border:1px solid #ffaa0055; }
     .vcomer-result.danger { background:rgba(255,50,50,0.1); border:1px solid #ff445555; }
     .vcomer-emoji { font-size:2.4rem; margin-bottom:8px; }
     .vcomer-rec { font-size:1.1rem; font-weight:700; margin-bottom:8px; }
-    .vcomer-exp { font-size:0.92rem; color:#aaa; line-height:1.6; }
+    .vcomer-exp { font-size:0.92rem; color:#ccc; line-height:1.6; }
 
     /* MODAL ENTRADA DUPLICADA */
     .dup-modal { display:none; position:fixed; inset:0; background:#000000dd; z-index:1050; justify-content:center; align-items:center; }
@@ -517,10 +517,10 @@
 
       <div class="btn-row">
         <button class="btn btn-success" onclick="registrar()">💾 Registrar e Calcular</button>
-        <button class="btn" style="background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;border:1px solid #00ff9944;" onclick="abrirVouComer()">🍽️ Vou Comer</button>
+        <button class="btn" style="background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;border:1px solid #00ff9944;" onclick="abrirVouComer()">🍽️ Antes de Comer</button>
       </div>
-      <div style="font-size:0.75rem;color:#555;margin-top:8px;line-height:1.5;">
-        💡 <em>Vou Comer</em>: informe a glicemia atual e o app avisa se pode tomar a dose de insulina prescrita antes da refeição — ou se precisa esperar/reduzir para não causar hipoglicemia.
+      <div style="font-size:0.75rem;color:#778;margin-top:8px;line-height:1.5;">
+        💡 <em>Antes de Comer</em>: informe a glicemia atual e o app avisa se pode tomar a dose de insulina prescrita antes da refeição — ou se precisa esperar/reduzir para não causar hipoglicemia.
       </div>
 
       <!-- PRÓXIMA MEDIÇÃO -->
@@ -570,8 +570,8 @@
       <div class="vcomer-exp" id="vcomer-exp"></div>
     </div>
     <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
-      <button onclick="fecharVouComer()" style="flex:1;min-width:80px;background:#1a1a3a;color:#aaa;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;font-size:0.95rem;">Fechar</button>
-      <button id="vcomer-btn-anotar" onclick="anotarDoseRefeicao()" style="flex:2;min-width:0;display:none;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;padding:12px;border:1px solid #00ff9955;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">💉 Anotar <span id="vcomer-btn-dose">5</span> U tomadas</button>
+      <button onclick="fecharVouComer()" style="flex:1;min-width:80px;background:#1a1a3a;color:#ccc;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;font-size:0.95rem;">Fechar</button>
+      <button id="vcomer-btn-anotar" onclick="anotarDoseRefeicao()" style="flex:2;min-width:0;display:none;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;padding:12px;border:1px solid #00ff9955;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">✅ Tomei as <span id="vcomer-btn-dose">5</span> U — Registrar</button>
     </div>
   </div>
 </div>
