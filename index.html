@@ -649,6 +649,8 @@
 
 <!-- ══════════ HISTÓRICO ══════════ -->
 <div id="tab-historico" class="content">
+  <!-- LENTA DO DIA -->
+  <button id="lenta-dia-btn" onclick="abrirLentaDoDia()" style="width:100%;margin-bottom:14px;padding:13px 16px;border-radius:10px;border:1px solid #cc44ff88;background:linear-gradient(135deg,#1a0028,#0d0020);color:#cc44ff;font-size:0.9rem;font-weight:600;cursor:pointer;text-align:left;">🟣 Insulina Lenta do Dia — ⚠️ não registrada ainda</button>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
     <div style="font-size:0.85rem;color:#555;" id="hist-count">0 registros</div>
     <button class="btn btn-danger btn-sm" onclick="if(confirm('Apagar tudo?')){const pid=activeProfileId();['gc_data_','gc_lenta_','gc_lentadose_','gc_proxts_'].forEach(k=>localStorage.removeItem(k+pid));location.reload();}">🗑️ Apagar tudo</button>
@@ -1229,6 +1231,40 @@ setInterval(atualizarDatetime, 60000);
 initConfig();
 renderCfgPerfis();
 
+// ── LENTA DO DIA (botão histórico) ──
+function abrirLentaDoDia() {
+  document.getElementById('inp-lenta-modal').value = loadConfig().doseLenta;
+  const agora = new Date();
+  const hh = String(agora.getHours()).padStart(2,'0');
+  const mm = String(agora.getMinutes()).padStart(2,'0');
+  document.getElementById('inp-lenta-hora').value = `${hh}:${mm}`;
+  document.getElementById('lenta-modal').classList.add('show');
+}
+
+function atualizarBtnLentaDia() {
+  const btn = document.getElementById('lenta-dia-btn');
+  if (!btn) return;
+  const hoje = new Date().toDateString();
+  const visto = localStorage.getItem('gc_lenta_' + activeProfileId());
+  const dose = parseFloat(localStorage.getItem('gc_lentadose_' + activeProfileId()) || '0');
+  if (visto === hoje && dose > 0) {
+    btn.textContent = `🟣 Lenta do dia: ${dose} U ✅ — toque para corrigir`;
+    btn.style.borderColor = '#00ff9966';
+    btn.style.background = 'linear-gradient(135deg,#001a0d,#000d06)';
+    btn.style.color = '#00ff99bb';
+  } else if (visto === hoje && dose === 0) {
+    btn.textContent = '🟣 Lenta do dia: não tomada — toque para corrigir';
+    btn.style.borderColor = '#ffaa0066';
+    btn.style.background = 'linear-gradient(135deg,#1a1200,#0d0900)';
+    btn.style.color = '#ffaa00bb';
+  } else {
+    btn.textContent = '🟣 Insulina Lenta do Dia — ⚠️ não registrada ainda';
+    btn.style.borderColor = '#cc44ff88';
+    btn.style.background = 'linear-gradient(135deg,#1a0028,#0d0020)';
+    btn.style.color = '#cc44ff';
+  }
+}
+
 // ── INSULINA LENTA MATINAL ──
 function verificarLentaMatinal() {
   const agora = new Date();
@@ -1253,27 +1289,31 @@ function confirmarLentaModal() {
   localStorage.setItem('gc_lentadose_' + activeProfileId(), dose);
   document.getElementById('lenta-modal').classList.remove('show');
 
-  if (dose > 0) {
-    const dados = loadData();
-    let dtStr;
+  // Remove qualquer entrada de lenta existente de hoje para evitar duplicata
+  let dados = loadData();
+  const inicioHoje = new Date(); inicioHoje.setHours(0,0,0,0);
+  dados = dados.filter(r => !(r._tipo === 'insulina lenta' && new Date(r.dt) >= inicioHoje));
 
+  if (dose > 0) {
+    let dtStr;
     if (horaInput) {
-      // Usa a hora que o usuário informou + data de hoje
       const agora = new Date();
       const ano = agora.getFullYear();
       const mes = String(agora.getMonth() + 1).padStart(2, '0');
       const dia = String(agora.getDate()).padStart(2, '0');
       dtStr = `${ano}-${mes}-${dia}T${horaInput}`;
     } else {
-      // Se não informou hora, usa agora
       const agora = new Date();
       dtStr = new Date(agora.getTime() - agora.getTimezoneOffset()*60000).toISOString().slice(0,16);
     }
-
     dados.push({ id: Date.now(), dt: dtStr, glicemia: null, rapida: 0, lenta: dose, aplicou: true, sugRapida: null, _tipo: 'insulina lenta' });
-    dados.sort((a,b) => new Date(a.dt) - new Date(b.dt));
-    saveData(dados);
   }
+
+  dados.sort((a,b) => new Date(a.dt) - new Date(b.dt));
+  saveData(dados);
+  atualizarBtnLentaDia();
+  atualizarStatusBar();
+  renderHistorico();
 }
 
 function pularLentaModal() {
@@ -1281,12 +1321,14 @@ function pularLentaModal() {
   localStorage.setItem('gc_lenta_' + activeProfileId(), hoje);
   localStorage.setItem('gc_lentadose_' + activeProfileId(), 0);
   document.getElementById('lenta-modal').classList.remove('show');
+  atualizarBtnLentaDia();
 }
 
 // Modal de insulina lenta agora aparece apenas após a primeira medição (não ao carregar)
-// Atualiza dose padrão quando a página carrega
+// Atualiza dose padrão e botão lenta quando a página carrega
 setTimeout(() => {
   document.getElementById('inp-lenta-modal').value = loadConfig().doseLenta;
+  atualizarBtnLentaDia();
 }, 500);
 
 // ── TABS ──
@@ -1297,7 +1339,7 @@ function switchTab(id, el) {
   document.getElementById('tab-'+id).classList.add('active');
   document.getElementById('iob-statusbar-row').style.display = id === 'registrar' ? '' : 'none';
   if(id==='grafico') setTimeout(()=>{ renderGrafico(); if(chartInst) chartInst.resize(); },200);
-  if(id==='historico') renderHistorico();
+  if(id==='historico') { renderHistorico(); atualizarBtnLentaDia(); }
   if(id==='analise') renderAnalise();
   if(id==='config') renderCfgPerfis();
 }
