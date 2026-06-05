@@ -304,6 +304,98 @@
     }
     #inp-glicemia { font-size:1.6rem; font-weight:700; padding:16px; text-align:center; letter-spacing:1px; animation:pulso-input-verde 2s ease-in-out infinite; }
     #inp-glicemia:focus { animation:none; border-color:#00e5ff; box-shadow:0 0 0 3px rgba(0,229,255,0.2); }
+
+    /* BANNER ANUNCIE AQUI */
+    @keyframes banner-glow {
+      0%,100% { border-color:#00e5ff22; box-shadow:0 0 6px #00e5ff08; }
+      50%      { border-color:#00e5ff66; box-shadow:0 0 18px #00e5ff22; }
+    }
+    .banner-anuncio {
+      margin:20px 20px 4px;
+      padding:11px 16px;
+      border-radius:10px;
+      background:linear-gradient(135deg,#080816,#0d1128);
+      border:1px solid #00e5ff22;
+      text-align:center;
+      cursor:pointer;
+      animation:banner-glow 3s ease-in-out infinite;
+      display:block;
+      text-decoration:none;
+    }
+    .banner-anuncio-linha1 { font-size:0.72rem; color:#334; text-transform:uppercase; letter-spacing:2px; margin-bottom:3px; }
+    .banner-anuncio-linha2 { font-size:0.92rem; color:#00e5ff99; font-weight:600; }
+    .banner-anuncio-linha3 { font-size:0.7rem; color:#334; margin-top:3px; }
+
+    /* BOTÃO APOIE — barra discreta no rodapé */
+    .apoie-bar {
+      padding:14px 20px 18px;
+      text-align:center;
+      background:#060612;
+    }
+    .apoie-bar-btn {
+      background:none; border:none;
+      color:#2a2a44; font-size:0.78rem;
+      cursor:pointer; padding:6px 16px;
+      border-radius:20px; transition:all 0.3s;
+      letter-spacing:0.5px;
+    }
+    .apoie-bar-btn:hover { color:#00ff9988; }
+
+    /* MODAL APOIE */
+    .apoie-modal { display:none; position:fixed; inset:0; background:#000000cc; z-index:2500; justify-content:center; align-items:center; padding:16px; }
+    .apoie-modal.show { display:flex; }
+    .apoie-modal-box {
+      background:linear-gradient(135deg,#080818,#0d1130);
+      border:1px solid #1e2a5a;
+      border-radius:18px;
+      padding:28px 22px 24px;
+      max-width:360px; width:100%;
+      max-height:92vh; overflow-y:auto;
+      text-align:center;
+    }
+    .apoie-titulo { font-size:1.15rem; font-weight:700; color:#00ff99; margin-bottom:6px; }
+    .apoie-subtitulo { font-size:0.88rem; color:#666; line-height:1.55; margin-bottom:20px; }
+    .apoie-banner-patrocinador {
+      background:linear-gradient(135deg,#080816,#0d1128);
+      border:1px solid #00e5ff33;
+      border-radius:12px;
+      padding:16px;
+      margin-bottom:20px;
+      animation:banner-glow 3s ease-in-out infinite;
+    }
+    .apoie-banner-label { font-size:0.65rem; color:#334; text-transform:uppercase; letter-spacing:2px; margin-bottom:6px; }
+    .apoie-banner-content { font-size:1rem; color:#00e5ff88; font-weight:600; }
+    .apoie-banner-email { font-size:0.78rem; color:#445; margin-top:6px; }
+    .apoie-divisor { border:none; border-top:1px solid #1a1a3a; margin:20px 0; }
+    .apoie-pix-titulo { font-size:0.82rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+    .apoie-qrcode { width:180px; height:180px; border-radius:10px; margin:0 auto 14px; display:block; object-fit:contain; background:#fff; padding:6px; }
+    .apoie-qr-placeholder { width:180px; height:180px; border-radius:10px; margin:0 auto 14px; background:#fff; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:#aaa; text-align:center; padding:10px; }
+    .apoie-btn-copiar {
+      width:100%; padding:12px; border-radius:10px; border:1px solid #00e5ff44;
+      background:rgba(0,229,255,0.06); color:#00e5ff; font-size:0.9rem;
+      font-weight:600; cursor:pointer; transition:all 0.2s; margin-bottom:8px;
+    }
+    .apoie-btn-copiar:hover { background:rgba(0,229,255,0.12); }
+    .apoie-agradecimento { font-size:0.75rem; color:#333; margin-top:16px; line-height:1.6; }
+    .apoie-fechar {
+      margin-top:16px; background:none; border:1px solid #1a1a3a;
+      color:#444; padding:10px 28px; border-radius:10px; cursor:pointer; font-size:0.88rem;
+    }
+
+    /* MODAL AVISO LEGAL */
+    .aviso-legal-modal { display:none; position:fixed; inset:0; background:#000000ee; z-index:3000; justify-content:center; align-items:flex-end; }
+    .aviso-legal-modal.show { display:flex; }
+    .aviso-legal-box {
+      background:#0d1130;
+      border:1px solid #2a3a6a;
+      border-radius:18px 18px 0 0;
+      padding:28px 22px 36px;
+      width:100%; max-width:500px;
+      margin:0 auto;
+    }
+    .aviso-legal-titulo { font-size:1rem; font-weight:700; color:#ffaa00; margin-bottom:12px; }
+    .aviso-legal-texto { font-size:0.85rem; color:#888; line-height:1.7; margin-bottom:20px; }
+    .aviso-legal-btn { width:100%; padding:14px; background:linear-gradient(135deg,#004d22,#002211); color:#00ff99; border:1px solid #00ff9944; border-radius:10px; font-size:1rem; font-weight:700; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -548,6 +640,11 @@
     <div class="legenda-item"><div class="dot" style="background:#ffaa00"></div> Elevada (140–250)</div>
     <div class="legenda-item"><div class="dot" style="background:#ff6633"></div> Hiperglicemia (&gt;250)</div>
   </div>
+  <div class="banner-anuncio" onclick="abrirApoie()">
+    <div class="banner-anuncio-linha1">Espaço publicitário</div>
+    <div class="banner-anuncio-linha2">📢 Anuncie aqui</div>
+    <div class="banner-anuncio-linha3">hellfirespriston@gmail.com</div>
+  </div>
 </div>
 
 <!-- ══════════ HISTÓRICO ══════════ -->
@@ -558,6 +655,11 @@
   </div>
   <div class="scroll-list" id="lista-historico">
     <div style="text-align:center;color:#333;padding:40px;">Nenhum registro ainda</div>
+  </div>
+  <div class="banner-anuncio" onclick="abrirApoie()">
+    <div class="banner-anuncio-linha1">Espaço publicitário</div>
+    <div class="banner-anuncio-linha2">📢 Anuncie aqui</div>
+    <div class="banner-anuncio-linha3">hellfirespriston@gmail.com</div>
   </div>
 </div>
 
@@ -731,6 +833,12 @@
     <button class="config-save" onclick="salvarConfig()">💾 Salvar Configurações</button>
     <div id="cfg-salvo-msg" style="text-align:center;color:#00ff99;font-size:0.85rem;margin-top:10px;display:none;">✅ Configurações salvas!</div>
 
+    <div class="banner-anuncio" onclick="abrirApoie()" style="margin:24px 0 0;">
+      <div class="banner-anuncio-linha1">Espaço publicitário</div>
+      <div class="banner-anuncio-linha2">📢 Anuncie aqui</div>
+      <div class="banner-anuncio-linha3">hellfirespriston@gmail.com</div>
+    </div>
+
     <div style="margin-top:32px;border-top:1px solid #222;padding-top:20px;">
       <details>
         <summary style="font-size:0.75rem;color:#333;text-transform:uppercase;letter-spacing:1px;cursor:pointer;user-select:none;">🛠️ Ferramentas do Desenvolvedor</summary>
@@ -741,6 +849,58 @@
       </details>
     </div>
 
+  </div>
+</div>
+
+<!-- BARRA APOIE -->
+<div class="apoie-bar">
+  <button class="apoie-bar-btn" onclick="abrirApoie()">💚 Apoie o GlicoCare</button>
+</div>
+
+<!-- MODAL APOIE -->
+<div class="apoie-modal" id="apoie-modal">
+  <div class="apoie-modal-box">
+    <div class="apoie-titulo">💚 Apoie o GlicoCare</div>
+    <div class="apoie-subtitulo">Este app é gratuito e sempre será.<br>Se ele ajudou na saúde de alguém, qualquer apoio é muito bem-vindo.</div>
+
+    <!-- BANNER PATROCINADOR -->
+    <div class="apoie-banner-patrocinador">
+      <div class="apoie-banner-label">Espaço do patrocinador</div>
+      <div class="apoie-banner-content">📢 Anuncie aqui</div>
+      <div class="apoie-banner-email">Alcance usuários diabéticos e cuidadores<br>📩 hellfirespriston@gmail.com</div>
+    </div>
+
+    <hr class="apoie-divisor"/>
+
+    <!-- PIX -->
+    <div class="apoie-pix-titulo">Doação via PIX — qualquer valor</div>
+    <img src="img/qrcode-pix.png" alt="QR Code PIX" class="apoie-qrcode" onerror="this.style.display='none';document.getElementById('apoie-qr-fallback').style.display='flex'"/>
+    <div id="apoie-qr-fallback" class="apoie-qr-placeholder" style="display:none;">
+      QR Code PIX<br><small style="color:#aaa;margin-top:4px;">Adicione o arquivo<br>img/qrcode-pix.png</small>
+    </div>
+    <button class="apoie-btn-copiar" onclick="copiarChavePix()">
+      <span id="apoie-btn-copiar-txt">📋 Copiar chave PIX</span>
+    </button>
+
+    <div class="apoie-agradecimento">
+      Banco Inter · Chave aleatória<br>
+      O app não registra suas doações.<br>Obrigado de coração! 🙏
+    </div>
+
+    <button class="apoie-fechar" onclick="fecharApoie()">Fechar</button>
+  </div>
+</div>
+
+<!-- MODAL AVISO LEGAL -->
+<div class="aviso-legal-modal" id="aviso-legal-modal">
+  <div class="aviso-legal-box">
+    <div class="aviso-legal-titulo">⚠️ Aviso Importante</div>
+    <div class="aviso-legal-texto">
+      O <strong style="color:#f0f0f0;">GlicoCare</strong> é uma ferramenta de <strong style="color:#f0f0f0;">apoio pessoal</strong> ao controle de glicemia.<br><br>
+      Os cálculos são baseados nos parâmetros que <strong style="color:#f0f0f0;">você mesmo configurou</strong> junto ao seu médico. O app <strong style="color:#f0f0f0;">não substitui</strong> orientação médica profissional.<br><br>
+      Sempre consulte seu médico antes de alterar doses de insulina.
+    </div>
+    <button class="aviso-legal-btn" onclick="aceitarAvisoLegal()">✅ Entendi, continuar</button>
   </div>
 </div>
 
@@ -2285,6 +2445,36 @@ function gerarPDF() {
   a.download = `GlicoCare_Relatorio_${hoje.replace(/\//g,'-')}.pdf`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+// ── APOIE O GLICOCARE ──
+function abrirApoie() {
+  document.getElementById('apoie-modal').classList.add('show');
+}
+function fecharApoie() {
+  document.getElementById('apoie-modal').classList.remove('show');
+}
+function copiarChavePix() {
+  const chave = '690b438d-c136-4b3c-b95c-0c877b184a88';
+  navigator.clipboard.writeText(chave).then(() => {
+    const btn = document.getElementById('apoie-btn-copiar-txt');
+    btn.textContent = '✅ Chave copiada!';
+    setTimeout(() => { btn.textContent = '📋 Copiar chave PIX'; }, 2500);
+  }).catch(() => {
+    prompt('Copie a chave PIX abaixo:', chave);
+  });
+}
+document.getElementById('apoie-modal').addEventListener('click', function(e) {
+  if (e.target === this) fecharApoie();
+});
+
+// ── AVISO LEGAL (primeira abertura) ──
+function aceitarAvisoLegal() {
+  localStorage.setItem('gc_aviso_aceito', '1');
+  document.getElementById('aviso-legal-modal').classList.remove('show');
+}
+if (!localStorage.getItem('gc_aviso_aceito')) {
+  document.getElementById('aviso-legal-modal').classList.add('show');
 }
 
 // ── INIT ──
