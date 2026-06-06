@@ -1878,16 +1878,28 @@ function atualizarStatusBar() {
   document.getElementById('iob-fill-lenta').style.width = Math.min(100, (iobL/iobMaxLenta)*100) + '%';
 
   atualizarDisplayGlicemia(ultimo.glicemia);
-  atualizarProximaBox(ultimo.glicemia, ultimo.rapida || 0);
+  atualizarProximaBox(ultimo.glicemia, ultimo.rapida || 0, iobR, dados);
 }
 
 // Mostra proxima-box sem abrir card de resultado
-function atualizarProximaBox(glic, sug) {
-  // Usa o timestamp salvo no momento do registro; só recalcula se não houver salvo
+function atualizarProximaBox(glic, sug, iobR, dados) {
   var proxTs = parseInt(localStorage.getItem('gc_proxts_' + activeProfileId()) || '0');
   var prox;
-  if (proxTs) {
+  if (proxTs && proxTs > Date.now()) {
+    // timestamp ainda no futuro — usar como está
     prox = new Date(proxTs);
+  } else if (iobR > 0 && dados && dados.length) {
+    // timestamp vencido mas IOB ativo — recalcular a partir da última dose de rápida
+    var lastDose = null;
+    for (var i = dados.length - 1; i >= 0; i--) {
+      if ((dados[i].rapida || 0) > 0) { lastDose = dados[i]; break; }
+    }
+    var h = glic < 70 ? 0.5 : glic < 100 ? 2 : glic <= 140 ? 4 : glic <= 250 ? 2 : 1;
+    h = Math.min(h, 2); // IOB ativo → máximo 2h
+    var base = lastDose ? new Date(lastDose.dt).getTime() : Date.now();
+    prox = new Date(base + h * 3600000);
+    if (prox.getTime() < Date.now()) prox = new Date(Date.now()); // já passou → mostrar agora
+    localStorage.setItem('gc_proxts_' + activeProfileId(), prox.getTime());
   } else {
     var h = 4;
     if (glic < 70) h = 0.5;
