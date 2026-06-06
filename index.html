@@ -1678,16 +1678,24 @@ function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
 function confirmarDose() {
   const rapida = parseFloat(document.getElementById('res-inp-rapida').value)||0;
   // Atualiza o registro de glicemia (usando ID, não índice) com as doses confirmadas
-  const dados = loadData();
+  let dados = loadData();
   const idReg = window._ultimoRegistroGlicemiaId;
+  let glicReg = null;
   if (idReg) {
     const idx = dados.findIndex(r => r.id === idReg);
     if (idx !== -1) {
       dados[idx].rapida = rapida;
       dados[idx].aplicou = rapida > 0;
+      glicReg = dados[idx].glicemia;
       saveData(dados);
     }
   }
+  // Recalcula próxima medição com a dose real aplicada (reseta gc_proxts_ para garantir)
+  localStorage.removeItem('gc_proxts_' + activeProfileId());
+  dados = loadData();
+  const iobR = calcIOB(dados, 'rapida');
+  const glic = glicReg || (dados.length ? dados[dados.length-1].glicemia : 0);
+  if (glic) calcProximaMedicao(glic, rapida, iobR);
   atualizarStatusBar();
   fecharResultado();
 }
@@ -2020,6 +2028,7 @@ function deletar(id) {
 
   dados = dados.filter(r=>r.id!==id);
   saveData(dados);
+  localStorage.removeItem('gc_proxts_' + activeProfileId());
   renderHistorico();
   atualizarStatusBar();
 }
