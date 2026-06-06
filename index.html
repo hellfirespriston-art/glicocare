@@ -1592,7 +1592,7 @@ function calcularSugestao() {
   }
 
   // Próxima medição
-  calcProximaMedicao(glicemia, sugRapida);
+  calcProximaMedicao(glicemia, sugRapida, iobR);
 
   // Display glicemia
   atualizarDisplayGlicemia(glicemia);
@@ -1605,7 +1605,7 @@ function calcMediaLenta(dados) {
 }
 
 // ── PRÓXIMA MEDIÇÃO ──
-function calcProximaMedicao(glicemia, sugRapida) {
+function calcProximaMedicao(glicemia, sugRapida, iobR) {
   let horas = 4, motivo = '';
   if (glicemia < 70) { horas = 0.5; motivo = '⚠️ Hipoglicemia — verificar em 30min'; }
   else if (glicemia < 100) { horas = 2; motivo = 'Glicemia baixa — verificar em 2h'; }
@@ -1614,6 +1614,7 @@ function calcProximaMedicao(glicemia, sugRapida) {
   else { horas = 1; motivo = '🔴 Hiperglicemia — verificar em 1h'; }
 
   if (sugRapida > 0) { horas = Math.min(horas, 2); motivo += ' (insulina aplicada)'; }
+  else if (iobR > 0) { horas = Math.min(horas, 2); motivo += ' (IOB ativo — insulina anterior em circulação)'; }
 
   const proxima = new Date(Date.now() + horas * 3600000);
   const proxStr = proxima.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}) + ' (' + (horas < 1 ? '30min' : horas + 'h') + ')';
@@ -1774,7 +1775,7 @@ function registrar() {
   }
 
   atualizarDisplayGlicemia(glicemia);
-  calcProximaMedicao(glicemia, sugRapida);
+  calcProximaMedicao(glicemia, sugRapida, iobR);
   preencherSugestaoCard(sugRapida, 0, iobR, iobL, tooltipCard);
   // Esconde boxes do form
   document.getElementById('sugestao-box').style.display='none';
