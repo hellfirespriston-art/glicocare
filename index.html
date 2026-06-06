@@ -846,6 +846,26 @@
       <button onclick="document.getElementById('dev-modal').classList.add('show')" style="width:100%;background:#06060f;border:1px solid #00e5ff22;color:#00e5ffaa;padding:12px;border-radius:8px;cursor:pointer;font-size:0.88rem;">👨‍💻 Sobre o Desenvolvedor</button>
     </div>
 
+    <!-- BACKUP & ARMAZENAMENTO -->
+    <div style="margin-top:24px;border-top:1px solid #222;padding-top:20px;">
+      <div style="font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">💾 Backup & Armazenamento</div>
+
+      <!-- Indicador de uso -->
+      <div id="storage-info" style="background:#0d1130;border:1px solid #1e3a5a;border-radius:10px;padding:14px;margin-bottom:14px;font-size:0.85rem;color:#aaa;">
+        Carregando...
+      </div>
+
+      <button onclick="exportarDados()" style="width:100%;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;border:1px solid #00ff9944;padding:12px;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;">
+        📥 Exportar dados (backup JSON)
+      </button>
+      <label style="display:block;width:100%;margin-top:8px;">
+        <div style="width:100%;background:#1a1a3a;color:#00e5ff;border:1px solid #00e5ff44;padding:12px;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;text-align:center;box-sizing:border-box;">
+          📤 Importar backup JSON
+        </div>
+        <input type="file" accept=".json" onchange="importarDados(this)" style="display:none;"/>
+      </label>
+    </div>
+
     <div style="margin-top:12px;border-top:1px solid #222;padding-top:20px;">
       <details>
         <summary style="font-size:0.75rem;color:#333;text-transform:uppercase;letter-spacing:1px;cursor:pointer;user-select:none;">🛠️ Ferramentas do Desenvolvedor</summary>
@@ -1206,8 +1226,88 @@ const GLICEMIA_ALVO = 100; // fallback
 const FATOR_SENS_DEFAULT = 40; // fallback
 
 // ── STORAGE ──
+const LIMITE_REGISTROS = 8760; // ~1 ano de medições hora em hora
+
 function loadData() { return JSON.parse(localStorage.getItem('gc_data_' + activeProfileId()) || '[]'); }
-function saveData(d) { localStorage.setItem('gc_data_' + activeProfileId(), JSON.stringify(d)); }
+function saveData(d) {
+  // FIFO: mantém só os LIMITE_REGISTROS mais recentes
+  if (d.length > LIMITE_REGISTROS) {
+    d.sort((a, b) => new Date(a.dt) - new Date(b.dt));
+    d = d.slice(d.length - LIMITE_REGISTROS);
+  }
+  localStorage.setItem('gc_data_' + activeProfileId(), JSON.stringify(d));
+}
+
+function exportarDados() {
+  const dados = loadData();
+  if (!dados.length) { alert('Nenhum dado para exportar.'); return; }
+  const json = JSON.stringify(dados, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const hoje = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `glicocare_backup_${hoje}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarDados(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const novos = JSON.parse(e.target.result);
+      if (!Array.isArray(novos)) throw new Error();
+      const existentes = loadData();
+      // Mescla evitando duplicatas por id
+      const ids = new Set(existentes.map(r => r.id));
+      const merged = [...existentes, ...novos.filter(r => !ids.has(r.id))];
+      merged.sort((a, b) => new Date(a.dt) - new Date(b.dt));
+      saveData(merged);
+      atualizarStatusBar();
+      renderHistorico();
+      alert(`✅ ${novos.length} registros importados com sucesso!`);
+    } catch {
+      alert('❌ Arquivo inválido. Use um backup gerado pelo GlicoCare.');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function usageStorage() {
+  const dados = loadData();
+  const bytes = new Blob([JSON.stringify(dados)]).size;
+  const pct = Math.round((bytes / (5 * 1024 * 1024)) * 100);
+  const registros = dados.length;
+  const restam = Math.max(0, LIMITE_REGISTROS - registros);
+  return { bytes, pct, registros, restam };
+}
+
+function atualizarStorageInfo() {
+  const el = document.getElementById('storage-info');
+  if (!el) return;
+  const { bytes, pct, registros, restam } = usageStorage();
+  const kb = (bytes / 1024).toFixed(1);
+  const cor = pct < 50 ? '#00ff99' : pct < 80 ? '#ffaa00' : '#ff4466';
+  const diasRestam = Math.floor(restam / 24);
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+      <span>Registros salvos</span>
+      <strong style="color:#00e5ff">${registros.toLocaleString('pt-BR')} / ${LIMITE_REGISTROS.toLocaleString('pt-BR')}</strong>
+    </div>
+    <div style="background:#0a0a1a;border-radius:6px;height:8px;overflow:hidden;margin-bottom:8px;">
+      <div style="height:100%;width:${Math.min(pct,100)}%;background:${cor};border-radius:6px;transition:width 0.4s;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:#666;">
+      <span>${kb} KB usados</span>
+      <span style="color:${cor}">~${diasRestam} dias restantes no limite</span>
+    </div>
+    ${pct >= 80 ? '<div style="margin-top:8px;color:#ffaa00;font-size:0.82rem;">⚠️ Armazenamento acima de 80% — faça um backup!</div>' : ''}
+  `;
+}
 
 // ── RELÓGIO ──
 function tick() {
@@ -1368,7 +1468,7 @@ function switchTab(id, el) {
   if(id==='grafico') setTimeout(()=>{ renderGrafico(); if(chartInst) chartInst.resize(); },200);
   if(id==='historico') { renderHistorico(); atualizarBtnLentaDia(); }
   if(id==='analise') renderAnalise();
-  if(id==='config') renderCfgPerfis();
+  if(id==='config') { renderCfgPerfis(); atualizarStorageInfo(); }
 }
 
 // ── SWIPE DE ABAS ──
