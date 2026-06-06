@@ -642,10 +642,9 @@
       <label style="white-space:nowrap;">Período:</label>
       <select id="sel-periodo" onchange="renderGrafico()" style="width:auto;">
         <option value="24">Últimas 24h</option>
+        <option value="48">Últimos 2 dias</option>
         <option value="72">Últimos 3 dias</option>
-        <option value="168" selected>Últimos 7 dias</option>
-        <option value="720">Último mês</option>
-        <option value="0">Tudo</option>
+        <option value="96" selected>Últimos 4 dias</option>
       </select>
     </div>
   </div>
@@ -1851,7 +1850,14 @@ function renderGrafico() {
     },
     options:{
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{labels:{color:'#ccc',font:{size:14}}}, tooltip:{mode:'index',intersect:false} },
+      plugins:{
+        legend:{labels:{color:'#ccc',font:{size:14}}},
+        tooltip:{
+          mode:'index',
+          intersect:false,
+          filter: function(item) { return item.datasetIndex === 0; }
+        }
+      },
       scales:{
         x:{ticks:{color:'#444',maxTicksLimit:10},grid:{color:'#1a1a3a'}},
         y:{ticks:{color:'#444',callback:v=>v+' mg/dL'},grid:{color:'#1a1a3a'},min:40,suggestedMax:300}
