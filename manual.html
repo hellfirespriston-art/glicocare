@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>GlicoCare — Manual de Uso</title>
+<style>
+  @page { size: A4; margin: 18mm 18mm 18mm 18mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 10.5pt; color: #1a1a1a; line-height: 1.5; }
+
+  header { border-bottom: 3px solid #0044aa; padding-bottom: 10px; margin-bottom: 16px; display: flex; align-items: flex-end; justify-content: space-between; }
+  header h1 { font-size: 22pt; color: #0044aa; letter-spacing: -0.5px; }
+  header .sub { font-size: 9pt; color: #555; }
+  header .version { font-size: 9pt; color: #888; }
+
+  h2 { font-size: 12pt; color: #0044aa; border-left: 4px solid #0044aa; padding-left: 8px; margin: 18px 0 8px; }
+  h3 { font-size: 10.5pt; font-weight: bold; color: #222; margin: 10px 0 4px; }
+
+  p { margin-bottom: 6px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+
+  .box { border: 1px solid #ccd; border-radius: 6px; padding: 10px 12px; background: #f7f8fc; }
+  .box h3 { color: #0044aa; margin-bottom: 4px; }
+
+  ul { padding-left: 18px; margin-bottom: 6px; }
+  ul li { margin-bottom: 3px; }
+
+  .tag { display: inline-block; background: #0044aa; color: white; border-radius: 4px; padding: 1px 7px; font-size: 8.5pt; font-weight: bold; margin-right: 4px; }
+  .tag.verde { background: #007a3d; }
+  .tag.roxo { background: #6600aa; }
+  .tag.cinza { background: #555; }
+  .tag.laranja { background: #b85000; }
+
+  .alerta { background: #fff8e1; border: 1px solid #f0c040; border-radius: 6px; padding: 8px 12px; margin: 10px 0; font-size: 9.5pt; }
+  .alerta strong { color: #7a5000; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 8px; }
+  table th { background: #0044aa; color: white; padding: 5px 8px; text-align: left; }
+  table td { padding: 4px 8px; border-bottom: 1px solid #dde; }
+  table tr:nth-child(even) td { background: #f4f5fb; }
+
+  .zona { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+
+  footer { border-top: 1px solid #ccd; margin-top: 20px; padding-top: 8px; font-size: 8.5pt; color: #888; display: flex; justify-content: space-between; }
+
+  .page-break { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>💉 GlicoCare</h1>
+    <div class="sub">Controle de Glicemia e Insulina — Manual de Uso</div>
+  </div>
+  <div class="version">v1.0 — glicocare-delta.vercel.app</div>
+</header>
+
+<!-- ══ VISÃO GERAL ══ -->
+<h2>Visão Geral</h2>
+<p>O GlicoCare é um aplicativo web (PWA) para controle de glicemia e insulina. Funciona no celular e no computador, sem necessidade de instalação. Os dados ficam salvos no próprio dispositivo.</p>
+
+<div class="grid3">
+  <div class="box">
+    <h3>➕ Registrar</h3>
+    <p>Informe a glicemia e registre a dose de insulina aplicada.</p>
+  </div>
+  <div class="box">
+    <h3>📈 Gráfico</h3>
+    <p>Visualize a evolução da glicemia ao longo do tempo.</p>
+  </div>
+  <div class="box">
+    <h3>📋 Histórico</h3>
+    <p>Consulte todos os registros anteriores com detalhes.</p>
+  </div>
+  <div class="box">
+    <h3>🧠 Análise</h3>
+    <p>Estatísticas: GMI, HbA1c estimada, TIR e variabilidade.</p>
+  </div>
+  <div class="box">
+    <h3>⚙️ Config</h3>
+    <p>Personalize tipo de insulina, dose, alvo e alarmes.</p>
+  </div>
+  <div class="box">
+    <h3>📄 PDF</h3>
+    <p>Gere relatório médico completo em preto e branco.</p>
+  </div>
+</div>
+
+<!-- ══ REGISTRAR ══ -->
+<h2>Como Registrar uma Medição</h2>
+
+<ol style="padding-left:18px; margin-bottom:8px;">
+  <li>Informe o valor de glicemia no campo <strong>Glicemia (mg/dL)</strong>.</li>
+  <li>Confirme a data e hora (preenchida automaticamente com o horário local).</li>
+  <li>Informe a refeição, se houver, e selecione: <strong>Vou comer</strong>, <strong>Já comi</strong> ou <strong>Sem refeição</strong>.</li>
+  <li>Clique em <strong>Registrar e Calcular</strong>.</li>
+</ol>
+
+<p>O aplicativo calcula automaticamente a dose sugerida de insulina rápida com base na glicemia atual, na glicemia alvo configurada, no fator de sensibilidade e no IOB (insulina ainda ativa no corpo).</p>
+
+<div class="grid">
+  <div class="box">
+    <h3>Dose Sugerida</h3>
+    <p>Exibida após o cálculo. Leve em conta o IOB para evitar hipoglicemia por sobreposição de doses.</p>
+  </div>
+  <div class="box">
+    <h3>Confirmar Aplicação</h3>
+    <p>Após ver a dose sugerida, informe as <strong>Unidades aplicadas</strong> e confirme para salvar no histórico.</p>
+  </div>
+</div>
+
+<!-- ══ IOB ══ -->
+<h2>IOB — Insulina Ativa no Corpo</h2>
+<p>O IOB (Insulin On Board) mostra quanto de insulina ainda está atuando no organismo, evitando sobreposição de doses perigosas.</p>
+
+<div class="grid">
+  <div class="box">
+    <h3><span style="color:#00aacc">💉</span> Rápida Ativa</h3>
+    <p>Insulina de ação rápida aplicada nas últimas horas. Decai gradualmente até zerar.</p>
+  </div>
+  <div class="box">
+    <h3><span style="color:#aa44ff">🟣</span> Lenta Ativa</h3>
+    <p>Insulina basal (lenta) ainda em circulação. Fica ativa por até 24h dependendo do tipo.</p>
+  </div>
+</div>
+
+<!-- ══ INSULINA LENTA ══ -->
+<h2>Insulina Lenta Matinal</h2>
+<p>Todo dia a partir das <strong>7h00</strong>, o app exibe um aviso para registrar a dose de insulina lenta (basal). O valor padrão é a dose configurada em Config. É possível editar o valor antes de confirmar.</p>
+<ul>
+  <li><strong>Confirmei, tomei</strong> — registra a dose no horário atual.</li>
+  <li><strong>Não vou tomar</strong> — descarta o aviso do dia.</li>
+</ul>
+
+<!-- ══ ALARME ══ -->
+<h2>Alarme de Próxima Medição</h2>
+<p>Na aba Registrar, é possível ativar um alarme sonoro para lembrar o horário da próxima medição. O alarme emite bips e exibe um modal para ser encerrado.</p>
+<ul>
+  <li>Horário silencioso configurável (ex: 23h às 7h) — o alarme não toca nesse intervalo.</li>
+  <li><strong>Exceção:</strong> hipoglicemia abaixo de 54 mg/dL sempre toca o alarme, independente do silencioso.</li>
+</ul>
+
+<!-- ══ PÁGINA 2 ══ -->
+<div class="page-break"></div>
+
+<header>
+  <div>
+    <h1>💉 GlicoCare</h1>
+    <div class="sub">Controle de Glicemia e Insulina — Manual de Uso</div>
+  </div>
+  <div class="version">v1.0 — página 2</div>
+</header>
+
+<!-- ══ ANÁLISE ══ -->
+<h2>Aba Análise</h2>
+<p>Exibe estatísticas calculadas a partir dos registros salvos no dispositivo.</p>
+
+<table>
+  <tr><th>Indicador</th><th>O que significa</th><th>Meta geral</th></tr>
+  <tr><td><strong>GMI</strong> (Glucose Management Indicator)</td><td>Estimativa do HbA1c com base na glicemia média</td><td>&lt; 7%</td></tr>
+  <tr><td><strong>HbA1c Estimada</strong></td><td>Média de glicemia nos últimos ~3 meses</td><td>&lt; 7%</td></tr>
+  <tr><td><strong>CV</strong> (Coeficiente de Variação)</td><td>Variabilidade glicêmica — quanto a glicemia oscila</td><td>&lt; 36%</td></tr>
+  <tr><td><strong>TIR</strong> (Tempo no Alvo)</td><td>% de leituras dentro da faixa 70–180 mg/dL</td><td>&gt; 70%</td></tr>
+</table>
+
+<h3>Zonas do TIR</h3>
+<ul>
+  <li><span class="zona" style="background:#cc0022"></span><strong>Muito Baixo</strong> — abaixo de 54 mg/dL (hipoglicemia severa)</li>
+  <li><span class="zona" style="background:#ff4466"></span><strong>Baixo</strong> — 54 a 69 mg/dL</li>
+  <li><span class="zona" style="background:#00cc66"></span><strong>No Alvo</strong> — 70 a 180 mg/dL</li>
+  <li><span class="zona" style="background:#ffaa00"></span><strong>Alto</strong> — 181 a 250 mg/dL</li>
+  <li><span class="zona" style="background:#ff5500"></span><strong>Muito Alto</strong> — acima de 250 mg/dL</li>
+</ul>
+
+<!-- ══ CONFIG ══ -->
+<h2>Configurações</h2>
+
+<div class="grid">
+  <div class="box">
+    <h3>Tipo de Insulina Lenta</h3>
+    <p>Lantus, Toujeo, Tresiba ou NPH. Afeta o cálculo de duração da insulina basal no IOB.</p>
+  </div>
+  <div class="box">
+    <h3>Dose Lenta Padrão</h3>
+    <p>Valor pré-preenchido no aviso matinal de insulina lenta.</p>
+  </div>
+  <div class="box">
+    <h3>Glicemia Alvo (mg/dL)</h3>
+    <p>Meta de glicemia usada no cálculo da dose de insulina rápida. Padrão: 200 mg/dL.</p>
+  </div>
+  <div class="box">
+    <h3>Fator de Sensibilidade</h3>
+    <p>Quantos mg/dL 1 unidade de insulina reduz. O app aprende automaticamente (80% histórico + 20% novo).</p>
+  </div>
+  <div class="box">
+    <h3>Horário Silencioso</h3>
+    <p>Intervalo em que o alarme de medição não toca (ex: 23h–7h).</p>
+  </div>
+  <div class="box">
+    <h3>Período do Alarme</h3>
+    <p>Intervalo entre medições (ex: a cada 2h). O app calcula o próximo horário automaticamente.</p>
+  </div>
+</div>
+
+<!-- ══ PDF ══ -->
+<h2>Relatório PDF</h2>
+<p>Disponível na aba <strong>Análise</strong>. Gera um relatório médico em preto e branco com:</p>
+<ul>
+  <li>GMI, HbA1c estimada e Coeficiente de Variação</li>
+  <li>Tempo no Alvo (TIR) com as 5 zonas glicêmicas</li>
+  <li>Gráfico de glicemia cronológico</li>
+  <li>Médias por período do dia (madrugada, manhã, tarde, noite)</li>
+  <li>Resumo de insulina aplicada (rápida e lenta)</li>
+  <li>Registro de hipoglicemias</li>
+  <li>Histórico completo de medições</li>
+</ul>
+
+<!-- ══ AVISOS ══ -->
+<h2>Avisos Importantes</h2>
+
+<div class="alerta">
+  <strong>⚠️ Aviso Legal:</strong> O GlicoCare é uma ferramenta de apoio e registro. As sugestões de dose são estimativas baseadas em parâmetros configurados e <strong>não substituem a orientação do médico ou endocrinologista</strong>. Sempre consulte um profissional de saúde antes de ajustar doses de insulina.
+</div>
+
+<div class="alerta">
+  <strong>📱 Dados locais:</strong> Os registros ficam salvos apenas no dispositivo (localStorage do navegador). Não há sincronização entre dispositivos. Não limpe os dados do navegador para não perder o histórico.
+</div>
+
+<footer>
+  <span>GlicoCare v1.0 — glicocare-delta.vercel.app</span>
+  <span>Gerado em 02/06/2026</span>
+</footer>
+
+</body>
+</html>

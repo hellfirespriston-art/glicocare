@@ -147,13 +147,13 @@
 
     /* PROXIMA MEDICAO */
     .proxima-box {
-      background:linear-gradient(135deg,#0a1520,#0f1f35);
-      border:1px solid #00ff9933; border-radius:12px; padding:16px;
-      margin-top:16px; display:none;
+      background:linear-gradient(135deg,#081a10,#0f2820);
+      border:2px solid #00ff9944; border-radius:18px; padding:22px 20px;
+      margin-top:0; display:none;
     }
-    .proxima-box .prox-title { font-size:0.85rem; color:#999; text-transform:uppercase; letter-spacing:1px; }
-    .proxima-box .prox-time { font-size:1.9rem; font-weight:700; color:#00ff99; margin-top:6px; }
-    .proxima-box .prox-motivo { font-size:0.92rem; color:#bbb; margin-top:4px; }
+    .proxima-box .prox-title { font-size:0.88rem; color:#00ff9977; text-transform:uppercase; letter-spacing:1.5px; font-weight:600; }
+    .proxima-box .prox-time { font-size:2.6rem; font-weight:700; color:#00ff99; margin-top:8px; line-height:1; }
+    .proxima-box .prox-motivo { font-size:1rem; color:#aaa; margin-top:8px; line-height:1.6; }
 
 
     /* MODAL INSULINA LENTA */
@@ -486,35 +486,41 @@
 
 <!-- ══════════ REGISTRAR ══════════ -->
 <div id="tab-registrar" class="content active">
-  <div class="grid2">
 
-    <!-- MEDIR -->
-    <div class="card" style="grid-column:1/-1;">
-      <div class="btn-row">
-        <button class="btn" style="background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;border:1px solid #00ff9944;" onclick="abrirMedicaoNormal()">💾 Medição Normal</button>
-        <button class="btn" style="background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;border:1px solid #00ff9944;" onclick="abrirVouComer()">🍽️ Medição Antes de Comer</button>
-      </div>
-      <div style="font-size:0.75rem;color:#778;margin-top:8px;line-height:1.5;">
-        💡 <em>Antes de Comer</em>: informe a glicemia atual e o app avisa se pode tomar a dose de insulina prescrita antes da refeição — ou se precisa esperar/reduzir para não causar hipoglicemia. A dose padrão e a glicemia alvo são configuradas na aba ⚙️ Ajustes.
-      </div>
-
-      <!-- PRÓXIMA MEDIÇÃO -->
-      <div class="proxima-box" id="proxima-box">
-        <div class="prox-title">⏰ Próxima medição recomendada</div>
-        <div class="prox-time" id="prox-time">—</div>
-        <div class="prox-motivo" id="prox-motivo"></div>
-      </div>
+  <!-- CARD: MEDIR AGORA -->
+  <button onclick="abrirMedicaoNormal()" style="width:100%;margin-bottom:14px;padding:30px 22px;border-radius:20px;border:2px solid #00ff9944;background:linear-gradient(135deg,#001a0d,#002e14,#001a0d);color:#00ff99;cursor:pointer;text-align:left;display:flex;align-items:center;gap:20px;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;">
+    <div style="font-size:3rem;line-height:1;flex-shrink:0;">📏</div>
+    <div style="flex:1;">
+      <div style="font-size:1.5rem;font-weight:700;margin-bottom:6px;letter-spacing:-0.2px;">Medir Agora</div>
+      <div style="font-size:1rem;color:#00ff9966;line-height:1.5;">Registre o valor do glicosímetro</div>
     </div>
+    <div style="font-size:2rem;opacity:0.3;">›</div>
+  </button>
 
-    <!-- inputs ocultos usados por registrar() -->
-    <input type="number" id="inp-glicemia" style="display:none;" min="20" max="600"/>
-    <input type="number" id="inp-rapida" style="display:none;" value="0" min="0" max="80" step="0.5"/>
-    <input type="datetime-local" id="inp-datetime" readonly style="display:none;"/>
-    <!-- divs de sugestão mantidas para compatibilidade (não visíveis na tela principal) -->
-    <div id="sugestao-box" style="display:none;"></div>
-    <div id="doses-box" style="display:none;"></div>
+  <!-- CARD: ANTES DE COMER -->
+  <button onclick="abrirVouComer()" style="width:100%;margin-bottom:20px;padding:30px 22px;border-radius:20px;border:2px solid #00e5ff33;background:linear-gradient(135deg,#001828,#002035,#001828);color:#00e5ff;cursor:pointer;text-align:left;display:flex;align-items:center;gap:20px;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;">
+    <div style="font-size:3rem;line-height:1;flex-shrink:0;">🍽️</div>
+    <div style="flex:1;">
+      <div style="font-size:1.5rem;font-weight:700;margin-bottom:6px;letter-spacing:-0.2px;">Antes de Comer</div>
+      <div style="font-size:1rem;color:#00b8cc66;line-height:1.5;">Calcule a dose de insulina da refeição</div>
+    </div>
+    <div style="font-size:2rem;opacity:0.3;">›</div>
+  </button>
 
+  <!-- PRÓXIMA MEDIÇÃO -->
+  <div class="proxima-box" id="proxima-box">
+    <div class="prox-title">⏰ Próxima medição recomendada</div>
+    <div class="prox-time" id="prox-time">—</div>
+    <div class="prox-motivo" id="prox-motivo"></div>
   </div>
+
+  <!-- inputs ocultos usados por registrar() -->
+  <input type="number" id="inp-glicemia" style="display:none;" min="20" max="600"/>
+  <input type="number" id="inp-rapida" style="display:none;" value="0" min="0" max="80" step="0.5"/>
+  <input type="datetime-local" id="inp-datetime" readonly style="display:none;"/>
+  <div id="sugestao-box" style="display:none;"></div>
+  <div id="doses-box" style="display:none;"></div>
+
 </div>
 
 <!-- MODAL INSULINA LENTA (global — fora das tabs para funcionar em qualquer aba) -->
@@ -539,18 +545,20 @@
 
 <!-- MODAL MEDIÇÃO NORMAL -->
 <div class="vcomer-modal" id="normal-modal">
-  <div class="vcomer-box">
-    <div class="vcomer-title">💾 Nova Medição</div>
-    <div class="vcomer-sub">Digite o valor do glicosímetro (mg/dL):</div>
-    <div class="form-row" style="margin-top:12px;">
-      <input type="number" id="nm-glicemia" placeholder="Ex: 140" min="20" max="600" inputmode="numeric"
-        style="font-size:1.4rem;text-align:center;padding:14px;"
+  <div class="vcomer-box" style="border:2px solid #00ff9944;border-radius:22px;padding:32px 24px;max-width:380px;">
+    <div style="text-align:center;font-size:2.4rem;margin-bottom:10px;">📏</div>
+    <div style="text-align:center;font-size:1.5rem;font-weight:700;color:#00ff99;margin-bottom:6px;">Qual foi o valor?</div>
+    <div style="text-align:center;font-size:1rem;color:#aaa;margin-bottom:22px;line-height:1.5;">Digite o número que apareceu<br>no glicosímetro</div>
+    <div style="position:relative;margin-bottom:8px;">
+      <input type="number" id="nm-glicemia" placeholder="140" min="20" max="600" inputmode="numeric"
+        style="font-size:3rem;font-weight:700;text-align:center;padding:22px 70px 22px 22px;width:100%;background:#0a0a20;border:2px solid #00ff9944;border-radius:16px;color:#00ff99;letter-spacing:1px;"
         oninput="document.getElementById('nm-btn-registrar').disabled=!this.value"/>
+      <span style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:0.95rem;color:#00ff9955;font-weight:700;pointer-events:none;">mg/dL</span>
     </div>
-    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
-      <button onclick="fecharMedicaoNormal()" style="flex:1;min-width:80px;background:#1a1a3a;color:#ccc;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;font-size:0.95rem;">Fechar</button>
+    <div style="display:flex;gap:12px;margin-top:20px;">
+      <button onclick="fecharMedicaoNormal()" style="flex:1;background:#1a1a3a;color:#aaa;padding:20px;border:1px solid #333;border-radius:14px;cursor:pointer;font-size:1.05rem;">Fechar</button>
       <button id="nm-btn-registrar" onclick="registrarNormal()" disabled
-        style="flex:2;min-width:0;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;padding:12px;border:1px solid #00ff9955;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;">
+        style="flex:2;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;padding:20px;border:1px solid #00ff9955;border-radius:14px;cursor:pointer;font-size:1.2rem;font-weight:700;">
         ✅ Registrar
       </button>
     </div>
@@ -559,21 +567,24 @@
 
 <!-- MODAL VOU COMER -->
 <div class="vcomer-modal" id="vcomer-modal">
-  <div class="vcomer-box">
-    <div class="vcomer-title">🍽️ Verificar Bolus de Refeição</div>
-    <div class="vcomer-sub">Informe sua glicemia atual antes de comer para saber se deve tomar as <span id="vcomer-dose-label">5</span> U prescritas.</div>
+  <div class="vcomer-box" style="border:2px solid #00ff9944;border-radius:22px;padding:32px 24px;max-width:380px;">
+    <div style="text-align:center;font-size:2.4rem;margin-bottom:10px;">🍽️</div>
+    <div style="text-align:center;font-size:1.5rem;font-weight:700;color:#00ff99;margin-bottom:8px;">Antes de Comer</div>
+    <div style="text-align:center;font-size:1rem;color:#aaa;margin-bottom:20px;line-height:1.6;">Meça sua glicemia agora para saber se pode tomar as <strong style="color:#f0f0f0;"><span id="vcomer-dose-label">5</span> U</strong> prescritas pelo médico</div>
     <div class="form-row">
-      <label>Glicemia atual (mg/dL)</label>
-      <input type="number" id="vcomer-glicemia" placeholder="Ex: 120" min="20" max="600" oninput="calcularBolusComer()"/>
+      <label style="font-size:1.05rem;margin-bottom:10px;display:block;color:#ccc;">Glicemia atual (mg/dL)</label>
+      <input type="number" id="vcomer-glicemia" placeholder="Ex: 120" min="20" max="600" inputmode="numeric"
+        oninput="calcularBolusComer()"
+        style="font-size:2.2rem;font-weight:700;text-align:center;padding:18px;border:2px solid #00e5ff33;border-radius:14px;background:#0a0a20;color:#00e5ff;"/>
     </div>
-    <div class="vcomer-result" id="vcomer-result">
-      <div class="vcomer-emoji" id="vcomer-emoji"></div>
-      <div class="vcomer-rec" id="vcomer-rec"></div>
-      <div class="vcomer-exp" id="vcomer-exp"></div>
+    <div class="vcomer-result" id="vcomer-result" style="border-radius:14px;padding:20px;">
+      <div class="vcomer-emoji" id="vcomer-emoji" style="font-size:3rem;margin-bottom:10px;"></div>
+      <div class="vcomer-rec" id="vcomer-rec" style="font-size:1.25rem;margin-bottom:10px;"></div>
+      <div class="vcomer-exp" id="vcomer-exp" style="font-size:0.97rem;line-height:1.7;"></div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
-      <button onclick="fecharVouComer()" style="flex:1;min-width:80px;background:#1a1a3a;color:#ccc;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;font-size:0.95rem;">Fechar</button>
-      <button id="vcomer-btn-anotar" onclick="anotarDoseRefeicao()" style="flex:2;min-width:0;display:none;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;padding:12px;border:1px solid #00ff9955;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">✅ Tomei as <span id="vcomer-btn-dose">5</span> U — Registrar</button>
+    <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
+      <button onclick="fecharVouComer()" style="flex:1;min-width:80px;background:#1a1a3a;color:#aaa;padding:20px;border:1px solid #333;border-radius:14px;cursor:pointer;font-size:1.05rem;">Fechar</button>
+      <button id="vcomer-btn-anotar" onclick="anotarDoseRefeicao()" style="flex:2;min-width:0;display:none;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;padding:20px;border:1px solid #00ff9955;border-radius:14px;cursor:pointer;font-size:1.05rem;font-weight:700;">✅ Tomei as <span id="vcomer-btn-dose">5</span> U — Registrar</button>
     </div>
   </div>
 </div>
