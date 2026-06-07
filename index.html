@@ -1948,13 +1948,11 @@ const glicemiaGradPlugin = {
 
     const p = v => Math.max(0, Math.min(1, (toY(v) - top) / (bottom - top)));
 
-    grad.addColorStop(0,              'rgba(255,40,40,0.40)');
-    grad.addColorStop(p(hiperSev),    'rgba(255,40,40,0.40)');
-    grad.addColorStop(p(zonaOk1),     'rgba(255,130,0,0.20)');
-    grad.addColorStop(p(alvo),        'rgba(0,0,0,0.0)');
-    grad.addColorStop(p(zonaOk2),     'rgba(255,130,0,0.20)');
-    grad.addColorStop(p(hipoSev),     'rgba(255,40,40,0.40)');
-    grad.addColorStop(1,              'rgba(255,40,40,0.40)');
+    grad.addColorStop(0,          'rgba(255,40,40,0.40)');
+    grad.addColorStop(p(zonaOk1), 'rgba(0,0,0,0.0)');
+    grad.addColorStop(p(alvo),    'rgba(0,0,0,0.0)');
+    grad.addColorStop(p(zonaOk2), 'rgba(0,0,0,0.0)');
+    grad.addColorStop(1,          'rgba(255,40,40,0.40)');
 
     ctx.save();
     ctx.fillStyle = grad;
