@@ -1451,11 +1451,11 @@ function pularLentaModal() {
   atualizarBtnLentaDia();
 }
 
-// Modal de insulina lenta agora aparece apenas após a primeira medição (não ao carregar)
-// Atualiza dose padrão e botão lenta quando a página carrega
+// Ao carregar: atualiza dose, botão e verifica se modal de lenta deve aparecer
 setTimeout(() => {
   document.getElementById('inp-lenta-modal').value = loadConfig().doseLenta;
   atualizarBtnLentaDia();
+  verificarLentaMatinal();
 }, 500);
 
 // ── TABS ──
@@ -2220,7 +2220,7 @@ function anotarDoseRefeicao() {
   btn.style.background = 'linear-gradient(135deg,#007a3d,#004422)';
   btn.style.border = '1px solid #00ff9988';
   btn.disabled = true;
-  setTimeout(() => fecharVouComer(), 1800);
+  setTimeout(() => { fecharVouComer(); verificarLentaMatinal(); }, 1800);
 }
 
 // ── PROTEÇÃO ENTRADA DUPLICADA ──
