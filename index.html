@@ -1985,8 +1985,8 @@ function renderGrafico() {
   const n = Math.max(values.length, 2);
 
   // Cores dos pontos por zona
-  const cores      = values.map(v => v < 70 ? '#ff4466' : v <= 180 ? '#00ff99' : v <= 250 ? '#ffaa00' : '#ff6633');
-  const coresBorda = values.map(v => v < 70 ? '#cc0033' : v <= 180 ? '#00cc66' : v <= 250 ? '#cc7700' : '#cc3300');
+  const cores      = values.map(v => v < 70 ? '#ff4466' : v <= 180 ? '#00e5ff' : v <= 250 ? '#ffaa00' : '#ff6633');
+  const coresBorda = values.map(v => v < 70 ? '#cc0033' : v <= 180 ? '#00aacc' : v <= 250 ? '#cc7700' : '#cc3300');
 
   if (chartInst) chartInst.destroy();
   const ctx = document.getElementById('grafico-glicemia').getContext('2d');
@@ -2001,7 +2001,7 @@ function renderGrafico() {
         {
           label: 'Alvo (' + alvo + ' mg/dL)',
           data: Array(n).fill(alvo),
-          borderColor: '#00ff99',
+          borderColor: '#00e5ff',
           borderWidth: 1.5,
           pointRadius: 0,
           fill: false
