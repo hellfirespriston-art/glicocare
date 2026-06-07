@@ -759,11 +759,11 @@
   <!-- TIR: TEMPO NO ALVO -->
   <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #1e2a5a;border-radius:16px;padding:20px;margin-bottom:14px;">
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;">
-      <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">📊 Tempo no Alvo (TIR)</div>
-      <div id="tir-dias-label" style="font-size:0.72rem;color:#444;"></div>
+      <div style="font-size:0.72rem;color:#889;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">📊 Tempo no Alvo (TIR)</div>
+      <div id="tir-dias-label" style="font-size:0.72rem;color:#aaa;"></div>
     </div>
     <div id="tir-bar" style="display:flex;border-radius:10px;overflow:hidden;height:34px;margin-bottom:14px;background:#1a1a2a;">
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:#444;">Sem dados</div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:#778;">Sem dados</div>
     </div>
     <div id="tir-legenda" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
   </div>
@@ -773,22 +773,22 @@
 
   <!-- MÉDIAS POR PERÍODO -->
   <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #1e2a5a;border-radius:16px;padding:20px;margin-bottom:14px;">
-    <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:16px;">🕐 Médias por Período do Dia</div>
+    <div style="font-size:0.72rem;color:#889;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:16px;">🕐 Médias por Período do Dia</div>
     <div id="analise-periodos"></div>
   </div>
 
   <!-- PADRÕES -->
   <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #1e2a5a;border-radius:16px;padding:20px;margin-bottom:14px;">
-    <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:16px;">🧠 Padrões Identificados</div>
-    <div id="padroes-box" style="font-size:0.9rem;color:#aaa;">
-      <div style="text-align:center;padding:20px;color:#444;">Registre pelo menos 7 dias para identificar padrões</div>
+    <div style="font-size:0.72rem;color:#889;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:16px;">🧠 Padrões Identificados</div>
+    <div id="padroes-box" style="font-size:0.9rem;color:#ccc;">
+      <div style="text-align:center;padding:20px;color:#888;">Registre pelo menos 7 dias para identificar padrões</div>
     </div>
   </div>
 
   <!-- PDF -->
   <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #1e2a5a;border-radius:16px;padding:20px;text-align:center;">
-    <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:12px;">📄 Relatório para Consulta Médica</div>
-    <p style="color:#666;font-size:0.88rem;margin-bottom:16px;line-height:1.6;">PDF completo com histórico, doses, HbA1c e padrões — leve ao médico.</p>
+    <div style="font-size:0.72rem;color:#889;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:12px;">📄 Relatório para Consulta Médica</div>
+    <p style="color:#aaa;font-size:0.88rem;margin-bottom:16px;line-height:1.6;">PDF completo com histórico, doses, HbA1c e padrões — leve ao médico.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;align-items:center;">
       <select id="sel-pdf-periodo" style="width:auto;">
         <option value="30" selected>Último mês</option>
@@ -2531,7 +2531,7 @@ function renderAnalise() {
     { pct:pH2, color:'#7a0022', label:`Hipo grave (<54): ${pH2}%` },
   ];
   document.getElementById('tir-legenda').innerHTML = allTirZones.map(z =>
-    `<div style="display:flex;align-items:center;gap:6px;font-size:0.72rem;color:#aaa;">
+    `<div style="display:flex;align-items:center;gap:6px;font-size:0.72rem;color:#ccc;">
       <div style="width:10px;height:10px;border-radius:3px;background:${z.color};flex-shrink:0;"></div>${z.label}
     </div>`
   ).join('');
@@ -2545,24 +2545,24 @@ function renderAnalise() {
 
   document.getElementById('analise-kpis').innerHTML = `
     <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid ${hba1cColor}44;border-radius:14px;padding:18px;text-align:center;">
-      <div style="font-size:0.66rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">HbA1c Estimada</div>
+      <div style="font-size:0.66rem;color:#889;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">HbA1c Estimada</div>
       <div style="font-size:2.4rem;font-weight:700;color:${hba1cColor};line-height:1;">${hba1c.toFixed(1)}<span style="font-size:1rem;font-weight:400;">%</span></div>
       <div style="font-size:0.72rem;color:${hba1cColor};margin-top:8px;font-weight:600;">${hba1cLabel}</div>
     </div>
     <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #00e5ff22;border-radius:14px;padding:18px;text-align:center;">
-      <div style="font-size:0.66rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Média Glicemia</div>
+      <div style="font-size:0.66rem;color:#889;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Média Glicemia</div>
       <div style="font-size:2.4rem;font-weight:700;color:#00e5ff;line-height:1;">${Math.round(media)}</div>
-      <div style="font-size:0.72rem;color:#555;margin-top:8px;">mg/dL · ${n} medições</div>
+      <div style="font-size:0.72rem;color:#999;margin-top:8px;">mg/dL · ${n} medições</div>
     </div>
     <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid ${cvColor}33;border-radius:14px;padding:18px;text-align:center;">
-      <div style="font-size:0.66rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Variabilidade (CV)</div>
+      <div style="font-size:0.66rem;color:#889;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Variabilidade (CV)</div>
       <div style="font-size:2.4rem;font-weight:700;color:${cvColor};line-height:1;">${cv.toFixed(0)}<span style="font-size:1rem;font-weight:400;">%</span></div>
       <div style="font-size:0.72rem;color:${cvColor};margin-top:8px;">${cvLabel}</div>
     </div>
     <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #cc44ff33;border-radius:14px;padding:18px;text-align:center;">
-      <div style="font-size:0.66rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Sensibilidade</div>
+      <div style="font-size:0.66rem;color:#889;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Sensibilidade</div>
       <div style="font-size:2.4rem;font-weight:700;color:#cc44ff;line-height:1;">${fatorAtual}</div>
-      <div style="font-size:0.72rem;color:#555;margin-top:8px;">mg/dL por U</div>
+      <div style="font-size:0.72rem;color:#999;margin-top:8px;">mg/dL por U</div>
     </div>
   `;
 
@@ -2580,8 +2580,8 @@ function renderAnalise() {
     const border = i < periodos.length-1 ? 'border-bottom:1px solid #1a1a2a;' : '';
     if (!m) return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0;${border}">
       <div style="font-size:1.5rem;width:34px;text-align:center;">${p.icon}</div>
-      <div style="flex:1;"><div style="font-size:0.85rem;color:#666;">${p.nome} <span style="color:#444;font-size:0.78rem;">${p.range}</span></div></div>
-      <div style="font-size:0.78rem;color:#444;">—</div>
+      <div style="flex:1;"><div style="font-size:0.85rem;color:#bbb;">${p.nome} <span style="color:#778;font-size:0.78rem;">${p.range}</span></div></div>
+      <div style="font-size:0.78rem;color:#667;">—</div>
     </div>`;
 
     const cor = m<70?'#ff3355':m<=180?'#00b84a':m<=250?'#ff8800':'#cc2200';
@@ -2590,14 +2590,14 @@ function renderAnalise() {
     return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0;${border}">
       <div style="font-size:1.5rem;width:34px;text-align:center;flex-shrink:0;">${p.icon}</div>
       <div style="flex:1;">
-        <div style="font-size:0.82rem;color:#888;margin-bottom:7px;">${p.nome} <span style="color:#555;font-size:0.75rem;">${p.range}</span> · <span style="color:#555;font-size:0.75rem;">${vals.length} med.</span></div>
+        <div style="font-size:0.82rem;color:#ccc;margin-bottom:7px;">${p.nome} <span style="color:#999;font-size:0.75rem;">${p.range}</span> · <span style="color:#888;font-size:0.75rem;">${vals.length} med.</span></div>
         <div style="background:#1a1a2a;border-radius:6px;height:7px;overflow:hidden;">
           <div style="width:${pctBarra}%;height:100%;background:${cor};border-radius:6px;"></div>
         </div>
       </div>
       <div style="text-align:right;min-width:72px;flex-shrink:0;">
         <div style="font-size:1.15rem;font-weight:700;color:${cor};">${Math.round(m)}</div>
-        <div style="font-size:0.68rem;color:#555;">${status}</div>
+        <div style="font-size:0.68rem;color:#aaa;">${status}</div>
       </div>
     </div>`;
   }).join('');
@@ -2643,9 +2643,9 @@ function renderAnalise() {
   document.getElementById('padroes-box').innerHTML = padroes.length
     ? padroes.map(p=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #1a1a2a;">
         <div style="font-size:1.1rem;flex-shrink:0;line-height:1.5;">${p.icon}</div>
-        <div style="font-size:0.88rem;color:#bbb;line-height:1.7;">${p.txt}</div>
+        <div style="font-size:0.88rem;color:#ddd;line-height:1.7;">${p.txt}</div>
       </div>`).join('')
-    : '<div style="color:#555;text-align:center;padding:20px;">Mais dados necessários para análise</div>';
+    : '<div style="color:#888;text-align:center;padding:20px;">Mais dados necessários para análise</div>';
 }
 
 // ── GERAR PDF ──
