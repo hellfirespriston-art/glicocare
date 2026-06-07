@@ -209,18 +209,26 @@
     .chart-controls select { width:auto; }
 
     /* HISTORICO */
+    .hist-dia-header { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#444; padding:18px 2px 7px; display:flex; align-items:center; gap:10px; }
+    .hist-dia-header:first-child { padding-top:2px; }
+    .hist-dia-header::after { content:''; flex:1; height:1px; background:linear-gradient(to right,#1a1a3a,transparent); }
     .hist-item {
-      background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a;
-      border-radius:12px; padding:12px 16px; margin-bottom:8px;
-      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+      background:linear-gradient(135deg,#0d1130,#161630);
+      border:1px solid #1e2a5a; border-left:4px solid var(--hist-cor,#1e2a5a);
+      border-radius:12px; padding:14px 12px 14px 16px; margin-bottom:8px;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
     }
-    .hist-left .hist-glicemia { font-size:1.6rem; font-weight:700; }
-    .hist-left .hist-meta { font-size:0.85rem; color:#ccc; margin-top:3px; }
-    .hist-right { text-align:right; font-size:0.85rem; color:#666; }
-    .hist-insulin { color:#00e5ff; font-size:0.88rem; margin-top:3px; }
-    .badge-del { background:rgba(255,50,50,0.1); border:1px solid #ff444433; color:#ff6666; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.82rem; }
-    .badge-edit { background:rgba(0,229,255,0.08); border:1px solid #00e5ff44; color:#00e5ff; padding:9px 14px; border-radius:8px; cursor:pointer; font-size:0.82rem; }
-    .hist-btns { display:flex; flex-direction:row; gap:10px; align-items:center; }
+    .hist-value-row { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+    .hist-left { flex:1; min-width:0; }
+    .hist-left .hist-glicemia { font-size:1.7rem; font-weight:700; line-height:1; }
+    .hist-status-badge { font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:20px; text-transform:uppercase; letter-spacing:0.5px; }
+    .hist-left .hist-meta { font-size:0.8rem; color:#666; margin-top:5px; }
+    .hist-insulin { color:#00e5ff88; font-size:0.8rem; margin-top:4px; line-height:1.5; }
+    .hist-btns { display:flex; flex-direction:column; gap:6px; align-items:center; flex-shrink:0; }
+    .badge-edit { background:rgba(0,229,255,0.07); border:1px solid #00e5ff22; color:#00e5ff88; width:32px; height:32px; border-radius:9px; cursor:pointer; font-size:0.88rem; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+    .badge-del { background:rgba(255,50,50,0.06); border:1px solid #ff444422; color:#ff666655; width:32px; height:32px; border-radius:9px; cursor:pointer; font-size:0.78rem; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+    .badge-edit:active { background:rgba(0,229,255,0.18); color:#00e5ff; }
+    .badge-del:active { background:rgba(255,50,50,0.2); color:#ff6666; }
 
     /* TOOLTIP */
     .tooltip-wrap { position:relative; display:inline-flex; align-items:center; }
@@ -714,9 +722,12 @@
     </div>
     <div style="font-size:0.75rem;opacity:0.5;">›</div>
   </button>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-    <div style="font-size:0.85rem;color:#555;" id="hist-count">0 registros</div>
-    <button class="btn btn-danger btn-sm" onclick="if(confirm('Apagar tudo?')){const pid=activeProfileId();['gc_data_','gc_lenta_','gc_lentadose_','gc_proxts_'].forEach(k=>localStorage.removeItem(k+pid));location.reload();}">🗑️ Apagar tudo</button>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:0 2px;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:0.82rem;font-weight:600;color:#445;">Registros</span>
+      <span id="hist-count" style="font-size:0.72rem;background:#10102a;color:#445;border:1px solid #1e1e40;padding:2px 9px;border-radius:20px;font-weight:600;">0</span>
+    </div>
+    <button onclick="if(confirm('Apagar todos os registros?')){const pid=activeProfileId();['gc_data_','gc_lenta_','gc_lentadose_','gc_proxts_'].forEach(k=>localStorage.removeItem(k+pid));location.reload();}" style="background:none;border:1px solid #2a1020;color:#443344;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.78rem;">🗑️ Limpar tudo</button>
   </div>
   <div class="scroll-list" id="lista-historico">
     <div style="text-align:center;color:#333;padding:40px;">Nenhum registro ainda</div>
@@ -2132,43 +2143,103 @@ function renderGrafico() {
 function renderHistorico() {
   const dados = loadData();
   const el = document.getElementById('lista-historico');
-  document.getElementById('hist-count').textContent = dados.length + ' registros';
-  if (!dados.length) { el.innerHTML='<div style="text-align:center;color:#333;padding:40px;">Nenhum registro ainda</div>'; return; }
+  document.getElementById('hist-count').textContent = dados.length;
+  if (!dados.length) {
+    el.innerHTML = '<div style="text-align:center;padding:60px 20px;"><div style="font-size:2.5rem;margin-bottom:12px;opacity:0.25;">📋</div><div style="color:#333;font-size:0.9rem;">Nenhum registro ainda</div></div>';
+    return;
+  }
+
+  // Ordena decrescente
+  const sorted = [...dados].sort((a,b) => new Date(b.dt) - new Date(a.dt));
+
+  // Agrupa por data local
+  const grupos = {};
+  sorted.forEach(r => {
+    const d = new Date(r.dt);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if (!grupos[key]) grupos[key] = [];
+    grupos[key].push(r);
+  });
+
+  const hojeD = new Date(); hojeD.setHours(0,0,0,0);
+  const ontemD = new Date(hojeD); ontemD.setDate(ontemD.getDate()-1);
+  const semana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const chaves = Object.keys(grupos).sort((a,b) => b.localeCompare(a));
 
   let html = '';
-  for (let i = dados.length-1; i>=0; i--) {
-    const r = dados[i];
-    const cor = r.glicemia<70?'#ff4466':r.glicemia<=140?'#00ff99':r.glicemia<=250?'#ffaa00':'#ff6633';
-    const dtFmt = new Date(r.dt).toLocaleString('pt-BR');
-    const insulina = [];
-    if (r._tipo === 'insulina lenta') insulina.push(`🟣 Insulina Lenta: ${r.lenta}U ✅`);
-    else {
-      if (r.sugRapida != null && r.sugRapida > 0) {
-        if (r.rapida > 0) insulina.push(`🔵 Sugerido: ${r.sugRapida}U (tomou ${r.rapida}U ✅)`);
-        else insulina.push(`🔵 Sugerido: ${r.sugRapida}U (não tomou)`);
+
+  chaves.forEach(key => {
+    const [y,m,d] = key.split('-').map(Number);
+    const diaDate = new Date(y, m-1, d);
+    let label;
+    if (diaDate.getTime() === hojeD.getTime()) label = 'Hoje';
+    else if (diaDate.getTime() === ontemD.getTime()) label = 'Ontem';
+    else label = `${semana[diaDate.getDay()]}, ${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}`;
+
+    // Média do dia (só glicemias reais)
+    const medicoes = grupos[key].filter(r => r._tipo !== 'insulina lenta' && r.glicemia);
+    const mediaLabel = medicoes.length
+      ? ` · média ${Math.round(medicoes.reduce((s,r)=>s+r.glicemia,0)/medicoes.length)}`
+      : '';
+
+    html += `<div class="hist-dia-header">${label}${mediaLabel}</div>`;
+
+    grupos[key].forEach(r => {
+      const hora = new Date(r.dt).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+
+      if (r._tipo === 'insulina lenta') {
+        html += `<div class="hist-item" style="--hist-cor:#cc44ff;">
+          <div class="hist-left">
+            <div class="hist-value-row">
+              <div class="hist-glicemia" style="color:#cc44ff;font-size:1.35rem;">💉 Lenta</div>
+              <span class="hist-status-badge" style="background:#1e0030;color:#cc44ffaa;">BASAL</span>
+            </div>
+            <div class="hist-meta">${hora} · ${r.lenta || '—'}U aplicada</div>
+          </div>
+          <div class="hist-btns">
+            <button class="badge-edit" onclick="abrirEditModal(${r.id})">✏️</button>
+            <button class="badge-del" onclick="deletar(${r.id})">✕</button>
+          </div>
+        </div>`;
+        return;
       }
-      if (r.rapida>0 && (r.sugRapida == null || r.sugRapida <= 0)) insulina.push(`💉 Insulina Rápida Aplicada: ${r.rapida}U ✅`);
-    }
-    const insulinaStr = insulina.length
-      ? `<div class="hist-insulin">${insulina.join(' · ')}</div>`
-      : r.aplicou === false || r.aplicou == null
-        ? `<div class="hist-insulin" style="color:#666;">💉 Sem insulina aplicada</div>`
-        : '';
-    const glicemiaDisplay = r._tipo === 'insulina lenta'
-      ? `<div class="hist-glicemia" style="color:#cc44ff">🟣 Insulina Lenta</div>`
-      : `<div class="hist-glicemia" style="color:${cor}">${r.glicemia} <small style="font-size:0.5em;color:#555">mg/dL</small></div>`;
-    html += `<div class="hist-item">
-      <div class="hist-left">
-        ${glicemiaDisplay}
-        <div class="hist-meta">${dtFmt}</div>
-        ${insulinaStr}
-      </div>
-      <div class="hist-btns">
-        <button class="badge-edit" onclick="abrirEditModal(${r.id})">✏️</button>
-        <button class="badge-del" onclick="deletar(${r.id})">✕</button>
-      </div>
-    </div>`;
-  }
+
+      const cor = r.glicemia < 70 ? '#ff4466' : r.glicemia <= 140 ? '#00ff99' : r.glicemia <= 250 ? '#ffaa00' : '#ff6633';
+      const [bBg, bClr, bLbl] = r.glicemia < 70
+        ? ['#3a0011','#ff4466','HIPO']
+        : r.glicemia <= 140
+          ? ['#003a1a','#00ff99','NORMAL']
+          : r.glicemia <= 250
+            ? ['#3a2200','#ffaa00','ALTO']
+            : ['#3a1000','#ff6633','CRÍTICO'];
+
+      const insulina = [];
+      if (r.sugRapida != null && r.sugRapida > 0) {
+        if (r.rapida > 0) insulina.push(`🔵 ${r.sugRapida}U sugerido · ${r.rapida}U tomado ✅`);
+        else insulina.push(`🔵 ${r.sugRapida}U sugerido · não tomou`);
+      }
+      if (r.rapida > 0 && (r.sugRapida == null || r.sugRapida <= 0)) insulina.push(`💉 ${r.rapida}U rápida ✅`);
+      const insulinaStr = insulina.length
+        ? `<div class="hist-insulin">${insulina.join('<br>')}</div>`
+        : `<div class="hist-insulin" style="color:#333;">sem insulina</div>`;
+
+      html += `<div class="hist-item" style="--hist-cor:${cor};">
+        <div class="hist-left">
+          <div class="hist-value-row">
+            <div class="hist-glicemia" style="color:${cor}">${r.glicemia}<small style="font-size:0.45em;color:#555;"> mg/dL</small></div>
+            <span class="hist-status-badge" style="background:${bBg};color:${bClr};">${bLbl}</span>
+          </div>
+          <div class="hist-meta">${hora}</div>
+          ${insulinaStr}
+        </div>
+        <div class="hist-btns">
+          <button class="badge-edit" onclick="abrirEditModal(${r.id})">✏️</button>
+          <button class="badge-del" onclick="deletar(${r.id})">✕</button>
+        </div>
+      </div>`;
+    });
+  });
+
   el.innerHTML = html;
 }
 
