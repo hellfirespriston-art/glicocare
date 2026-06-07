@@ -638,7 +638,14 @@
 <!-- ══════════ HISTÓRICO ══════════ -->
 <div id="tab-historico" class="content">
   <!-- LENTA DO DIA -->
-  <button id="lenta-dia-btn" onclick="abrirLentaDoDia()" style="width:100%;margin-bottom:14px;padding:13px 16px;border-radius:10px;border:1px solid #cc44ff88;background:linear-gradient(135deg,#1a0028,#0d0020);color:#cc44ff;font-size:0.9rem;font-weight:600;cursor:pointer;text-align:left;">🟣 Insulina Lenta do Dia — ⚠️ não registrada ainda</button>
+  <button id="lenta-dia-btn" onclick="abrirLentaDoDia()" style="width:100%;margin-bottom:14px;padding:16px 18px;border-radius:14px;border:1px solid #cc44ff55;background:linear-gradient(135deg,#1a0028,#0d0020);color:#cc44ff;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;">
+    <div style="font-size:1.6rem;line-height:1;flex-shrink:0;">💉</div>
+    <div style="flex:1;">
+      <div id="lenta-dia-titulo" style="font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;opacity:0.7;margin-bottom:3px;">Insulina Lenta do Dia</div>
+      <div id="lenta-dia-status" style="font-size:1rem;font-weight:700;">⚠️ Não registrada ainda</div>
+    </div>
+    <div style="font-size:0.75rem;opacity:0.5;">›</div>
+  </button>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
     <div style="font-size:0.85rem;color:#555;" id="hist-count">0 registros</div>
     <button class="btn btn-danger btn-sm" onclick="if(confirm('Apagar tudo?')){const pid=activeProfileId();['gc_data_','gc_lenta_','gc_lentadose_','gc_proxts_'].forEach(k=>localStorage.removeItem(k+pid));location.reload();}">🗑️ Apagar tudo</button>
@@ -1358,23 +1365,24 @@ function abrirLentaDoDia() {
 
 function atualizarBtnLentaDia() {
   const btn = document.getElementById('lenta-dia-btn');
-  if (!btn) return;
+  const status = document.getElementById('lenta-dia-status');
+  if (!btn || !status) return;
   const hoje = new Date().toDateString();
   const visto = localStorage.getItem('gc_lenta_' + activeProfileId());
   const dose = parseFloat(localStorage.getItem('gc_lentadose_' + activeProfileId()) || '0');
   if (visto === hoje && dose > 0) {
-    btn.textContent = `🟣 Lenta do dia: ${dose} U ✅ — toque para corrigir`;
+    status.textContent = `${dose} U aplicada ✅ — toque para corrigir`;
     btn.style.borderColor = '#00ff9966';
     btn.style.background = 'linear-gradient(135deg,#001a0d,#000d06)';
-    btn.style.color = '#00ff99bb';
+    btn.style.color = '#00ff99';
   } else if (visto === hoje && dose === 0) {
-    btn.textContent = '🟣 Lenta do dia: não tomada — toque para corrigir';
+    status.textContent = 'Não tomada hoje — toque para corrigir';
     btn.style.borderColor = '#ffaa0066';
     btn.style.background = 'linear-gradient(135deg,#1a1200,#0d0900)';
-    btn.style.color = '#ffaa00bb';
+    btn.style.color = '#ffaa00';
   } else {
-    btn.textContent = '🟣 Insulina Lenta do Dia — ⚠️ não registrada ainda';
-    btn.style.borderColor = '#cc44ff88';
+    status.textContent = '⚠️ Não registrada ainda';
+    btn.style.borderColor = '#cc44ff55';
     btn.style.background = 'linear-gradient(135deg,#1a0028,#0d0020)';
     btn.style.color = '#cc44ff';
   }
