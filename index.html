@@ -321,21 +321,35 @@
     .scroll-list::-webkit-scrollbar-thumb { background:#1e2a5a; border-radius:2px; }
 
     /* CONFIG */
-    .config-section { background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a; border-radius:12px; padding:20px; margin-bottom:16px; }
-    .config-section h3 { font-size:1rem; color:#00e5ff; margin-bottom:16px; text-transform:uppercase; letter-spacing:1px; }
-    .config-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+    .cfg-tab-header { padding:4px 2px 18px; }
+    .cfg-tab-header h2 { font-size:1.25rem; font-weight:700; color:#cdd; margin:0 0 3px; }
+    .cfg-tab-header p { font-size:0.8rem; color:#334; margin:0; }
+    .config-section { background:linear-gradient(135deg,#0d1130,#161630); border:1px solid #1e2a5a; border-radius:14px; padding:20px; margin-bottom:12px; }
+    .config-section h3 { font-size:0.7rem; font-weight:700; color:#445; margin-bottom:16px; text-transform:uppercase; letter-spacing:1.5px; border-bottom:1px solid #141428; padding-bottom:10px; }
+    .config-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
     .config-row:last-child { margin-bottom:0; }
-    .config-label { font-size:0.95rem; color:#f0f0f0; flex:1; min-width:180px; }
-    .config-label small { display:block; font-size:0.8rem; color:#aaa; margin-top:3px; line-height:1.4; }
-    .config-input { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:10px 12px; border-radius:8px; font-size:1rem; width:130px; text-align:center; }
-    .config-select { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:10px 20px 10px 12px; border-radius:8px; font-size:0.95rem; width:240px; }
-    .config-badge { font-size:0.85rem; padding:5px 12px; border-radius:20px; font-weight:600; }
+    .config-label { font-size:0.9rem; color:#bbb; flex:1; min-width:0; }
+    .config-label small { display:block; font-size:0.75rem; color:#556; margin-top:2px; line-height:1.4; }
+    .config-input { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:10px 12px; border-radius:8px; font-size:1rem; width:90px; text-align:center; }
+    .config-select { background:#0a0a20; border:1px solid #2a3a6a; color:#f0f0f0; padding:10px 12px; border-radius:8px; font-size:0.88rem; width:auto; max-width:200px; }
+    @media(max-width:480px){ .config-select { max-width:100%; width:100%; } .config-row { flex-wrap:wrap; } }
+    .config-badge { font-size:0.8rem; padding:4px 10px; border-radius:20px; font-weight:600; }
     .badge-auto { background:#003322; color:#00ff99; border:1px solid #00ff9955; }
     .badge-manual { background:#1a1a00; color:#ffaa00; border:1px solid #ffaa0055; }
-    .fator-display { font-size:1.5rem; font-weight:700; color:#00e5ff; text-align:center; min-width:60px; }
-    .config-save { background:linear-gradient(135deg,#0066cc,#004499); color:white; border:none; padding:14px 28px; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; width:100%; margin-top:8px; }
-    .config-save:hover { background:linear-gradient(135deg,#0077ee,#0055bb); }
-    .aprendizado-info { font-size:0.88rem; color:#aaa; margin-top:10px; line-height:1.55; }
+    .fator-display { font-size:1.5rem; font-weight:700; color:#00e5ff; text-align:center; min-width:55px; }
+    .config-save { background:linear-gradient(135deg,#0055bb,#003388); color:white; border:none; padding:16px 28px; border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer; width:100%; margin-top:4px; letter-spacing:0.3px; -webkit-tap-highlight-color:transparent; }
+    .config-save:active { opacity:0.85; }
+    .aprendizado-info { font-size:0.82rem; color:#557; margin-top:10px; line-height:1.55; padding:10px 12px; background:#080816; border-radius:8px; border:1px solid #141428; }
+    /* Toggle switch */
+    .toggle-switch { position:relative; display:inline-block; width:44px; height:24px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; position:absolute; }
+    .toggle-slider { position:absolute; inset:0; background:#141428; border-radius:24px; cursor:pointer; transition:0.25s; border:1px solid #2a2a45; }
+    .toggle-slider::before { content:''; position:absolute; width:18px; height:18px; left:2px; bottom:2px; background:#3a3a55; border-radius:50%; transition:0.25s; }
+    .toggle-switch input:checked + .toggle-slider { background:#003a22; border-color:#00ff9955; }
+    .toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); background:#00ff99; }
+    /* Botões rodapé config */
+    .cfg-footer-btn { width:100%; background:#080814; border:1px solid #18182a; color:#445; padding:12px 16px; border-radius:10px; cursor:pointer; font-size:0.85rem; text-align:left; display:flex; align-items:center; gap:10px; -webkit-tap-highlight-color:transparent; }
+    .cfg-footer-btn:active { background:#0f0f22; }
 
     /* INPUT GLICEMIA — destaque especial */
     @keyframes pulso-input-verde {
@@ -789,22 +803,28 @@
 
 <!-- ══════════ CONFIG ══════════ -->
 <div id="tab-config" class="content">
-  <div style="max-width:700px;margin:0 auto;padding:20px;">
+  <div style="max-width:700px;margin:0 auto;">
+
+    <!-- HEADER -->
+    <div class="cfg-tab-header">
+      <h2>⚙️ Ajustes</h2>
+      <p>Perfil e configurações de cálculo de doses</p>
+    </div>
 
     <!-- PERFIS -->
     <div class="config-section">
-      <h3>👤 Perfis de Usuário</h3>
-      <div id="cfg-perfil-atual" style="margin-bottom:14px;font-size:0.88rem;color:#aaa;"></div>
+      <h3>👤 Perfis</h3>
+      <div id="cfg-perfil-atual" style="margin-bottom:14px;font-size:0.85rem;color:#556;"></div>
       <div id="cfg-perfil-lista" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
-      <button onclick="abrirCriarPerfil()" style="width:100%;background:#0a1520;border:1px dashed #2a5a7a;color:#6ab4d8;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;">+ Criar novo perfil</button>
+      <button onclick="abrirCriarPerfil()" style="width:100%;background:#080e18;border:1px dashed #1e3a50;color:#4a8aaa;padding:10px;border-radius:8px;cursor:pointer;font-size:0.85rem;">+ Criar novo perfil</button>
     </div>
 
-    <!-- INSULINA LENTA -->
+    <!-- INSULINA (lenta + refeição + hora reset) -->
     <div class="config-section">
-      <h3>🟣 Insulina Lenta (Basal)</h3>
+      <h3>💉 Insulina</h3>
       <div class="config-row">
-        <div class="config-label">Tipo de insulina
-          <small>Define duração no cálculo de IOB</small>
+        <div class="config-label">Tipo de lenta
+          <small>Define a duração no cálculo de IOB</small>
         </div>
         <select class="config-select" id="cfg-insulina-tipo">
           <option value="24">Lantus / Glargina U100 — 24h</option>
@@ -814,79 +834,64 @@
         </select>
       </div>
       <div class="config-row">
-        <div class="config-label">Dose padrão matinal
-          <small>Valor pré-preenchido no aviso de insulina lenta da manhã</small>
+        <div class="config-label">Dose basal diária
+          <small>Pré-preenchida no aviso matinal da lenta</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <input type="number" class="config-input" id="cfg-dose-lenta" value="20" min="1" max="80" step="1"/>
-          <span style="color:#cc44ff;font-weight:700;">U</span>
+          <span style="color:#cc44ff;font-weight:700;font-size:0.9rem;">U</span>
         </div>
       </div>
-    </div>
-
-    <!-- DOSE REFEIÇÃO -->
-    <div class="config-section">
-      <h3>🍽️ Dose de Insulina para Refeições</h3>
       <div class="config-row">
-        <div class="config-label">Unidades antes de comer
-          <small>Dose prescrita pelo médico para ser tomada antes das refeições. Usada pelo botão "Vou Comer".</small>
+        <div class="config-label">Dose antes de comer
+          <small>Prescrita pelo médico — usada no botão "Vou Comer"</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
-          <input type="number" class="config-input" id="cfg-dose-refeicao" value="5" min="1" max="30" step="0.5" style="width:70px;"/>
-          <span style="color:#aaa;font-size:0.85rem;">U</span>
+          <input type="number" class="config-input" id="cfg-dose-refeicao" value="5" min="1" max="30" step="0.5"/>
+          <span style="color:#aaa;font-size:0.9rem;">U</span>
         </div>
       </div>
-    </div>
-
-    <!-- HORA RESET LENTA -->
-    <div class="config-section">
-      <h3>🕐 Horário da Pergunta de Insulina Lenta</h3>
       <div class="config-row">
-        <div class="config-label">Hora de início
-          <small>O app pergunta sobre a insulina lenta uma vez por dia, a partir deste horário. Útil se a aplicação for mais cedo ou mais tarde do que 7h da manhã.</small>
+        <div class="config-label">Hora do aviso diário
+          <small>App pergunta sobre a lenta uma vez por dia a partir desse horário</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
-          <input type="number" class="config-input" id="cfg-hora-reset-lenta" value="7" min="0" max="23" step="1" style="width:70px;"/>
-          <span style="color:#aaa;font-size:0.85rem;">h</span>
+          <input type="number" class="config-input" id="cfg-hora-reset-lenta" value="7" min="0" max="23" step="1"/>
+          <span style="color:#aaa;font-size:0.9rem;">h</span>
         </div>
       </div>
     </div>
 
-    <!-- GLICEMIA ALVO -->
+    <!-- GLICEMIA & CÁLCULO (alvo + sensibilidade) -->
     <div class="config-section">
-      <h3>🎯 Glicemia Alvo</h3>
+      <h3>🎯 Glicemia & Cálculo de Dose</h3>
       <div class="config-row">
         <div class="config-label">Meta de glicemia
-          <small>Usado no cálculo da dose de insulina rápida</small>
+          <small>Alvo usado no cálculo da dose de insulina rápida</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <input type="number" class="config-input" id="cfg-glicemia-alvo" value="200" min="70" max="300" step="5"/>
-          <span style="color:#aaa;font-size:0.85rem;">mg/dL</span>
+          <span style="color:#aaa;font-size:0.9rem;">mg/dL</span>
         </div>
       </div>
-    </div>
-
-    <!-- FATOR DE SENSIBILIDADE -->
-    <div class="config-section">
-      <h3>⚡ Fator de Sensibilidade à Insulina</h3>
       <div class="config-row">
-        <div class="config-label">Fator atual
-          <small>1U de insulina rápida reduz X mg/dL</small>
+        <div class="config-label">Fator de sensibilidade atual
+          <small>1U de rápida reduz X mg/dL</small>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:8px;">
           <div class="fator-display" id="cfg-fator-display">40</div>
-          <span style="color:#aaa;font-size:0.85rem;">mg/dL por U</span>
+          <span style="color:#445;font-size:0.75rem;line-height:1.3;">mg/dL<br>por U</span>
         </div>
       </div>
       <div class="config-row">
         <div class="config-label">Ajuste manual
-          <small>Quanto maior o valor, menos insulina o app vai sugerir</small>
+          <small>Quanto maior, menos insulina o app vai sugerir</small>
         </div>
         <input type="number" class="config-input" id="cfg-fator-manual" value="40" min="10" max="200" step="1" oninput="onFatorManualChange()"/>
       </div>
       <div class="config-row">
         <div class="config-label">Auto-aprendizado
-          <small>Ajusta o fator automaticamente com base nas doses aplicadas e resultado real</small>
+          <small>Ajusta o fator com base nas doses e resultados reais</small>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <label class="toggle-switch">
@@ -901,48 +906,49 @@
       </div>
     </div>
 
+    <!-- SALVAR -->
     <button class="config-save" onclick="salvarConfig()">💾 Salvar Configurações</button>
     <div id="cfg-salvo-msg" style="text-align:center;color:#00ff99;font-size:0.85rem;margin-top:10px;display:none;">✅ Configurações salvas!</div>
 
-    <div class="banner-anuncio" onclick="abrirApoie()" style="margin:24px 0 0;">
+    <!-- BACKUP & DADOS -->
+    <div class="config-section" style="margin-top:20px;">
+      <h3>💾 Backup & Dados</h3>
+      <div id="storage-info" style="font-size:0.8rem;color:#445;margin-bottom:14px;">Carregando...</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button onclick="exportarDados()" style="width:100%;background:linear-gradient(135deg,#002e14,#001208);color:#00ff99aa;border:1px solid #00ff9922;padding:13px;border-radius:10px;cursor:pointer;font-size:0.88rem;font-weight:600;">📥 Exportar backup JSON</button>
+        <label style="display:block;width:100%;">
+          <div style="width:100%;background:linear-gradient(135deg,#001020,#000810);color:#00e5ff88;border:1px solid #00e5ff1a;padding:13px;border-radius:10px;cursor:pointer;font-size:0.88rem;font-weight:600;text-align:center;box-sizing:border-box;">📤 Importar backup JSON</div>
+          <input type="file" accept=".json" onchange="importarDados(this)" style="display:none;"/>
+        </label>
+      </div>
+    </div>
+
+    <!-- LEGAL & SOBRE -->
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+      <button class="cfg-footer-btn" onclick="document.getElementById('aviso-legal-modal').classList.add('show')">
+        <span>⚠️</span><span>Aviso Legal</span>
+      </button>
+      <button class="cfg-footer-btn" onclick="document.getElementById('dev-modal').classList.add('show')">
+        <span>👨‍💻</span><span>Sobre o Desenvolvedor</span>
+      </button>
+    </div>
+
+    <!-- FERRAMENTAS DO DEV (ocultas) -->
+    <div style="margin-top:20px;padding-bottom:4px;">
+      <details>
+        <summary style="font-size:0.68rem;color:#222;text-transform:uppercase;letter-spacing:1px;cursor:pointer;user-select:none;list-style:none;-webkit-tap-highlight-color:transparent;">🛠 Ferramentas do desenvolvedor</summary>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+          <button onclick="simularDados()" style="width:100%;background:#0a0a18;border:1px solid #1e1e2e;color:#334;padding:10px;border-radius:8px;cursor:pointer;font-size:0.82rem;">Gerar 30 dias de dados simulados</button>
+          <button onclick="limparDados()" style="width:100%;background:#0a0a18;border:1px solid #2a1010;color:#664444;padding:10px;border-radius:8px;cursor:pointer;font-size:0.82rem;">🗑️ Apagar todos os registros</button>
+        </div>
+      </details>
+    </div>
+
+    <!-- BANNER APOIE -->
+    <div class="banner-anuncio" onclick="abrirApoie()" style="margin:16px 0 4px;">
       <div class="banner-anuncio-linha1">Espaço publicitário</div>
       <div class="banner-anuncio-linha2">📢 Anuncie aqui</div>
       <div class="banner-anuncio-linha3">hellfirespriston@gmail.com</div>
-    </div>
-
-    <div style="margin-top:24px;border-top:1px solid #222;padding-top:20px;display:flex;flex-direction:column;gap:10px;">
-      <button onclick="document.getElementById('aviso-legal-modal').classList.add('show')" style="width:100%;background:#0a0a20;border:1px solid #2a3a4a;color:#778899;padding:12px;border-radius:8px;cursor:pointer;font-size:0.88rem;">⚠️ Ver Aviso Legal</button>
-      <button onclick="document.getElementById('dev-modal').classList.add('show')" style="width:100%;background:#06060f;border:1px solid #00e5ff22;color:#00e5ffaa;padding:12px;border-radius:8px;cursor:pointer;font-size:0.88rem;">👨‍💻 Sobre o Desenvolvedor</button>
-    </div>
-
-    <!-- BACKUP & ARMAZENAMENTO -->
-    <div style="margin-top:24px;border-top:1px solid #222;padding-top:20px;">
-      <div style="font-size:0.75rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">💾 Backup & Armazenamento</div>
-
-      <!-- Indicador de uso -->
-      <div id="storage-info" style="background:#0d1130;border:1px solid #1e3a5a;border-radius:10px;padding:14px;margin-bottom:14px;font-size:0.85rem;color:#aaa;">
-        Carregando...
-      </div>
-
-      <button onclick="exportarDados()" style="width:100%;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;border:1px solid #00ff9944;padding:12px;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;">
-        📥 Exportar dados (backup JSON)
-      </button>
-      <label style="display:block;width:100%;margin-top:8px;">
-        <div style="width:100%;background:#1a1a3a;color:#00e5ff;border:1px solid #00e5ff44;padding:12px;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;text-align:center;box-sizing:border-box;">
-          📤 Importar backup JSON
-        </div>
-        <input type="file" accept=".json" onchange="importarDados(this)" style="display:none;"/>
-      </label>
-    </div>
-
-    <div style="margin-top:12px;border-top:1px solid #222;padding-top:20px;">
-      <details>
-        <summary style="font-size:0.75rem;color:#333;text-transform:uppercase;letter-spacing:1px;cursor:pointer;user-select:none;">🛠️ Ferramentas do Desenvolvedor</summary>
-        <div style="margin-top:12px;">
-          <button onclick="simularDados()" style="width:100%;background:#1a1a2a;border:1px solid #444;color:#888;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;">Gerar 30 dias de dados simulados</button>
-          <button onclick="limparDados()" style="width:100%;background:#1a1a2a;border:1px solid #440000;color:#cc4444;padding:10px;border-radius:8px;cursor:pointer;font-size:0.88rem;margin-top:8px;">🗑️ Apagar todos os registros</button>
-        </div>
-      </details>
     </div>
 
   </div>
