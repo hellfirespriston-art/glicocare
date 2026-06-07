@@ -1927,19 +1927,63 @@ function atualizarProximaBox(glic, sug, iobR, dados) {
 
 // ── GRÁFICO ──
 var chartInst = null;
+
+// Plugin: fundo degradê baseado no alvo glicêmico do usuário
+const glicemiaGradPlugin = {
+  id: 'glicemiaGrad',
+  beforeDraw(chart) {
+    const { ctx, chartArea, scales } = chart;
+    if (!chartArea || !scales.y) return;
+    const { top, bottom, left, right } = chartArea;
+    const yScale = scales.y;
+    const alvo = chart._glicAlvo || 180;
+
+    // Converte valor de glicemia para posição Y em pixels
+    const toY = v => {
+      const min = yScale.min, max = yScale.max;
+      return top + (1 - (Math.min(max, Math.max(min, v)) - min) / (max - min)) * (bottom - top);
+    };
+
+    const grad = ctx.createLinearGradient(0, top, 0, bottom);
+
+    // Topo do gráfico (hiper severa) → vermelho
+    grad.addColorStop(0, 'rgba(255,40,40,0.38)');
+
+    // 250 → laranja
+    const p250 = Math.max(0, Math.min(1, (toY(250) - top) / (bottom - top)));
+    grad.addColorStop(p250, 'rgba(255,130,0,0.22)');
+
+    // Alvo do usuário → verde
+    const pAlvo = Math.max(0, Math.min(1, (toY(alvo) - top) / (bottom - top)));
+    grad.addColorStop(pAlvo, 'rgba(0,220,80,0.28)');
+
+    // 70 (limiar hipo) → laranja
+    const p70 = Math.max(0, Math.min(1, (toY(70) - top) / (bottom - top)));
+    grad.addColorStop(p70, 'rgba(255,130,0,0.22)');
+
+    // Base do gráfico (hipo severa) → vermelho
+    grad.addColorStop(1, 'rgba(255,40,40,0.38)');
+
+    ctx.save();
+    ctx.fillStyle = grad;
+    ctx.fillRect(left, top, right - left, bottom - top);
+    ctx.restore();
+  }
+};
+
 function renderGrafico() {
   const dados = loadData();
   const cfg = loadConfig();
   const alvo = cfg.glicemiaAlvo || 180;
 
-  // Filtrar só registros de hoje (meia-noite até agora) com glicemia válida
+  // Filtrar só registros de hoje com glicemia válida
   const hoje = new Date();
   const inicioDia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0).getTime();
   const filtrado = dados
     .filter(r => r.glicemia != null && r.glicemia > 0 && new Date(r.dt).getTime() >= inicioDia)
     .sort((a, b) => new Date(a.dt) - new Date(b.dt));
 
-  // Atualiza label de data
+  // Label de data
   const elData = document.getElementById('graf-data-label');
   if (elData) elData.textContent = hoje.toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
 
@@ -1948,93 +1992,41 @@ function renderGrafico() {
   const n = Math.max(values.length, 2);
 
   // Cores dos pontos por zona
-  const cores = values.map(v => v < 70 ? '#ff4466' : v <= 180 ? '#00ff99' : v <= 250 ? '#ffaa00' : '#ff6633');
+  const cores      = values.map(v => v < 70 ? '#ff4466' : v <= 180 ? '#00ff99' : v <= 250 ? '#ffaa00' : '#ff6633');
   const coresBorda = values.map(v => v < 70 ? '#cc0033' : v <= 180 ? '#00cc66' : v <= 250 ? '#cc7700' : '#cc3300');
-
-  // Zonas da "Bollinger" glicêmica
-  const HIPO      = 70;
-  const HIPER     = 180;
-  const HIPER_SEV = 250;
 
   if (chartInst) chartInst.destroy();
   const ctx = document.getElementById('grafico-glicemia').getContext('2d');
 
-  // Gradiente de fundo da linha de glicemia
-  const grad = ctx.createLinearGradient(0, 0, 0, 260);
-  grad.addColorStop(0, 'rgba(0,229,255,0.18)');
-  grad.addColorStop(1, 'rgba(0,229,255,0.01)');
-
   chartInst = new Chart(ctx, {
     type: 'line',
+    plugins: [glicemiaGradPlugin],
     data: {
       labels,
       datasets: [
-        // Zona hiper severa (preenchimento vermelho escuro acima de 250)
-        {
-          label: '_hiper_sev_top',
-          data: Array(n).fill(400),
-          borderWidth: 0, pointRadius: 0, fill: '-1',
-          backgroundColor: 'rgba(255,80,0,0.10)'
-        },
-        {
-          label: '_hiper_sev',
-          data: Array(n).fill(HIPER_SEV),
-          borderColor: 'rgba(255,100,50,0.35)', borderWidth: 1,
-          borderDash: [3, 5], pointRadius: 0, fill: false
-        },
-        // Zona hiper (laranja entre 180-250)
-        {
-          label: '_hiper_top',
-          data: Array(n).fill(HIPER_SEV),
-          borderWidth: 0, pointRadius: 0, fill: '-1',
-          backgroundColor: 'rgba(255,170,0,0.10)'
-        },
-        {
-          label: '_hiper',
-          data: Array(n).fill(HIPER),
-          borderColor: 'rgba(255,170,0,0.5)', borderWidth: 1.5,
-          borderDash: [5, 4], pointRadius: 0, fill: false
-        },
-        // Zona alvo (verde entre 70-180)
-        {
-          label: '_alvo_top',
-          data: Array(n).fill(HIPER),
-          borderWidth: 0, pointRadius: 0, fill: '-1',
-          backgroundColor: 'rgba(0,255,120,0.07)'
-        },
-        // Linha do alvo configurado pelo usuário
+        // Linha pontilhada do alvo
         {
           label: 'Alvo (' + alvo + ' mg/dL)',
           data: Array(n).fill(alvo),
-          borderColor: 'rgba(0,229,255,0.55)', borderWidth: 1.5,
-          borderDash: [6, 3], pointRadius: 0, fill: false
+          borderColor: 'rgba(255,255,255,0.25)',
+          borderWidth: 1.5,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false
         },
-        // Zona hipo (vermelho abaixo de 70)
-        {
-          label: '_hipo_base',
-          data: Array(n).fill(HIPO),
-          borderWidth: 0, pointRadius: 0, fill: 'origin',
-          backgroundColor: 'rgba(255,50,80,0.12)'
-        },
-        {
-          label: '_hipo',
-          data: Array(n).fill(HIPO),
-          borderColor: 'rgba(255,60,80,0.5)', borderWidth: 1.5,
-          borderDash: [5, 4], pointRadius: 0, fill: false
-        },
-        // Linha de glicemia — dataset principal
+        // Linha de glicemia
         {
           label: 'Glicemia (mg/dL)',
           data: values,
-          borderColor: '#00e5ff',
-          backgroundColor: grad,
+          borderColor: '#ffffff',
+          backgroundColor: 'rgba(255,255,255,0.06)',
           borderWidth: 2.5,
           pointRadius: 7,
-          pointHoverRadius: 9,
+          pointHoverRadius: 10,
           pointBackgroundColor: cores,
           pointBorderColor: coresBorda,
           pointBorderWidth: 2,
-          fill: true,
+          fill: false,
           tension: 0.35,
           order: 0
         }
@@ -2045,11 +2037,7 @@ function renderGrafico() {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          labels: {
-            color: '#ccc',
-            font: { size: 12 },
-            filter: item => !item.text.startsWith('_')
-          }
+          labels: { color: '#aaa', font: { size: 12 } }
         },
         tooltip: {
           mode: 'index',
@@ -2058,26 +2046,21 @@ function renderGrafico() {
           callbacks: {
             label: ctx => {
               const v = ctx.parsed.y;
-              const zona = v < 70 ? '🔴 Hipoglicemia' : v <= 180 ? '🟢 Normal' : v <= 250 ? '🟡 Elevada' : '🔴 Hiperglicemia severa';
+              const zona = v < 70 ? '🔴 Hipoglicemia' : v <= 180 ? '🟢 Normal' : v <= 250 ? '🟡 Elevada' : '🔴 Hiper severa';
               return ` ${v} mg/dL — ${zona}`;
             }
           }
         }
       },
       scales: {
-        x: {
-          ticks: { color: '#666', maxTicksLimit: 8, font: { size: 11 } },
-          grid: { color: '#1a1a3a' }
-        },
-        y: {
-          ticks: { color: '#666', callback: v => v + ' mg/dL', font: { size: 11 } },
-          grid: { color: '#1a1a3a' },
-          min: 40,
-          suggestedMax: 300
-        }
+        x: { ticks: { color: '#666', maxTicksLimit: 8, font: { size: 11 } }, grid: { color: '#1a1a3a' } },
+        y: { ticks: { color: '#666', callback: v => v + ' mg/dL', font: { size: 11 } }, grid: { color: '#1a1a3a' }, min: 40, suggestedMax: 300 }
       }
     }
   });
+
+  // Passa o alvo para o plugin acessar no beforeDraw
+  chartInst._glicAlvo = alvo;
 }
 
 // ── HISTÓRICO ──
