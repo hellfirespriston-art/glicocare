@@ -1939,23 +1939,22 @@ const glicemiaGradPlugin = {
 
     const grad = ctx.createLinearGradient(0, top, 0, bottom);
 
-    // Topo do gráfico (hiper severa) → vermelho
-    grad.addColorStop(0, 'rgba(255,40,40,0.38)');
+    // Margem simétrica em relação ao alvo
+    const margem = Math.min(alvo - 70, 250 - alvo); // ex: alvo=200 → margem=50
+    const zonaOk1 = alvo + margem;       // limite hiper da zona segura
+    const zonaOk2 = alvo - margem;       // limite hipo da zona segura
+    const hiperSev = zonaOk1 + margem;   // ponto vermelho acima
+    const hipoSev  = zonaOk2 - margem;   // ponto vermelho abaixo
 
-    // 250 → laranja
-    const p250 = Math.max(0, Math.min(1, (toY(250) - top) / (bottom - top)));
-    grad.addColorStop(p250, 'rgba(255,130,0,0.22)');
+    const p = v => Math.max(0, Math.min(1, (toY(v) - top) / (bottom - top)));
 
-    // Alvo do usuário → preto (zona normal)
-    const pAlvo = Math.max(0, Math.min(1, (toY(alvo) - top) / (bottom - top)));
-    grad.addColorStop(pAlvo, 'rgba(0,0,0,0.0)');
-
-    // 70 (limiar hipo) → laranja
-    const p70 = Math.max(0, Math.min(1, (toY(70) - top) / (bottom - top)));
-    grad.addColorStop(p70, 'rgba(255,130,0,0.22)');
-
-    // Base do gráfico (hipo severa) → vermelho
-    grad.addColorStop(1, 'rgba(255,40,40,0.38)');
+    grad.addColorStop(0,              'rgba(255,40,40,0.40)');
+    grad.addColorStop(p(hiperSev),    'rgba(255,40,40,0.40)');
+    grad.addColorStop(p(zonaOk1),     'rgba(255,130,0,0.20)');
+    grad.addColorStop(p(alvo),        'rgba(0,0,0,0.0)');
+    grad.addColorStop(p(zonaOk2),     'rgba(255,130,0,0.20)');
+    grad.addColorStop(p(hipoSev),     'rgba(255,40,40,0.40)');
+    grad.addColorStop(1,              'rgba(255,40,40,0.40)');
 
     ctx.save();
     ctx.fillStyle = grad;
