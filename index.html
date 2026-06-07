@@ -2209,6 +2209,11 @@ function anotarDoseRefeicao() {
     hora = _now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
   }
 
+  // Atualiza próxima medição levando em conta a insulina recém-tomada
+  const dadosAtualizados = loadData();
+  const iobRAtual = calcIOB(dadosAtualizados, 'rapida');
+  calcProximaMedicao(glicemiaModal, doseAnotar, iobRAtual);
+
   atualizarStatusBar();
   renderHistorico();
   btn.innerHTML = `✅ ${doseAnotar} U anotadas (${hora})`;
