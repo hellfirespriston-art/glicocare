@@ -628,13 +628,6 @@
     <div id="graf-data-label" style="font-size:0.82rem;color:#00e5ff;font-weight:600;"></div>
   </div>
   <div class="chart-box"><canvas id="grafico-glicemia"></canvas></div>
-  <div class="legenda" style="margin-top:12px;">
-    <div class="legenda-item"><div class="dot" style="background:#ff4466"></div> Hipoglicemia (&lt;70)</div>
-    <div class="legenda-item"><div class="dot" style="background:#00ff99"></div> Normal (70–180)</div>
-    <div class="legenda-item"><div class="dot" style="background:#ffaa00"></div> Elevada (180–250)</div>
-    <div class="legenda-item"><div class="dot" style="background:#ff6633"></div> Hiper (&gt;250)</div>
-    <div class="legenda-item"><div style="width:12px;height:3px;background:#00e5ff;border-radius:2px;opacity:0.6;"></div> Alvo</div>
-  </div>
   <div class="banner-anuncio" onclick="abrirApoie()">
     <div class="banner-anuncio-linha1">Espaço publicitário</div>
     <div class="banner-anuncio-linha2">📢 Anuncie aqui</div>
@@ -2035,9 +2028,7 @@ function renderGrafico() {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          labels: { color: '#aaa', font: { size: 12 } }
-        },
+        legend: { display: false },
         tooltip: {
           mode: 'index',
           intersect: false,
