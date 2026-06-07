@@ -1946,9 +1946,9 @@ const glicemiaGradPlugin = {
     const p250 = Math.max(0, Math.min(1, (toY(250) - top) / (bottom - top)));
     grad.addColorStop(p250, 'rgba(255,130,0,0.22)');
 
-    // Alvo do usuário → verde
+    // Alvo do usuário → preto (zona normal)
     const pAlvo = Math.max(0, Math.min(1, (toY(alvo) - top) / (bottom - top)));
-    grad.addColorStop(pAlvo, 'rgba(0,220,80,0.28)');
+    grad.addColorStop(pAlvo, 'rgba(0,0,0,0.0)');
 
     // 70 (limiar hipo) → laranja
     const p70 = Math.max(0, Math.min(1, (toY(70) - top) / (bottom - top)));
