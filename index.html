@@ -730,55 +730,50 @@
 
 <!-- ══════════ ANÁLISE ══════════ -->
 <div id="tab-analise" class="content">
-  <div class="grid2">
 
-    <!-- HBA1C -->
-    <div class="hba1c-box">
-      <div style="font-size:0.78rem;color:#555;text-transform:uppercase;letter-spacing:1px;">HbA1c Estimada</div>
-      <div class="hba1c-valor" id="hba1c-valor" style="color:#00e5ff;">—</div>
-      <div class="hba1c-cat" id="hba1c-cat">Sem dados suficientes</div>
-      <div style="font-size:0.75rem;color:#444;margin-top:8px;">
-        * Estimativa baseada na média das últimas medições. Fórmula: (média mg/dL + 46.7) / 28.7
-      </div>
-      <table class="hba1c-tabela" style="margin-top:16px;width:100%">
-        <tr><td>Abaixo de 5,7%</td><td style="color:#00ff99;">✅ Normal</td></tr>
-        <tr><td>5,7% – 6,4%</td><td style="color:#ffaa00;">⚠️ Pré-diabetes</td></tr>
-        <tr><td>6,5% ou mais</td><td style="color:#ff4466;">🔴 Diabetes</td></tr>
-        <tr><td>Meta tratamento</td><td style="color:#00e5ff;">🎯 Abaixo de 7%</td></tr>
-      </table>
+  <!-- TIR: TEMPO NO ALVO -->
+  <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #1e2a5a;border-radius:16px;padding:20px;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;">
+      <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">📊 Tempo no Alvo (TIR)</div>
+      <div id="tir-dias-label" style="font-size:0.72rem;color:#444;"></div>
     </div>
-
-    <!-- ESTATÍSTICAS -->
-    <div class="card">
-      <h3>Estatísticas</h3>
-      <div id="stats-box" style="font-size:0.88rem;line-height:2;">
-        <div style="color:#333;text-align:center;padding:20px;">Registre medições para ver estatísticas</div>
-      </div>
+    <div id="tir-bar" style="display:flex;border-radius:10px;overflow:hidden;height:34px;margin-bottom:14px;background:#1a1a2a;">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:#444;">Sem dados</div>
     </div>
-
-    <!-- PADRÕES -->
-    <div class="card" style="grid-column:1/-1;">
-      <h3>🧠 Padrões Identificados</h3>
-      <div id="padroes-box" style="font-size:0.88rem;line-height:1.8;color:#aaa;">
-        <div style="text-align:center;padding:20px;color:#666;">Registre pelo menos 7 dias para identificar padrões</div>
-      </div>
-    </div>
-
-    <!-- PDF -->
-    <div class="card" style="grid-column:1/-1;text-align:center;padding:24px;">
-      <h3 style="margin-bottom:16px;">📄 Relatório Médico</h3>
-      <p style="color:#888;font-size:0.88rem;margin-bottom:20px;">Gera um PDF completo com histórico de glicemia, doses de insulina, HbA1c estimada e padrões identificados para levar à consulta.</p>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <select id="sel-pdf-periodo" style="width:auto;">
-          <option value="30" selected>1 mês</option>
-          <option value="60">2 meses</option>
-          <option value="90">3 meses</option>
-        </select>
-        <button class="btn btn-primary" onclick="gerarPDF()">🖨️ Gerar PDF para Consulta</button>
-      </div>
-    </div>
-
+    <div id="tir-legenda" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
   </div>
+
+  <!-- KPIs -->
+  <div id="analise-kpis" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;"></div>
+
+  <!-- MÉDIAS POR PERÍODO -->
+  <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #1e2a5a;border-radius:16px;padding:20px;margin-bottom:14px;">
+    <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:16px;">🕐 Médias por Período do Dia</div>
+    <div id="analise-periodos"></div>
+  </div>
+
+  <!-- PADRÕES -->
+  <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #1e2a5a;border-radius:16px;padding:20px;margin-bottom:14px;">
+    <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:16px;">🧠 Padrões Identificados</div>
+    <div id="padroes-box" style="font-size:0.9rem;color:#aaa;">
+      <div style="text-align:center;padding:20px;color:#444;">Registre pelo menos 7 dias para identificar padrões</div>
+    </div>
+  </div>
+
+  <!-- PDF -->
+  <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #1e2a5a;border-radius:16px;padding:20px;text-align:center;">
+    <div style="font-size:0.72rem;color:#555;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:12px;">📄 Relatório para Consulta Médica</div>
+    <p style="color:#666;font-size:0.88rem;margin-bottom:16px;line-height:1.6;">PDF completo com histórico, doses, HbA1c e padrões — leve ao médico.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;align-items:center;">
+      <select id="sel-pdf-periodo" style="width:auto;">
+        <option value="30" selected>Último mês</option>
+        <option value="60">Últimos 2 meses</option>
+        <option value="90">Últimos 3 meses</option>
+      </select>
+      <button class="btn btn-primary" onclick="gerarPDF()">🖨️ Gerar PDF</button>
+    </div>
+  </div>
+
 </div>
 
 <!-- ══════════ CONFIG ══════════ -->
@@ -2400,57 +2395,180 @@ function fecharDupModal() {
 // ── ANÁLISE ──
 function renderAnalise() {
   const dados = loadData();
-  if (!dados.length) {
-    document.getElementById('stats-box').innerHTML = '<div style="color:#777;text-align:center;padding:20px;">Registre medições para ver estatísticas</div>';
+  const cfg = loadConfig();
+  const avg = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
+
+  const vazio = (id, msg) => { const el=document.getElementById(id); if(el) el.innerHTML=`<div style="text-align:center;padding:20px;color:#444;font-size:0.88rem;">${msg}</div>`; };
+
+  const medicoes = dados.filter(r => r.glicemia != null && r.glicemia > 0);
+
+  if (!medicoes.length) {
+    document.getElementById('tir-bar').innerHTML = '<div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:0.78rem;color:#444;">Sem dados</div>';
+    document.getElementById('tir-legenda').innerHTML = '';
+    document.getElementById('tir-dias-label').textContent = '';
+    document.getElementById('analise-kpis').innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#444;padding:24px;font-size:0.9rem;">Registre medições para ver análises</div>';
+    vazio('analise-periodos', 'Sem dados suficientes');
+    vazio('padroes-box', 'Registre pelo menos 7 dias para identificar padrões');
     return;
   }
 
-  const glicemias = dados.map(r=>r.glicemia);
-  const media = glicemias.reduce((a,b)=>a+b,0)/glicemias.length;
-  const max = Math.max(...glicemias);
-  const min = Math.min(...glicemias);
+  const glicemias = medicoes.map(r => r.glicemia);
+  const n = glicemias.length;
+  const media = avg(glicemias);
+  const maxG = Math.max(...glicemias);
+  const minG = Math.min(...glicemias);
+  const dp = Math.sqrt(glicemias.reduce((s,v) => s + Math.pow(v - media, 2), 0) / n);
+  const cv = dp / media * 100;
   const hba1c = (media + 46.7) / 28.7;
+  const diasComDados = new Set(medicoes.map(r => new Date(r.dt).toDateString())).size;
 
-  // HbA1c
-  document.getElementById('hba1c-valor').textContent = hba1c.toFixed(1) + '%';
-  const catEl = document.getElementById('hba1c-cat');
-  if (hba1c < 5.7) { catEl.textContent='✅ Normal'; catEl.style.background='rgba(0,255,153,0.15)'; catEl.style.color='#00ff99'; }
-  else if (hba1c < 6.5) { catEl.textContent='⚠️ Pré-diabetes'; catEl.style.background='rgba(255,170,0,0.15)'; catEl.style.color='#ffaa00'; }
-  else { catEl.textContent='🔴 Diabetes — busque controle'; catEl.style.background='rgba(255,68,102,0.15)'; catEl.style.color='#ff4466'; }
+  // ── TIR (Time in Range — Consenso Internacional 2019) ──
+  const zh2 = glicemias.filter(v=>v<54).length;
+  const zh1 = glicemias.filter(v=>v>=54&&v<70).length;
+  const zn  = glicemias.filter(v=>v>=70&&v<=180).length;
+  const za1 = glicemias.filter(v=>v>180&&v<=250).length;
+  const za2 = glicemias.filter(v=>v>250).length;
+  const pct = v => Math.round(v/n*100);
+  const pH2=pct(zh2), pH1=pct(zh1), pN=pct(zn), pA1=pct(za1), pA2=pct(za2);
 
-  // Stats
-  const emZona = glicemias.filter(v=>v>=70&&v<=140).length;
-  const pctZona = Math.round(emZona/glicemias.length*100);
-  document.getElementById('stats-box').innerHTML = `
-    <div>📊 Total de medições: <strong style="color:#00e5ff">${dados.length}</strong></div>
-    <div>📈 Média: <strong style="color:#00e5ff">${media.toFixed(0)} mg/dL</strong></div>
-    <div>🔺 Máxima: <strong style="color:#ff6633">${max} mg/dL</strong></div>
-    <div>🔻 Mínima: <strong style="color:#ff4466">${min} mg/dL</strong></div>
-    <div>✅ Tempo na zona: <strong style="color:#00ff99">${pctZona}%</strong></div>
-    <div>🔵 IOB Rápida atual: <strong style="color:#00e5ff">${calcIOB(dados,'rapida').toFixed(1)} U</strong></div>
+  const tirZones = [
+    { pct:pH2, color:'#7a0022', label:'< 54 mg/dL', titulo:'Hipo grave' },
+    { pct:pH1, color:'#ff3355', label:'54–70 mg/dL', titulo:'Hipoglicemia' },
+    { pct:pN,  color:'#00b84a', label:'70–180 mg/dL', titulo:'Na zona ✓' },
+    { pct:pA1, color:'#ff8800', label:'180–250 mg/dL', titulo:'Elevada' },
+    { pct:za2>0?pA2:0, color:'#cc2200', label:'> 250 mg/dL', titulo:'Hiperglicemia' },
+  ].filter(z=>z.pct>0);
+
+  document.getElementById('tir-dias-label').textContent = `${diasComDados} dia(s) · ${n} medições`;
+  document.getElementById('tir-bar').innerHTML = tirZones.map(z =>
+    `<div style="flex:${z.pct};background:${z.color};display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.9);min-width:0;overflow:hidden;white-space:nowrap;">
+      ${z.pct>=8 ? z.pct+'%' : ''}
+    </div>`
+  ).join('');
+
+  const allTirZones = [
+    { pct:pN,  color:'#00b84a', label:`Na zona (70–180): ${pN}%` },
+    { pct:pA1, color:'#ff8800', label:`Elevada (180–250): ${pA1}%` },
+    { pct:pH1, color:'#ff3355', label:`Hipo (54–70): ${pH1}%` },
+    { pct:pA2, color:'#cc2200', label:`Hiper (>250): ${pA2}%` },
+    { pct:pH2, color:'#7a0022', label:`Hipo grave (<54): ${pH2}%` },
+  ];
+  document.getElementById('tir-legenda').innerHTML = allTirZones.map(z =>
+    `<div style="display:flex;align-items:center;gap:6px;font-size:0.72rem;color:#aaa;">
+      <div style="width:10px;height:10px;border-radius:3px;background:${z.color};flex-shrink:0;"></div>${z.label}
+    </div>`
+  ).join('');
+
+  // ── KPIs ──
+  const hba1cColor = hba1c<5.7?'#00ff99':hba1c<6.5?'#ffaa00':'#ff4466';
+  const hba1cLabel = hba1c<5.7?'Normal ✓':hba1c<6.5?'Pré-diabetes':'Diabetes';
+  const cvColor = cv<36?'#00ff99':cv<50?'#ffaa00':'#ff4466';
+  const cvLabel = cv<36?'Controlada ✓':cv<50?'Moderada':'Alta ⚠️';
+  const fatorAtual = Math.round(getFatorSensAtual());
+
+  document.getElementById('analise-kpis').innerHTML = `
+    <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid ${hba1cColor}44;border-radius:14px;padding:18px;text-align:center;">
+      <div style="font-size:0.66rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">HbA1c Estimada</div>
+      <div style="font-size:2.4rem;font-weight:700;color:${hba1cColor};line-height:1;">${hba1c.toFixed(1)}<span style="font-size:1rem;font-weight:400;">%</span></div>
+      <div style="font-size:0.72rem;color:${hba1cColor};margin-top:8px;font-weight:600;">${hba1cLabel}</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #00e5ff22;border-radius:14px;padding:18px;text-align:center;">
+      <div style="font-size:0.66rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Média Glicemia</div>
+      <div style="font-size:2.4rem;font-weight:700;color:#00e5ff;line-height:1;">${Math.round(media)}</div>
+      <div style="font-size:0.72rem;color:#555;margin-top:8px;">mg/dL · ${n} medições</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid ${cvColor}33;border-radius:14px;padding:18px;text-align:center;">
+      <div style="font-size:0.66rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Variabilidade (CV)</div>
+      <div style="font-size:2.4rem;font-weight:700;color:${cvColor};line-height:1;">${cv.toFixed(0)}<span style="font-size:1rem;font-weight:400;">%</span></div>
+      <div style="font-size:0.72rem;color:${cvColor};margin-top:8px;">${cvLabel}</div>
+    </div>
+    <div style="background:linear-gradient(135deg,#0d1130,#161630);border:1px solid #cc44ff33;border-radius:14px;padding:18px;text-align:center;">
+      <div style="font-size:0.66rem;color:#555;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Sensibilidade</div>
+      <div style="font-size:2.4rem;font-weight:700;color:#cc44ff;line-height:1;">${fatorAtual}</div>
+      <div style="font-size:0.72rem;color:#555;margin-top:8px;">mg/dL por U</div>
+    </div>
   `;
 
-  // Padrões
-  let padroes = [];
-  const manha = dados.filter(r=>{const h=new Date(r.dt).getHours();return h>=6&&h<12;}).map(r=>r.glicemia);
-  const tarde = dados.filter(r=>{const h=new Date(r.dt).getHours();return h>=12&&h<18;}).map(r=>r.glicemia);
-  const noite = dados.filter(r=>{const h=new Date(r.dt).getHours();return h>=18||h<6;}).map(r=>r.glicemia);
-  const avg = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
+  // ── PERÍODOS DO DIA ──
+  const periodos = [
+    { icon:'🌙', nome:'Madrugada', range:'0h – 6h',  h1:0,  h2:6  },
+    { icon:'🌅', nome:'Manhã',     range:'6h – 12h', h1:6,  h2:12 },
+    { icon:'☀️', nome:'Tarde',    range:'12h – 18h', h1:12, h2:18 },
+    { icon:'🌆', nome:'Noite',    range:'18h – 24h', h1:18, h2:24 },
+  ];
 
-  const mM=avg(manha), mT=avg(tarde), mN=avg(noite);
-  if (mM) padroes.push(`🌅 Manhã: média ${mM.toFixed(0)} mg/dL ${mM>140?'— glicemia tende a ser alta de manhã ⚠️':'— bom controle matinal ✅'}`);
-  if (mT) padroes.push(`☀️ Tarde: média ${mT.toFixed(0)} mg/dL ${mT>140?'— verifique refeições do almoço ⚠️':'— boa resposta pós-almoço ✅'}`);
-  if (mN) padroes.push(`🌙 Noite: média ${mN.toFixed(0)} mg/dL ${mN>140?'— cuidado com glicemia noturna ⚠️':mN<80?'— risco de hipoglicemia noturna ⚠️':'— controle noturno ok ✅'}`);
+  document.getElementById('analise-periodos').innerHTML = periodos.map((p, i) => {
+    const vals = medicoes.filter(r=>{const h=new Date(r.dt).getHours();return h>=p.h1&&h<p.h2;}).map(r=>r.glicemia);
+    const m = avg(vals);
+    const border = i < periodos.length-1 ? 'border-bottom:1px solid #1a1a2a;' : '';
+    if (!m) return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0;${border}">
+      <div style="font-size:1.5rem;width:34px;text-align:center;">${p.icon}</div>
+      <div style="flex:1;"><div style="font-size:0.85rem;color:#666;">${p.nome} <span style="color:#444;font-size:0.78rem;">${p.range}</span></div></div>
+      <div style="font-size:0.78rem;color:#444;">—</div>
+    </div>`;
 
-  const hipos = glicemias.filter(v=>v<70).length;
-  if (hipos > 0) padroes.push(`⚠️ ${hipos} episódio(s) de hipoglicemia registrado(s) — atenção às doses`);
+    const cor = m<70?'#ff3355':m<=180?'#00b84a':m<=250?'#ff8800':'#cc2200';
+    const status = m<70?'⚠️ Hipo':m<=180?'✓ OK':m<=250?'↑ Alta':'⚠️ Hiper';
+    const pctBarra = Math.min(100, Math.round(m/400*100));
+    return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0;${border}">
+      <div style="font-size:1.5rem;width:34px;text-align:center;flex-shrink:0;">${p.icon}</div>
+      <div style="flex:1;">
+        <div style="font-size:0.82rem;color:#888;margin-bottom:7px;">${p.nome} <span style="color:#555;font-size:0.75rem;">${p.range}</span> · <span style="color:#555;font-size:0.75rem;">${vals.length} med.</span></div>
+        <div style="background:#1a1a2a;border-radius:6px;height:7px;overflow:hidden;">
+          <div style="width:${pctBarra}%;height:100%;background:${cor};border-radius:6px;"></div>
+        </div>
+      </div>
+      <div style="text-align:right;min-width:72px;flex-shrink:0;">
+        <div style="font-size:1.15rem;font-weight:700;color:${cor};">${Math.round(m)}</div>
+        <div style="font-size:0.68rem;color:#555;">${status}</div>
+      </div>
+    </div>`;
+  }).join('');
 
-  const fator = getFatorSens(dados);
-  if (fator !== FATOR_SENS_DEFAULT) padroes.push(`🧠 Sensibilidade calibrada: 1 U de insulina rápida reduz ~${fator.toFixed(0)} mg/dL neste perfil`);
+  // ── PADRÕES ──
+  const padroes = [];
+
+  // TIR
+  if (pN >= 70) padroes.push({ cor:'#00b84a', icon:'🎯', txt:`${pN}% das medições na zona alvo (70–180) — controle excelente!` });
+  else if (pN >= 50) padroes.push({ cor:'#ffaa00', icon:'📈', txt:`${pN}% das medições na zona alvo — a meta é acima de 70%` });
+  else padroes.push({ cor:'#ff4466', icon:'⚠️', txt:`Apenas ${pN}% na zona alvo — ajuste de rotina recomendado com o médico` });
+
+  // Hipos
+  const nHipos = glicemias.filter(v=>v<70).length;
+  if (nHipos>0) padroes.push({ cor:'#ff3355', icon:'🚨', txt:`${nHipos} medição(ões) abaixo de 70 mg/dL (hipoglicemia) — revise as doses com o médico` });
+
+  // Hipers
+  const nHipers = glicemias.filter(v=>v>250).length;
+  if (nHipers>0) padroes.push({ cor:'#ff8800', icon:'📊', txt:`${nHipers} medição(ões) acima de 250 mg/dL — hiperglicemia frequente detectada` });
+
+  // Variabilidade
+  if (cv>=36) padroes.push({ cor:'#ffaa00', icon:'📉', txt:`Variabilidade alta (CV ${cv.toFixed(0)}%) — rotina alimentar ou de aplicação inconsistente pode ser a causa` });
+
+  // Pior período
+  if (diasComDados >= 3) {
+    const avgs = periodos.map(p => {
+      const vals = medicoes.filter(r=>{const h=new Date(r.dt).getHours();return h>=p.h1&&h<p.h2;}).map(r=>r.glicemia);
+      return { nome:p.nome.toLowerCase(), m:avg(vals) };
+    }).filter(x=>x.m!=null);
+    if (avgs.length) {
+      const pior = avgs.reduce((a,b)=>b.m>a.m?b:a);
+      if (pior.m>180) padroes.push({ cor:'#ffaa00', icon:'🕐', txt:`Pior período: ${pior.nome} (média ${Math.round(pior.m)} mg/dL) — vale monitorar mais neste horário` });
+    }
+  }
+
+  // Extremos
+  if (maxG>300) padroes.push({ cor:'#ff4466', icon:'🔺', txt:`Pico registrado de ${maxG} mg/dL — episódio de hiperglicemia severa` });
+  if (minG<54) padroes.push({ cor:'#ff3355', icon:'🔻', txt:`Mínima registrada de ${minG} mg/dL — hipoglicemia grave detectada` });
+
+  // Consistência
+  if (diasComDados >= 14) padroes.push({ cor:'#00e5ff', icon:'📅', txt:`${diasComDados} dias de dados registrados — histórico consistente para análise confiável` });
 
   document.getElementById('padroes-box').innerHTML = padroes.length
-    ? padroes.map(p=>`<div style="padding:6px 0;border-bottom:1px solid #1a1a3a;">→ ${p}</div>`).join('')
-    : '<div style="color:#333">Registre mais medições para identificar padrões</div>';
+    ? padroes.map(p=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #1a1a2a;">
+        <div style="font-size:1.1rem;flex-shrink:0;line-height:1.5;">${p.icon}</div>
+        <div style="font-size:0.88rem;color:#bbb;line-height:1.7;">${p.txt}</div>
+      </div>`).join('')
+    : '<div style="color:#555;text-align:center;padding:20px;">Mais dados necessários para análise</div>';
 }
 
 // ── GERAR PDF ──
