@@ -940,6 +940,7 @@
         <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
           <button onclick="simularDados()" style="width:100%;background:#0a0a18;border:1px solid #1e1e2e;color:#334;padding:10px;border-radius:8px;cursor:pointer;font-size:0.82rem;">Gerar 30 dias de dados simulados</button>
           <button onclick="limparDados()" style="width:100%;background:#0a0a18;border:1px solid #2a1010;color:#664444;padding:10px;border-radius:8px;cursor:pointer;font-size:0.82rem;">🗑️ Apagar todos os registros</button>
+          <button onclick="hardReset()" style="width:100%;background:linear-gradient(135deg,#3a0010,#1a0008);border:1px solid #ff003344;color:#ff4466;padding:13px;border-radius:8px;cursor:pointer;font-size:0.88rem;font-weight:700;letter-spacing:0.3px;">⚡ Hard Reset — Limpar cache e recarregar app</button>
         </div>
       </details>
     </div>
@@ -1229,6 +1230,21 @@ function simularDados() {
   saveData(dados);
   atualizarStatusBar();
   alert('30 dias de dados simulados gerados!');
+}
+
+async function hardReset() {
+  if (!confirm('⚡ Hard Reset\n\nIsso vai apagar TODA a cache do app e recarregar do zero.\n\nSeus dados salvos NÃO serão apagados.\n\nContinuar?')) return;
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+  } catch(e) {}
+  window.location.reload(true);
 }
 
 function limparDados() {
