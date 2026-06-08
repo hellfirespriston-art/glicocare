@@ -380,20 +380,34 @@
     .banner-anuncio-linha2 { font-size:0.92rem; color:#00e5ffcc; font-weight:600; }
     .banner-anuncio-linha3 { font-size:0.7rem; color:#667788; margin-top:3px; }
 
-    /* BOTÃO APOIE — barra discreta no rodapé */
+    /* BOTÃO APOIE — barra com destaque */
     .apoie-bar {
-      padding:14px 20px 18px;
+      padding:16px 20px 20px;
       text-align:center;
       background:#060612;
     }
-    .apoie-bar-btn {
-      background:none; border:none;
-      color:#556677; font-size:0.78rem;
-      cursor:pointer; padding:6px 16px;
-      border-radius:20px; transition:all 0.3s;
-      letter-spacing:0.5px;
+    @keyframes apoie-pulse {
+      0%,100% { box-shadow:0 0 8px #00ff9944, 0 0 0 0 #00ff9933; }
+      50%      { box-shadow:0 0 18px #00ff9988, 0 0 0 6px #00ff9911; }
     }
-    .apoie-bar-btn:hover { color:#00ff99bb; }
+    .apoie-bar-btn {
+      background:rgba(0,255,153,0.07);
+      border:1px solid #00ff9955;
+      color:#00ff99cc;
+      font-size:0.85rem;
+      font-weight:600;
+      cursor:pointer;
+      padding:10px 24px;
+      border-radius:24px;
+      transition:all 0.3s;
+      letter-spacing:0.5px;
+      animation:apoie-pulse 2.8s ease-in-out infinite;
+    }
+    .apoie-bar-btn:hover {
+      background:rgba(0,255,153,0.15);
+      color:#00ff99;
+      border-color:#00ff9999;
+    }
 
     /* MODAL SOBRE O DEV */
     .dev-modal { display:none; position:fixed; inset:0; background:#000000ee; z-index:2600; justify-content:center; align-items:flex-start; padding:16px; overflow-y:auto; }
@@ -1009,6 +1023,7 @@
         Desenvolvido com ☕ e carinho<br>
         <span style="color:#00e5ff44;">///</span> GlicoCare · 2025 <span style="color:#00e5ff44;">///</span>
       </div>
+      <button onclick="document.getElementById('dev-modal').classList.remove('show');abrirApoie();" style="display:block;width:100%;margin-top:20px;padding:13px;border-radius:10px;border:1px solid #00ff9966;background:rgba(0,255,153,0.08);color:#00ff99;font-size:0.95rem;font-weight:700;cursor:pointer;letter-spacing:0.5px;transition:all 0.3s;">💚 Apoiar o GlicoCare</button>
       <button class="dev-fechar" onclick="document.getElementById('dev-modal').classList.remove('show')">Fechar</button>
     </div>
   </div>
