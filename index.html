@@ -1046,16 +1046,21 @@
     </div>
     <!-- SUGESTÃO + DOSES -->
     <div class="res-doses" id="res-doses-box" style="display:none;">
-      <div class="res-doses-title" style="display:flex;align-items:center;gap:12px;">
-        💉 Sugestão de Insulina
-        <span style="display:flex;align-items:center;gap:6px;">
-          <span id="res-sug-rapida" style="color:#00e5ff;font-weight:700;font-size:1.5rem;">—</span>
+      <!-- Destaque grande da dose sugerida -->
+      <div style="text-align:center;margin-bottom:18px;">
+        <div style="font-size:0.72rem;color:#00e5ff;text-transform:uppercase;letter-spacing:2.5px;font-weight:700;margin-bottom:10px;">💉 Dose Sugerida</div>
+        <div style="background:rgba(0,229,255,0.07);border:2px solid rgba(0,229,255,0.35);border-radius:18px;padding:18px 32px;display:inline-flex;align-items:baseline;gap:6px;min-width:160px;justify-content:center;box-shadow:0 0 24px rgba(0,229,255,0.12);">
+          <span id="res-sug-rapida" style="color:#00e5ff;font-weight:900;font-size:4.5rem;line-height:1;letter-spacing:-2px;text-shadow:0 0 20px rgba(0,229,255,0.5);">—</span>
+          <span style="color:#00e5ffbb;font-size:1.8rem;font-weight:700;">U</span>
+        </div>
+        <div style="margin-top:8px;">
           <span class="tooltip-wrap">
-            <span class="tooltip-icon" id="res-tooltip-icon">?</span>
+            <span class="tooltip-icon" id="res-tooltip-icon" style="font-size:0.8rem;padding:3px 9px;">? ver cálculo</span>
             <span class="tooltip-balao" id="res-tooltip-text"></span>
           </span>
-        </span>
+        </div>
       </div>
+      <!-- Campo de confirmação -->
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
         <span style="color:#aaa;font-size:0.95rem;white-space:nowrap;">Unidades aplicadas:</span>
         <div style="position:relative;display:inline-flex;align-items:center;">
@@ -1064,7 +1069,7 @@
         </div>
       </div>
       <button class="btn btn-success" id="btn-confirmar" style="width:100%;margin-top:6px;" onclick="confirmarDose()">✅ Confirmar 0U aplicadas</button>
-      <div class="res-doses-hint">* Edite os valores se necessário antes de confirmar</div>
+      <div class="res-doses-hint">* Edite o campo se a dose aplicada foi diferente</div>
     </div>
     <button class="res-fechar" onclick="fecharResultado()">✕ Fechar</button>
   </div>
