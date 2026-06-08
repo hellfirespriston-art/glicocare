@@ -704,6 +704,13 @@
       <label>Insulina Lenta (U)</label>
       <input type="number" id="edit-lenta" min="0" max="80" step="1" placeholder="0"/>
     </div>
+    <div id="edit-antes-row" class="form-row" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
+      <label style="margin:0;color:#bbb;">🍽️ Medição antes de comer</label>
+      <label class="toggle-switch" style="margin:0;">
+        <input type="checkbox" id="edit-antes"/>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
     <div style="display:flex;gap:10px;margin-top:18px;">
       <button onclick="salvarEdicao()" style="flex:1;background:#00e5ff;color:#000;font-weight:700;padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;">💾 Salvar</button>
       <button onclick="fecharEditModal()" style="flex:1;background:#1a1a3a;color:#aaa;padding:12px;border:1px solid #333;border-radius:8px;cursor:pointer;font-size:1rem;">Cancelar</button>
@@ -2251,7 +2258,7 @@ function renderHistorico() {
             <div class="hist-glicemia" style="color:${cor}">${r.glicemia}<small style="font-size:0.45em;color:#555;"> mg/dL</small></div>
             <span class="hist-status-badge" style="background:${bBg};color:${bClr};">${bLbl}</span>
           </div>
-          <div class="hist-meta">${hora}</div>
+          <div class="hist-meta">${hora}${r._antes ? ' · <span style="color:#ffaa00;font-size:0.78rem;">🍽️ antes de comer</span>' : ''}</div>
           ${insulinaStr}
         </div>
         <div class="hist-btns">
@@ -2297,8 +2304,11 @@ function abrirEditModal(id) {
   document.getElementById('edit-dt').value = r.dt.slice(0,16);
   document.getElementById('edit-rapida').value = r.rapida || 0;
   document.getElementById('edit-lenta').value = r.lenta || 0;
-  // Oculta glicemia se for registro de lenta
-  document.getElementById('edit-glicemia').closest('.form-row').style.display = r._tipo === 'insulina lenta' ? 'none' : '';
+  // Oculta glicemia e "antes de comer" se for registro de lenta
+  const isLenta = r._tipo === 'insulina lenta';
+  document.getElementById('edit-glicemia').closest('.form-row').style.display = isLenta ? 'none' : '';
+  document.getElementById('edit-antes-row').style.display = isLenta ? 'none' : 'flex';
+  document.getElementById('edit-antes').checked = !!r._antes;
   document.getElementById('edit-modal').style.display = 'flex';
 }
 
@@ -2324,6 +2334,7 @@ function salvarEdicao() {
   dados[idx].rapida = novaRapida;
   dados[idx].lenta = novaLenta;
   dados[idx].aplicou = (novaRapida > 0 || novaLenta > 0);
+  if (r._tipo !== 'insulina lenta') dados[idx]._antes = document.getElementById('edit-antes').checked;
   dados.sort((a,b) => new Date(a.dt) - new Date(b.dt));
   saveData(dados);
   localStorage.removeItem('gc_proxts_' + activeProfileId());
@@ -2444,6 +2455,7 @@ function anotarDoseRefeicao() {
     const idx = dados.findIndex(r => r.id === ultima.id);
     dados[idx].rapida = (dados[idx].rapida || 0) + doseAnotar;
     dados[idx].aplicou = true;
+    dados[idx]._antes = true;
     saveData(dados);
     hora = new Date(ultima.dt).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
   } else {
@@ -2452,7 +2464,7 @@ function anotarDoseRefeicao() {
     const _local = new Date(_now.getTime() - _now.getTimezoneOffset() * 60000);
     const dtFinal = _local.toISOString().slice(0, 16);
     const novoId = Date.now();
-    dados.push({ id: novoId, dt: dtFinal, glicemia: glicemiaModal, rapida: doseAnotar, lenta: 0, aplicou: true, sugRapida: null });
+    dados.push({ id: novoId, dt: dtFinal, glicemia: glicemiaModal, rapida: doseAnotar, lenta: 0, aplicou: true, sugRapida: null, _antes: true });
     dados.sort((a, b) => new Date(a.dt) - new Date(b.dt));
     saveData(dados);
     hora = _now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
