@@ -908,19 +908,6 @@
     <button class="config-save" onclick="salvarConfig()">💾 Salvar Configurações</button>
     <div id="cfg-salvo-msg" style="text-align:center;color:#00ff99;font-size:0.85rem;margin-top:10px;display:none;">✅ Configurações salvas!</div>
 
-    <!-- BACKUP & DADOS -->
-    <div class="config-section" style="margin-top:20px;">
-      <h3>💾 Backup & Dados</h3>
-      <div id="storage-info" style="font-size:0.8rem;color:#445;margin-bottom:14px;">Carregando...</div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <button onclick="exportarDados()" style="width:100%;background:linear-gradient(135deg,#002e14,#001208);color:#00ff99aa;border:1px solid #00ff9922;padding:13px;border-radius:10px;cursor:pointer;font-size:0.88rem;font-weight:600;">📥 Exportar backup JSON</button>
-        <label style="display:block;width:100%;">
-          <div style="width:100%;background:linear-gradient(135deg,#001020,#000810);color:#00e5ff88;border:1px solid #00e5ff1a;padding:13px;border-radius:10px;cursor:pointer;font-size:0.88rem;font-weight:600;text-align:center;box-sizing:border-box;">📤 Importar backup JSON</div>
-          <input type="file" accept=".json" onchange="importarDados(this)" style="display:none;"/>
-        </label>
-      </div>
-    </div>
-
     <!-- LEGAL & SOBRE -->
     <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
       <button class="cfg-footer-btn" onclick="document.getElementById('aviso-legal-modal').classList.add('show')">
