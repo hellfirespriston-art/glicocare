@@ -1221,7 +1221,7 @@ function simularDados() {
       dados.push({ id: dt.getTime()+idx, dt: dt.toISOString().slice(0,16), glicemia: g, rapida: idx===0?0:Math.round(4+Math.random()*4), lenta:0, aplicou: idx!==0, sugRapida:5 });
     });
     const dl = new Date(now - d*86400000); dl.setHours(7,5,0,0);
-    dados.push({ id:dl.getTime()+99, dt:dl.toISOString().slice(0,16), glicemia:null, rapida:0, lenta:cfg.doseLenta||20, aplicou:true, sugRapida:null, _tipo:'insulina lenta' });
+    dados.push({ id:dl.getTime()+99, dt:dl.toISOString().slice(0,16), glicemia:null, rapida:0, lenta:cfg.doseLenta||20, sugLenta:cfg.doseLenta||20, aplicou:true, sugRapida:null, _tipo:'insulina lenta' });
   }
   saveData(dados);
   atualizarStatusBar();
@@ -1521,7 +1521,8 @@ function confirmarLentaModal() {
       const agora = new Date();
       dtStr = new Date(agora.getTime() - agora.getTimezoneOffset()*60000).toISOString().slice(0,16);
     }
-    dados.push({ id: Date.now(), dt: dtStr, glicemia: null, rapida: 0, lenta: dose, aplicou: true, sugRapida: null, _tipo: 'insulina lenta' });
+    const cfgL = loadConfig();
+    dados.push({ id: Date.now(), dt: dtStr, glicemia: null, rapida: 0, lenta: dose, sugLenta: cfgL.doseLenta||20, aplicou: true, sugRapida: null, _tipo: 'insulina lenta' });
   }
 
   dados.sort((a,b) => new Date(a.dt) - new Date(b.dt));
@@ -2224,13 +2225,25 @@ function renderHistorico() {
       const hora = new Date(r.dt).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
       if (r._tipo === 'insulina lenta') {
+        const sugL = r.sugLenta != null ? r.sugLenta : null;
+        let lentaInfoStr;
+        if (sugL != null) {
+          if (r.lenta > 0) {
+            lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ff;">💉 ${sugL}U sugerida · ${r.lenta}U aplicada ✅</div>`;
+          } else {
+            lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ffaa;">💉 ${sugL}U sugerida · não aplicou</div>`;
+          }
+        } else {
+          lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ff;">💉 ${r.lenta || '—'}U aplicada ✅</div>`;
+        }
         html += `<div class="hist-item" style="--hist-cor:#cc44ff;">
           <div class="hist-left">
             <div class="hist-value-row">
               <div class="hist-glicemia" style="color:#cc44ff;font-size:1.35rem;">💉 Lenta</div>
               <span class="hist-status-badge" style="background:#1e0030;color:#cc44ffaa;">BASAL</span>
             </div>
-            <div class="hist-meta">${hora} · ${r.lenta || '—'}U aplicada</div>
+            <div class="hist-meta">${hora}</div>
+            ${lentaInfoStr}
           </div>
           <div class="hist-btns">
             <button class="badge-edit" onclick="abrirEditModal(${r.id})">✏️</button>
