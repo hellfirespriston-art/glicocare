@@ -721,8 +721,9 @@
 <!-- ══════════ GRÁFICO ══════════ -->
 <div id="tab-grafico" class="content">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:0 4px;">
-    <div style="font-size:0.82rem;color:#888;">📅 Medições de hoje</div>
-    <div id="graf-data-label" style="font-size:0.82rem;color:#00e5ff;font-weight:600;"></div>
+    <button onclick="grafNavDia(-1)" style="background:none;border:1px solid #1e2a5a;color:#00e5ff;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:1rem;-webkit-tap-highlight-color:transparent;">‹</button>
+    <div id="graf-data-label" style="font-size:0.82rem;color:#00e5ff;font-weight:600;text-align:center;flex:1;"></div>
+    <button id="graf-btn-prox" onclick="grafNavDia(+1)" style="background:none;border:1px solid #1e2a5a;color:#00e5ff;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:1rem;-webkit-tap-highlight-color:transparent;">›</button>
   </div>
   <div class="chart-box"><canvas id="grafico-glicemia"></canvas></div>
   <div class="banner-anuncio" onclick="abrirApoie()">
@@ -2036,6 +2037,15 @@ function atualizarProximaBox(glic, sug, iobR, dados) {
 
 // ── GRÁFICO ──
 var chartInst = null;
+var _grafOffset = 0; // 0 = hoje, -1 = ontem, etc.
+
+function grafNavDia(dir) {
+  const novoOffset = _grafOffset + dir;
+  if (novoOffset > 0) return; // não avança além de hoje
+  _grafOffset = novoOffset;
+  renderGrafico();
+}
+
 
 // Plugin: fundo degradê baseado no alvo glicêmico do usuário
 const glicemiaGradPlugin = {
@@ -2082,16 +2092,25 @@ function renderGrafico() {
   const cfg = loadConfig();
   const alvo = cfg.glicemiaAlvo || 180;
 
-  // Filtrar só registros de hoje com glicemia válida
-  const hoje = new Date();
-  const inicioDia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 0, 0, 0).getTime();
+  // Dia exibido com base no offset
+  const diaRef = new Date();
+  diaRef.setDate(diaRef.getDate() + _grafOffset);
+  const inicioDia = new Date(diaRef.getFullYear(), diaRef.getMonth(), diaRef.getDate(), 0, 0, 0).getTime();
+  const fimDia    = inicioDia + 86400000;
   const filtrado = dados
-    .filter(r => r.glicemia != null && r.glicemia > 0 && new Date(r.dt).getTime() >= inicioDia)
+    .filter(r => r.glicemia != null && r.glicemia > 0 && new Date(r.dt).getTime() >= inicioDia && new Date(r.dt).getTime() < fimDia)
     .sort((a, b) => new Date(a.dt) - new Date(b.dt));
 
   // Label de data
   const elData = document.getElementById('graf-data-label');
-  if (elData) elData.textContent = hoje.toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
+  if (elData) {
+    const labelDia = _grafOffset === 0 ? 'Hoje' : _grafOffset === -1 ? 'Ontem'
+      : diaRef.toLocaleDateString('pt-BR', { weekday:'short', day:'2-digit', month:'short' });
+    elData.textContent = `📅 ${labelDia}`;
+  }
+  // Botão "›" desativado quando já está em hoje
+  const btnProx = document.getElementById('graf-btn-prox');
+  if (btnProx) { btnProx.style.opacity = _grafOffset === 0 ? '0.25' : '1'; btnProx.style.pointerEvents = _grafOffset === 0 ? 'none' : 'auto'; }
 
   const labels = filtrado.map(r => new Date(r.dt).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}));
   const values = filtrado.map(r => r.glicemia);
