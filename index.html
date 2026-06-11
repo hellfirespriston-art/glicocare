@@ -185,13 +185,20 @@
     /* MODAL INSULINA LENTA */
     .lenta-modal { display:none; position:fixed; inset:0; background:#000000cc; z-index:1000; justify-content:center; align-items:center; }
     .lenta-modal.show { display:flex; }
-    .lenta-modal-box { background:#12001f; border:2px solid #cc44ff; border-radius:16px; padding:32px 24px; text-align:center; max-width:340px; width:92%; }
-    .lenta-modal-icon { font-size:3rem; }
-    .lenta-modal-title { font-size:1.25rem; font-weight:700; color:#cc44ff; margin:12px 0 6px; }
-    .lenta-modal-sub { font-size:0.95rem; color:#aaa; margin-bottom:20px; line-height:1.5; }
-    .lenta-dose-row { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:20px; }
-    .lenta-dose-row input { background:#0a0a20; border:1px solid #cc44ff; color:#f0f0f0; padding:12px 14px; border-radius:8px; font-size:1.7rem; font-weight:700; width:100px; text-align:center; }
-    .lenta-dose-row span { color:#cc44ff; font-size:1.2rem; font-weight:700; }
+    .lenta-modal-box { background:#12001f; border:2px solid #cc44ff; border-radius:20px; padding:36px 28px; text-align:center; max-width:360px; width:94%; }
+    .lenta-modal-icon { font-size:3.5rem; }
+    .lenta-modal-title { font-size:1.5rem; font-weight:700; color:#cc44ff; margin:14px 0 8px; }
+    .lenta-modal-sub { font-size:1.05rem; color:#ccc; margin-bottom:24px; line-height:1.6; }
+    .lenta-dose-row { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:24px; }
+    .lenta-dose-row input { background:#0a0a20; border:2px solid #cc44ff; color:#f0f0f0; padding:14px 16px; border-radius:10px; font-size:2.2rem; font-weight:700; width:110px; text-align:center; }
+    .lenta-dose-row span { color:#cc44ff; font-size:1.5rem; font-weight:700; }
+    .lenta-rapida-label { font-size:1.1rem; color:#ddd; text-align:center; margin-bottom:14px; font-weight:600; }
+    .lenta-toggle { display:flex; gap:10px; margin-bottom:16px; }
+    .lenta-toggle button { flex:1; padding:16px 10px; border-radius:12px; font-size:1.1rem; font-weight:700; cursor:pointer; border:2px solid; transition:all 0.2s; }
+    .lenta-toggle .t-nao { background:#1a0a2a; color:#cc44ffbb; border-color:#cc44ff55; }
+    .lenta-toggle .t-nao.ativo { background:#2a0a3a; color:#cc44ff; border-color:#cc44ff; }
+    .lenta-toggle .t-sim { background:#0a1a2a; color:#00b8ccbb; border-color:#00e5ff55; }
+    .lenta-toggle .t-sim.ativo { background:#003344; color:#00e5ff; border-color:#00e5ff; box-shadow:0 0 12px #00e5ff44; }
     .lenta-btn-row { display:flex; gap:10px; }
     .btn-lenta-confirmar { flex:1; background:#cc44ff; color:#000; font-weight:700; font-size:1rem; padding:15px; border:none; border-radius:10px; cursor:pointer; }
     .btn-lenta-pular { flex:1; background:#1a1a2a; color:#888; font-size:0.95rem; padding:15px; border:1px solid #333; border-radius:10px; cursor:pointer; }
@@ -613,27 +620,27 @@
 <!-- MODAL INSULINA LENTA (global — fora das tabs para funcionar em qualquer aba) -->
 <div class="lenta-modal" id="lenta-modal">
   <div class="lenta-modal-box">
-    <div class="lenta-modal-icon">🟣</div>
-    <div class="lenta-modal-title">Insulina Lenta — Manhã</div>
-    <div class="lenta-modal-sub">Você tomou insulina lenta hoje?<br>Confirme ou ajuste a dose abaixo:</div>
+    <div class="lenta-modal-icon">💉</div>
+    <div class="lenta-modal-title">Insulina da Manhã</div>
+    <div class="lenta-modal-sub">Quantas unidades você vai aplicar?</div>
     <div class="lenta-dose-row">
       <input type="number" id="inp-lenta-modal" value="20" min="0" max="80" step="1"/>
-      <span>U</span>
+      <span>u</span>
     </div>
-    <div style="margin:14px 0 6px;border-top:1px solid #2a1a40;padding-top:14px;">
-      <div style="color:#aaa;font-size:0.88rem;text-align:center;margin-bottom:10px;">Aplicou insulina rápida junto?</div>
-      <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <button id="lenta-rapida-nao" onclick="toggleLentaRapida(false)" style="flex:1;background:#1a0a2a;color:#cc44ffaa;border:1px solid #cc44ff55;border-radius:8px;padding:10px;cursor:pointer;font-size:0.9rem;font-weight:700;">Não</button>
-        <button id="lenta-rapida-sim" onclick="toggleLentaRapida(true)" style="flex:1;background:#1a1a2a;color:#666;border:1px solid #333;border-radius:8px;padding:10px;cursor:pointer;font-size:0.9rem;">Sim</button>
+    <div style="border-top:1px solid #2a1a40;padding-top:20px;margin-bottom:20px;">
+      <div class="lenta-rapida-label">Vai aplicar insulina rápida também?</div>
+      <div class="lenta-toggle">
+        <button id="lenta-rapida-nao" class="t-nao ativo" onclick="toggleLentaRapida(false)">❌ Não</button>
+        <button id="lenta-rapida-sim" class="t-sim" onclick="toggleLentaRapida(true)">✅ Sim</button>
       </div>
-      <div id="lenta-rapida-row" style="display:none;align-items:center;justify-content:center;gap:8px;">
-        <input type="number" id="inp-rapida-junto" value="5" min="0" max="80" step="1" style="background:#0a0a20;border:1px solid #00e5ff;color:#f0f0f0;padding:10px 12px;border-radius:8px;font-size:1.5rem;font-weight:700;width:90px;text-align:center;"/>
-        <span style="color:#00e5ff;font-size:1.1rem;font-weight:700;">U rápida</span>
+      <div id="lenta-rapida-row" style="display:none;align-items:center;justify-content:center;gap:10px;margin-top:4px;">
+        <input type="number" id="inp-rapida-junto" value="5" min="0" max="80" step="1" style="background:#0a0a20;border:2px solid #00e5ff;color:#f0f0f0;padding:12px;border-radius:10px;font-size:2rem;font-weight:700;width:100px;text-align:center;"/>
+        <span style="color:#00e5ff;font-size:1.3rem;font-weight:700;">u rápida</span>
       </div>
     </div>
     <div class="lenta-btn-row">
-      <button class="btn-lenta-confirmar" onclick="confirmarLentaModal()">✅ Confirmar dose tomada</button>
-      <button class="btn-lenta-pular" onclick="pularLentaModal()">Não vou tomar</button>
+      <button class="btn-lenta-confirmar" onclick="confirmarLentaModal()">✅ Aplicar agora</button>
+      <button class="btn-lenta-pular" onclick="pularLentaModal()">Não vou tomar hoje</button>
     </div>
   </div>
 </div>
@@ -1448,15 +1455,9 @@ function toggleLentaRapida(sim) {
   const btnSim = document.getElementById('lenta-rapida-sim');
   const btnNao = document.getElementById('lenta-rapida-nao');
   const row = document.getElementById('lenta-rapida-row');
-  if (sim) {
-    btnSim.style.background='#002840'; btnSim.style.color='#00e5ff'; btnSim.style.borderColor='#00e5ff';
-    btnNao.style.background='#1a1a2a'; btnNao.style.color='#666'; btnNao.style.borderColor='#333';
-    row.style.display='flex';
-  } else {
-    btnNao.style.background='#1a0a2a'; btnNao.style.color='#cc44ffaa'; btnNao.style.borderColor='#cc44ff55';
-    btnSim.style.background='#1a1a2a'; btnSim.style.color='#666'; btnSim.style.borderColor='#333';
-    row.style.display='none';
-  }
+  btnSim.classList.toggle('ativo', sim);
+  btnNao.classList.toggle('ativo', !sim);
+  row.style.display = sim ? 'flex' : 'none';
 }
 
 function abrirLentaDoDia() {
