@@ -1065,7 +1065,7 @@
           </span>
         </div>
       </div>
-      <button class="btn btn-success" id="btn-confirmar" style="width:100%;margin-top:6px;" onclick="confirmarDose()">✅ Confirmar 0U aplicadas</button>
+      <button class="btn btn-success" id="btn-confirmar" style="width:100%;margin-top:6px;" onclick="confirmarDose()">✅ Confirmar 0u aplicadas</button>
     </div>
     <button class="res-fechar" onclick="fecharResultado()">✕ Fechar</button>
   </div>
@@ -1774,7 +1774,7 @@ function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
   document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? Math.ceil(sugRapida) : '0';
   const val = sugRapida > 0 ? Math.ceil(sugRapida) : 0;
   window._doseSugerida = val;
-  document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}U aplicadas`;
+  document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}u aplicadas`;
   document.getElementById('btn-confirmar').classList.add('pronto');
   const icon = document.getElementById('res-tooltip-icon');
   const balao = document.getElementById('res-tooltip-text');
