@@ -615,13 +615,10 @@
   <div class="lenta-modal-box">
     <div class="lenta-modal-icon">🟣</div>
     <div class="lenta-modal-title">Insulina Lenta — Manhã</div>
-    <div class="lenta-modal-sub">Você tomou insulina lenta hoje?<br>Confirme ou ajuste a dose e hora abaixo:</div>
+    <div class="lenta-modal-sub">Você tomou insulina lenta hoje?<br>Confirme ou ajuste a dose abaixo:</div>
     <div class="lenta-dose-row">
       <input type="number" id="inp-lenta-modal" value="20" min="0" max="80" step="1"/>
       <span>U</span>
-    </div>
-    <div class="lenta-dose-row">
-      <input type="time" id="inp-lenta-hora" style="flex:1; width:100%;"/>
     </div>
     <div style="margin:14px 0 6px;border-top:1px solid #2a1a40;padding-top:14px;">
       <div style="color:#aaa;font-size:0.88rem;text-align:center;margin-bottom:10px;">Aplicou insulina rápida junto?</div>
@@ -1464,10 +1461,6 @@ function toggleLentaRapida(sim) {
 
 function abrirLentaDoDia() {
   document.getElementById('inp-lenta-modal').value = loadConfig().doseLenta;
-  const agora = new Date();
-  const hh = String(agora.getHours()).padStart(2,'0');
-  const mm = String(agora.getMinutes()).padStart(2,'0');
-  document.getElementById('inp-lenta-hora').value = `${hh}:${mm}`;
   toggleLentaRapida(false);
   document.getElementById('lenta-modal').classList.add('show');
 }
@@ -1505,17 +1498,12 @@ function verificarLentaMatinal() {
   if (visto === hoje) return;          // já respondeu hoje
   if (agora.getHours() < loadConfig().horaResetLenta) return; // só libera a partir da hora configurada
 
-  // Pré-preenche a hora atual no campo de hora
-  const hh = String(agora.getHours()).padStart(2, '0');
-  const mm = String(agora.getMinutes()).padStart(2, '0');
-  document.getElementById('inp-lenta-hora').value = `${hh}:${mm}`;
   toggleLentaRapida(false);
   document.getElementById('lenta-modal').classList.add('show');
 }
 
 function confirmarLentaModal() {
   const dose = parseFloat(document.getElementById('inp-lenta-modal').value) || 0;
-  const horaInput = document.getElementById('inp-lenta-hora').value; // HH:MM
   const doseRapidaJunto = document.getElementById('lenta-rapida-row').style.display !== 'none'
     ? (parseFloat(document.getElementById('inp-rapida-junto').value) || 0) : 0;
   const hoje = new Date().toDateString();
@@ -1529,17 +1517,9 @@ function confirmarLentaModal() {
   dados = dados.filter(r => !(r._tipo === 'insulina lenta' && new Date(r.dt) >= inicioHoje));
 
   if (dose > 0) {
-    let dtStr;
-    if (horaInput) {
-      const agora = new Date();
-      const ano = agora.getFullYear();
-      const mes = String(agora.getMonth() + 1).padStart(2, '0');
-      const dia = String(agora.getDate()).padStart(2, '0');
-      dtStr = `${ano}-${mes}-${dia}T${horaInput}`;
-    } else {
-      const agora = new Date();
-      dtStr = new Date(agora.getTime() - agora.getTimezoneOffset()*60000).toISOString().slice(0,16);
-    }
+    // Registra automaticamente com o horário do clique (hora local)
+    const agora = new Date();
+    const dtStr = new Date(agora.getTime() - agora.getTimezoneOffset()*60000).toISOString().slice(0,16);
     const cfgL = loadConfig();
     dados.push({ id: Date.now(), dt: dtStr, glicemia: null, rapida: doseRapidaJunto, lenta: dose, sugLenta: cfgL.doseLenta||20, aplicou: true, sugRapida: null, _tipo: 'insulina lenta' });
   }
