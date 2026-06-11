@@ -1771,7 +1771,7 @@ function calcProximaMedicao(glicemia, sugRapida, iobR) {
 
 function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
   document.getElementById('res-doses-box').style.display = 'block';
-  document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? Math.ceil(sugRapida) + ' U' : '0 U';
+  document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? Math.ceil(sugRapida) : '0';
   const val = sugRapida > 0 ? Math.ceil(sugRapida) : 0;
   window._doseSugerida = val;
   document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}U aplicadas`;
