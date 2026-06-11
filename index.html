@@ -1793,7 +1793,7 @@ function atualizarBotaoConfirmar() {
 function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
   document.getElementById('res-doses-box').style.display = 'block';
   document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? Math.ceil(sugRapida) + ' U' : '0 U';
-  const val = sugRapida > 0 ? Math.round(sugRapida) : 0;
+  const val = sugRapida > 0 ? Math.ceil(sugRapida) : 0;
   document.getElementById('res-inp-rapida').value = val || '';
   document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}U aplicadas`;
   const icon = document.getElementById('res-tooltip-icon');
