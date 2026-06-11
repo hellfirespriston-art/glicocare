@@ -1693,24 +1693,24 @@ function calcularSugestao() {
     explicacao = `📐 Glicemia ${glicemia} mg/dL − alvo ${alvo} mg/dL = <strong style="color:#fff">${(glicemia-alvo)} mg/dL acima</strong><br>`;
     explicacao += `➗ Fator de sensibilidade: 1 U reduz ~${fator.toFixed(0)} mg/dL → dose bruta: <strong style="color:#fff">${bruta.toFixed(1)} U</strong><br>`;
     if (iobR > 0) {
-      explicacao += `⏳ IOB ativo: −${iobR.toFixed(1)} U já em circulação → dose final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)} U</strong>`;
+      explicacao += `⏳ IOB ativo: −${iobR.toFixed(1)} U já em circulação → dose final: <strong style="color:#00e5ff">${Math.ceil(sugRapida)} U</strong>`;
     } else {
-      explicacao += `💉 Sem IOB ativo → dose final: <strong style="color:#00e5ff">${sugRapida.toFixed(1)} U</strong>`;
+      explicacao += `💉 Sem IOB ativo → dose final: <strong style="color:#00e5ff">${Math.ceil(sugRapida)} U</strong>`;
     }
   }
 
   // Exibe sugestão
   document.getElementById('sugestao-box').style.display = 'block';
-  document.getElementById('sug-rapida').textContent = sugRapida > 0 ? sugRapida.toFixed(1) + ' U' : '0 U (não necessária)';
-  document.getElementById('sug-lenta').textContent = sugLenta > 0 ? sugLenta.toFixed(1) + ' U' : '0 U (IOB ativo)';
+  document.getElementById('sug-rapida').textContent = sugRapida > 0 ? Math.ceil(sugRapida) + ' U' : '0 U (não necessária)';
+  document.getElementById('sug-lenta').textContent = sugLenta > 0 ? Math.ceil(sugLenta) + ' U' : '0 U (IOB ativo)';
   document.getElementById('sug-iob-desc').textContent = iobR.toFixed(1) + ' U rápida + ' + iobL.toFixed(1) + ' U lenta';
   const expEl = document.getElementById('sug-explicacao');
   expEl.innerHTML = explicacao; expEl.style.display = 'block';
 
   // Mostra campos de dose e preenche com sugestão
   document.getElementById('doses-box').style.display = 'block';
-  document.getElementById('inp-rapida').value = sugRapida > 0 ? sugRapida.toFixed(1) : 0;
-  document.getElementById('inp-lenta').value = sugLenta > 0 ? sugLenta.toFixed(1) : 0;
+  document.getElementById('inp-rapida').value = sugRapida > 0 ? Math.ceil(sugRapida) : 0;
+  document.getElementById('inp-lenta').value = sugLenta > 0 ? Math.ceil(sugLenta) : 0;
 
   if (iobR > 1) {
     document.getElementById('sug-aviso-iob').style.display = 'block';
@@ -1792,7 +1792,7 @@ function atualizarBotaoConfirmar() {
 
 function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
   document.getElementById('res-doses-box').style.display = 'block';
-  document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? sugRapida.toFixed(1) + ' U' : '0 U';
+  document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? Math.ceil(sugRapida) + ' U' : '0 U';
   const val = sugRapida > 0 ? Math.round(sugRapida) : 0;
   document.getElementById('res-inp-rapida').value = val || '';
   document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}U aplicadas`;
@@ -1903,9 +1903,9 @@ function registrar() {
     tooltipCard = `Sua glicemia está ${acima} mg/dL acima do alvo (${alvo2} mg/dL). `;
     tooltipCard += `Como 1 unidade de insulina reduz cerca de ${fator.toFixed(0)} mg/dL no seu caso, seriam necessárias ${bruta2.toFixed(1)} unidades para corrigir. `;
     if (iobR > 0) {
-      tooltipCard += `Mas você ainda tem ${iobR.toFixed(1)} unidade(s) ativa(s) no corpo de aplicações anteriores, então foram descontadas — resultando em ${sugRapida.toFixed(1)} unidade(s) sugerida(s).`;
+      tooltipCard += `Mas você ainda tem ${iobR.toFixed(1)} unidade(s) ativa(s) no corpo de aplicações anteriores, então foram descontadas — resultando em ${Math.ceil(sugRapida)} unidade(s) sugerida(s).`;
     } else {
-      tooltipCard += `Como não há insulina ativa no seu corpo no momento, a sugestão é de ${sugRapida.toFixed(1)} unidade(s).`;
+      tooltipCard += `Como não há insulina ativa no seu corpo no momento, a sugestão é de ${Math.ceil(sugRapida)} unidade(s).`;
     }
   }
 
