@@ -146,16 +146,10 @@
       0%,100% { box-shadow:0 0 10px #00ff9966; }
       50%      { box-shadow:0 0 28px #00ff99cc, 0 0 6px #00ff9988; }
     }
-    @keyframes pulso-inp-rapida {
-      0%,100% { box-shadow:0 0 8px #00e5ff55, inset 0 0 0 1px #00e5ffaa; border-color:#00e5ff88; }
-      50%      { box-shadow:0 0 20px #00e5ffaa, inset 0 0 0 1px #00e5ffff; border-color:#00e5ff; }
-    }
     @keyframes piscar-confirmar {
       0%,100% { box-shadow:0 0 12px #00ff9977; opacity:1; }
       50%      { box-shadow:0 0 32px #00ff99dd, 0 0 8px #00ff99aa; opacity:0.85; }
     }
-    #res-inp-rapida { animation:pulso-inp-rapida 2s ease-in-out infinite; }
-    #res-inp-rapida:focus { animation:none; border-color:#00e5ff; box-shadow:0 0 0 3px rgba(0,229,255,0.2); }
     #btn-confirmar.pronto { animation:piscar-confirmar 1s ease-in-out infinite; }
     .btn-success { background:linear-gradient(135deg,#007a3d,#004422); color:#00ff99; font-size:1.1rem; padding:16px 28px; }
     .btn-success:hover { background:linear-gradient(135deg,#009950,#006633); transform:translateY(-2px); }
@@ -1071,15 +1065,7 @@
           </span>
         </div>
       </div>
-      <!-- Campo de confirmação -->
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-        <span style="color:#aaa;font-size:0.95rem;white-space:nowrap;">Unidades aplicadas:</span>
-        <div style="display:inline-flex;align-items:center;">
-          <input type="number" id="res-inp-rapida" placeholder="0" min="0" max="80" step="1" oninput="atualizarBotaoConfirmar()" style="background:#0a0a20;border:1px solid #2a3a6a;color:#f0f0f0;padding:14px;border-radius:10px;font-size:2rem;font-weight:700;width:140px;text-align:center;"/>
-        </div>
-      </div>
       <button class="btn btn-success" id="btn-confirmar" style="width:100%;margin-top:6px;" onclick="confirmarDose()">✅ Confirmar 0U aplicadas</button>
-      <div class="res-doses-hint">* Edite o campo se a dose aplicada foi diferente</div>
     </div>
     <button class="res-fechar" onclick="fecharResultado()">✕ Fechar</button>
   </div>
@@ -1783,19 +1769,13 @@ function calcProximaMedicao(glicemia, sugRapida, iobR) {
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-// Chamado pelo registrar para preencher sugestão no card
-function atualizarBotaoConfirmar() {
-  const val = parseFloat(document.getElementById('res-inp-rapida').value) || 0;
-  document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}U aplicadas`;
-  document.getElementById('btn-confirmar').classList.add('pronto');
-}
-
 function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
   document.getElementById('res-doses-box').style.display = 'block';
   document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? Math.ceil(sugRapida) + ' U' : '0 U';
   const val = sugRapida > 0 ? Math.ceil(sugRapida) : 0;
-  document.getElementById('res-inp-rapida').value = val || '';
+  window._doseSugerida = val;
   document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}U aplicadas`;
+  document.getElementById('btn-confirmar').classList.add('pronto');
   const icon = document.getElementById('res-tooltip-icon');
   const balao = document.getElementById('res-tooltip-text');
   if (tooltipTexto) { balao.textContent = tooltipTexto; icon.style.display = 'inline-flex'; }
@@ -1803,7 +1783,7 @@ function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
 }
 
 function confirmarDose() {
-  const rapida = parseFloat(document.getElementById('res-inp-rapida').value)||0;
+  const rapida = window._doseSugerida || 0;
   // Atualiza o registro de glicemia (usando ID, não índice) com as doses confirmadas
   let dados = loadData();
   const idReg = window._ultimoRegistroGlicemiaId;
