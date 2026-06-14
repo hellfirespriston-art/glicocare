@@ -2216,16 +2216,11 @@ function renderHistorico() {
       const hora = new Date(r.dt).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
 
       if (r._tipo === 'insulina lenta') {
-        const sugL = r.sugLenta != null ? r.sugLenta : null;
         let lentaInfoStr;
-        if (sugL != null) {
-          if (r.lenta > 0) {
-            lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ff;">💉 ${sugL}U sugerida · ${r.lenta}U aplicada ✅</div>`;
-          } else {
-            lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ffaa;">💉 ${sugL}U sugerida · não aplicou</div>`;
-          }
+        if (r.lenta > 0) {
+          lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ff;">💉 ${r.lenta}u aplicada ✅</div>`;
         } else {
-          lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ff;">💉 ${r.lenta || '—'}U aplicada ✅</div>`;
+          lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ffaa;">não aplicou</div>`;
         }
         html += `<div class="hist-item" style="--hist-cor:#cc44ff;">
           <div class="hist-left">
@@ -2235,7 +2230,7 @@ function renderHistorico() {
             </div>
             <div class="hist-meta">${hora}</div>
             ${lentaInfoStr}
-            ${r.rapida > 0 ? `<div class="hist-insulin" style="color:#00e5ff;margin-top:3px;">💉 ${r.rapida}U rápida junto</div>` : ''}
+            ${r.rapida > 0 ? `<div class="hist-insulin" style="color:#00e5ff;margin-top:3px;">💉 ${r.rapida}u rápida junto</div>` : ''}
           </div>
           <div class="hist-btns">
             <button class="badge-edit" onclick="abrirEditModal(${r.id})">✏️</button>
