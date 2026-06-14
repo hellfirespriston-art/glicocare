@@ -1260,7 +1260,7 @@ function salvarConfig() {
   const cfg = loadConfig();
   cfg.insulinaTipo   = parseInt(document.getElementById('cfg-insulina-tipo').value);
   cfg.doseLenta      = parseFloat(document.getElementById('cfg-dose-lenta').value) || 20;
-  cfg.glicemiaAlvo   = parseFloat(document.getElementById('cfg-glicemia-alvo').value) || 100;
+  cfg.glicemiaAlvo   = parseFloat(document.getElementById('cfg-glicemia-alvo').value) || 200;
   if (!cfg.autoAprendizado) cfg.fatorSens = parseFloat(document.getElementById('cfg-fator-manual').value) || 40;
   cfg.autoAprendizado    = document.getElementById('cfg-auto-aprendizado').checked;
   cfg.horaResetLenta     = parseInt(document.getElementById('cfg-hora-reset-lenta').value) || 7;
@@ -1314,7 +1314,7 @@ function ajustarFatorAutoAprendizado(dadosOrdenados) {
 // Constantes fisiológicas
 const DUR_RAPIDA_H = 4;    // horas de duração insulina rápida
 const DUR_LENTA_H  = 20;   // fallback (usa getDurLenta() no runtime)
-const GLICEMIA_ALVO = 100; // fallback
+const GLICEMIA_ALVO = 200; // fallback (alinhado ao alvo padrao do app)
 const FATOR_SENS_DEFAULT = 40; // fallback
 
 // ── STORAGE ──
