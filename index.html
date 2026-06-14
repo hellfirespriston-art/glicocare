@@ -2252,10 +2252,10 @@ function renderHistorico() {
 
       const insulina = [];
       if (r.sugRapida != null && r.sugRapida > 0) {
-        if (r.rapida > 0) insulina.push(`🔵 ${r.sugRapida}U sugerido · ${r.rapida}U tomado ✅`);
-        else insulina.push(`🔵 ${r.sugRapida}U sugerido · não tomou`);
+        if (r.rapida > 0) insulina.push(`🔵 ${r.sugRapida}u sugerido · ${r.rapida}u tomado ✅`);
+        else insulina.push(`🔵 ${r.sugRapida}u sugerido · não tomou`);
       }
-      if (r.rapida > 0 && (r.sugRapida == null || r.sugRapida <= 0)) insulina.push(`💉 ${r.rapida}U rápida ✅`);
+      if (r.rapida > 0 && (r.sugRapida == null || r.sugRapida <= 0)) insulina.push(`💉 ${r.rapida}u rápida ✅`);
       const insulinaStr = insulina.length
         ? `<div class="hist-insulin">${insulina.join('<br>')}</div>`
         : `<div class="hist-insulin" style="color:#333;">sem insulina</div>`;
@@ -2383,7 +2383,7 @@ function fecharVouComer() {
 function calcularBolusComer() {
   const g = parseFloat(document.getElementById('vcomer-glicemia').value);
   const res = document.getElementById('vcomer-result');
-  if (!g || g < 20) { res.style.display='none'; return; }
+  if (!g || g < 20) { res.style.display='none'; document.getElementById('vcomer-btn-anotar').style.display='none'; return; }
   res.style.display = 'block';
   res.className = 'vcomer-result';
   const alvo = getGlicemiaAlvo();
@@ -2426,25 +2426,31 @@ function calcularBolusComer() {
   document.getElementById('vcomer-rec').textContent = rec;
   document.getElementById('vcomer-exp').textContent = exp;
 
-  // Botão "Anotar dose tomada" — só aparece quando faz sentido tomar alguma dose
+  // Botão de registro — SEMPRE aparece, pra garantir que a medição entre no histórico.
+  // Tomando insulina: registra glicemia + dose. Sem tomar: registra só a medição.
   const btnAnotar = document.getElementById('vcomer-btn-anotar');
   const podeTomar = !(g < 70 || g < alvo - 40);
+  btnAnotar.disabled = false;
+  btnAnotar.style.display = 'block';
   if (podeTomar) {
     const doseAnotar = (g < alvo) ? Math.ceil(dose / 2) : dose;
     btnAnotar.dataset.dose = doseAnotar;
-    btnAnotar.disabled = false;
     btnAnotar.style.background = 'linear-gradient(135deg,#004d22,#002211)';
     btnAnotar.style.color = '#00ff99';
     btnAnotar.style.border = '1px solid #00ff9955';
-    document.getElementById('vcomer-btn-dose').textContent = doseAnotar;
-    btnAnotar.style.display = 'block';
+    btnAnotar.innerHTML = `✅ Tomei as ${doseAnotar} u — Registrar`;
   } else {
-    btnAnotar.style.display = 'none';
+    btnAnotar.dataset.dose = '0';
+    btnAnotar.style.background = 'linear-gradient(135deg,#1a2436,#0a1018)';
+    btnAnotar.style.color = '#7fd0ff';
+    btnAnotar.style.border = '1px solid #00e5ff55';
+    btnAnotar.innerHTML = `📝 Registrar medição (sem insulina)`;
   }
 }
 
 function anotarDoseRefeicao() {
-  const doseAnotar = parseFloat(document.getElementById('vcomer-btn-anotar').dataset.dose) || getDoseRefeicao();
+  const dsRaw = document.getElementById('vcomer-btn-anotar').dataset.dose;
+  const doseAnotar = (dsRaw !== undefined && dsRaw !== '') ? (parseFloat(dsRaw) || 0) : getDoseRefeicao();
   const glicemiaModal = parseFloat(document.getElementById('vcomer-glicemia').value);
   const dados = loadData();
   const agora = Date.now();
@@ -2459,20 +2465,21 @@ function anotarDoseRefeicao() {
 
   let hora;
   if (ultima && gBate && recente) {
-    // Anexa dose na medição existente compatível
+    // Anexa dose na medição existente compatível (sem duplicar o registro)
     const idx = dados.findIndex(r => r.id === ultima.id);
     dados[idx].rapida = (dados[idx].rapida || 0) + doseAnotar;
-    dados[idx].aplicou = true;
+    if (doseAnotar > 0 && dados[idx].sugRapida == null) dados[idx].sugRapida = doseAnotar;
+    dados[idx].aplicou = (dados[idx].rapida || 0) > 0;
     dados[idx]._antes = true;
     saveData(dados);
     hora = new Date(ultima.dt).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
   } else {
-    // Cria nova entrada com a glicemia informada agora + dose
+    // Cria nova entrada com a glicemia informada agora (+ dose, se tomou)
     const _now = new Date();
     const _local = new Date(_now.getTime() - _now.getTimezoneOffset() * 60000);
     const dtFinal = _local.toISOString().slice(0, 16);
     const novoId = Date.now();
-    dados.push({ id: novoId, dt: dtFinal, glicemia: glicemiaModal, rapida: doseAnotar, lenta: 0, aplicou: true, sugRapida: null, _antes: true });
+    dados.push({ id: novoId, dt: dtFinal, glicemia: glicemiaModal, rapida: doseAnotar, lenta: 0, aplicou: doseAnotar > 0, sugRapida: doseAnotar > 0 ? doseAnotar : null, _antes: true });
     dados.sort((a, b) => new Date(a.dt) - new Date(b.dt));
     saveData(dados);
     hora = _now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -2485,7 +2492,7 @@ function anotarDoseRefeicao() {
 
   atualizarStatusBar();
   renderHistorico();
-  btn.innerHTML = `✅ ${doseAnotar} U anotadas (${hora})`;
+  btn.innerHTML = doseAnotar > 0 ? `✅ ${doseAnotar} u anotadas (${hora})` : `✅ Medição registrada (${hora})`;
   btn.style.background = 'linear-gradient(135deg,#007a3d,#004422)';
   btn.style.border = '1px solid #00ff9988';
   btn.disabled = true;
