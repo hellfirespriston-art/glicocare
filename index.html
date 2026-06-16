@@ -3132,6 +3132,13 @@ if (!localStorage.getItem('gc_aviso_aceito')) {
 
 // ── INIT ──
 atualizarStatusBar();
+
+// ── SERVICE WORKER (necessario pro PWA ser instalavel / detectado pelo PWABuilder) ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
