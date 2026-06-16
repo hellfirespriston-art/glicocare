@@ -1475,7 +1475,7 @@ function atualizarBtnLentaDia() {
   const visto = localStorage.getItem('gc_lenta_' + activeProfileId());
   const dose = parseFloat(localStorage.getItem('gc_lentadose_' + activeProfileId()) || '0');
   if (visto === hoje && dose > 0) {
-    status.textContent = `${dose} U aplicada ✅ — toque para corrigir`;
+    status.textContent = `${Math.ceil(dose)} U aplicada ✅ — toque para corrigir`;
     btn.style.borderColor = '#00ff9966';
     btn.style.background = 'linear-gradient(135deg,#001a0d,#000d06)';
     btn.style.color = '#00ff99';
@@ -1863,9 +1863,9 @@ function registrar() {
   } else {
     const acima = glicemia - alvo2;
     tooltipCard = `Sua glicemia está ${acima} mg/dL acima do alvo (${alvo2} mg/dL). `;
-    tooltipCard += `Como 1 unidade de insulina reduz cerca de ${fator.toFixed(0)} mg/dL no seu caso, seriam necessárias ${bruta2.toFixed(1)} unidades para corrigir. `;
+    tooltipCard += `Como 1 unidade de insulina reduz cerca de ${fator.toFixed(0)} mg/dL no seu caso, seriam necessárias ${Math.ceil(bruta2)} unidades para corrigir. `;
     if (iobR > 0) {
-      tooltipCard += `Mas você ainda tem ${iobR.toFixed(1)} unidade(s) ativa(s) no corpo de aplicações anteriores, então foram descontadas — resultando em ${Math.ceil(sugRapida)} unidade(s) sugerida(s).`;
+      tooltipCard += `Mas você ainda tem ${Math.ceil(iobR)} unidade(s) ativa(s) no corpo de aplicações anteriores, então foram descontadas — resultando em ${Math.ceil(sugRapida)} unidade(s) sugerida(s).`;
     } else {
       tooltipCard += `Como não há insulina ativa no seu corpo no momento, a sugestão é de ${Math.ceil(sugRapida)} unidade(s).`;
     }
@@ -1966,9 +1966,9 @@ function atualizarStatusBar() {
   const iobMax = 30;
   const iobMaxLenta = 40;
 
-  document.getElementById('sb-iob-rapida').textContent = iobR.toFixed(1) + ' U';
+  document.getElementById('sb-iob-rapida').textContent = Math.ceil(iobR) + ' U';
   document.getElementById('iob-fill').style.width = Math.min(100, (iobR/iobMax)*100) + '%';
-  document.getElementById('sb-iob-lenta').textContent = iobL.toFixed(1) + ' U';
+  document.getElementById('sb-iob-lenta').textContent = Math.ceil(iobL) + ' U';
   document.getElementById('iob-fill-lenta').style.width = Math.min(100, (iobL/iobMaxLenta)*100) + '%';
 
   atualizarDisplayGlicemia(ultimo.glicemia);
@@ -2219,7 +2219,7 @@ function renderHistorico() {
       if (r._tipo === 'insulina lenta') {
         let lentaInfoStr;
         if (r.lenta > 0) {
-          lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ff;">💉 ${r.lenta}u aplicada ✅</div>`;
+          lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ff;">💉 ${Math.ceil(r.lenta)}u aplicada ✅</div>`;
         } else {
           lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ffaa;">não aplicou</div>`;
         }
@@ -2231,7 +2231,7 @@ function renderHistorico() {
             </div>
             <div class="hist-meta">${hora}</div>
             ${lentaInfoStr}
-            ${r.rapida > 0 ? `<div class="hist-insulin" style="color:#00e5ff;margin-top:3px;">💉 ${r.rapida}u rápida junto</div>` : ''}
+            ${r.rapida > 0 ? `<div class="hist-insulin" style="color:#00e5ff;margin-top:3px;">💉 ${Math.ceil(r.rapida)}u rápida junto</div>` : ''}
           </div>
           <div class="hist-btns">
             <button class="badge-edit" onclick="abrirEditModal(${r.id})">✏️</button>
@@ -2252,10 +2252,10 @@ function renderHistorico() {
 
       const insulina = [];
       if (r.sugRapida != null && r.sugRapida > 0) {
-        if (r.rapida > 0) insulina.push(`🔵 ${r.sugRapida}u sugerido · ${r.rapida}u tomado ✅`);
-        else insulina.push(`🔵 ${r.sugRapida}u sugerido · não tomou`);
+        if (r.rapida > 0) insulina.push(`🔵 ${Math.ceil(r.sugRapida)}u sugerido · ${Math.ceil(r.rapida)}u tomado ✅`);
+        else insulina.push(`🔵 ${Math.ceil(r.sugRapida)}u sugerido · não tomou`);
       }
-      if (r.rapida > 0 && (r.sugRapida == null || r.sugRapida <= 0)) insulina.push(`💉 ${r.rapida}u rápida ✅`);
+      if (r.rapida > 0 && (r.sugRapida == null || r.sugRapida <= 0)) insulina.push(`💉 ${Math.ceil(r.rapida)}u rápida ✅`);
       const insulinaStr = insulina.length
         ? `<div class="hist-insulin">${insulina.join('<br>')}</div>`
         : `<div class="hist-insulin" style="color:#333;">sem insulina</div>`;
@@ -2387,7 +2387,7 @@ function calcularBolusComer() {
   res.style.display = 'block';
   res.className = 'vcomer-result';
   const alvo = getGlicemiaAlvo();
-  const dose = getDoseRefeicao();
+  const dose = Math.ceil(getDoseRefeicao());
   document.getElementById('vcomer-dose-label').textContent = dose;
   let emoji, rec, exp, cls;
   if (g < 70) {
