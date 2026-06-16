@@ -531,12 +531,12 @@
   <div class="iob-bar">
     <div class="iob-row">
       <span class="iob-label">💉 Rápida ativa</span>
-      <span class="iob-val" id="sb-iob-rapida" style="color:#00e5ff">0,0 U</span>
+      <span class="iob-val" id="sb-iob-rapida" style="color:#00e5ff">0 U</span>
     </div>
     <div class="iob-track"><div class="iob-fill" id="iob-fill" style="width:0%"></div></div>
     <div class="iob-row" style="margin-top:10px">
       <span class="iob-label">🟣 Lenta ativa</span>
-      <span class="iob-val" id="sb-iob-lenta" style="color:#cc44ff">0,0 U</span>
+      <span class="iob-val" id="sb-iob-lenta" style="color:#cc44ff">0 U</span>
     </div>
     <div class="iob-track"><div class="iob-fill-lenta" id="iob-fill-lenta" style="width:0%"></div></div>
     <div style="font-size:0.92rem;color:#666;margin-top:4px;">Insulina ainda em circulação no corpo</div>
@@ -1443,7 +1443,7 @@ function initApp() {
   renderCfgPerfis();
   atualizarStatusBar();
   renderHistorico();
-  document.getElementById('vcomer-dose-label').textContent = getDoseRefeicao();
+  document.getElementById('vcomer-dose-label').textContent = Math.ceil(getDoseRefeicao());
 }
 
 atualizarDatetime();
@@ -2002,7 +2002,10 @@ function atualizarProximaBox(glic, sug, iobR, dados) {
     else if (glic <= 250) h = 2;
     else h = 1;
     if (sug > 0) h = Math.min(h, 2);
-    prox = new Date(Date.now() + h * 3600000);
+    // Ancora no horário da última medição (não em "agora"), senão o alvo se empurra 1s a cada tick e "Medir agora!" nunca dispara
+    var ultimoReg = (dados && dados.length) ? dados[dados.length - 1] : null;
+    var baseT = ultimoReg ? new Date(ultimoReg.dt).getTime() : Date.now();
+    prox = new Date(baseT + h * 3600000); // se já passou, fica no passado → tick mostra "Medir agora!"
     localStorage.setItem('gc_proxts_' + activeProfileId(), prox.getTime());
   }
   var diffMs = prox - Date.now();
