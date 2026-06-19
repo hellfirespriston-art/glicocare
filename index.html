@@ -537,6 +537,8 @@
       <span class="iob-val" id="sb-iob-rapida" style="color:#00e5ff">0 U</span>
     </div>
     <div class="iob-track"><div class="iob-fill" id="iob-fill" style="width:0%"></div></div>
+    <!-- PROJECAO: glicemia estimada quando a rapida terminar de agir -->
+    <div id="iob-projecao" style="display:none;margin-top:8px;padding:10px 12px;border-radius:10px;"></div>
     <div class="iob-row" style="margin-top:10px">
       <span class="iob-label">🟣 Lenta ativa</span>
       <span class="iob-val" id="sb-iob-lenta" style="color:#cc44ff">0 U</span>
@@ -1976,6 +1978,72 @@ function atualizarStatusBar() {
 
   atualizarDisplayGlicemia(ultimo.glicemia);
   atualizarProximaBox(ultimo.glicemia, ultimo.rapida || 0, iobR, dados);
+  atualizarProjecaoGlicemia(dados, iobR);
+}
+
+// ── PROJEÇÃO: glicemia estimada quando a insulina rápida terminar de agir ──
+// Pega a ÚLTIMA medição do histórico e desconta o efeito do IOB rápido ainda ativo.
+// IOB × fator de sensibilidade = mg/dL que ainda devem cair (mesmo número que o app
+// usa pra dosar, então a estimativa fica coerente com a barra). Hora do fim = última
+// dose de rápida + duração da rápida (4h). É a tendência "se não comer nada agora".
+function atualizarProjecaoGlicemia(dados, iobR) {
+  const el = document.getElementById('iob-projecao');
+  if (!el) return;
+
+  // Sem insulina rápida relevante em circulação → nada a projetar
+  if (!iobR || iobR < 0.1 || !dados || !dados.length) { el.style.display = 'none'; return; }
+
+  // Última medição REAL de glicemia (ignora registros só de insulina lenta)
+  let ultimaMed = null;
+  for (let i = dados.length - 1; i >= 0; i--) {
+    if (dados[i]._tipo !== 'insulina lenta' && dados[i].glicemia > 0) { ultimaMed = dados[i]; break; }
+  }
+  if (!ultimaMed) { el.style.display = 'none'; return; }
+
+  // Última dose de rápida aplicada → define quando a ação termina (dose + 4h)
+  let ultimaDose = null;
+  for (let i = dados.length - 1; i >= 0; i--) {
+    if (dados[i].aplicou && (dados[i].rapida || 0) > 0) { ultimaDose = dados[i]; break; }
+  }
+
+  const fator = getFatorSensAtual() || FATOR_SENS_DEFAULT;
+  const quedaPrevista = iobR * fator;                       // mg/dL que ainda devem cair
+  const projetada = Math.round(ultimaMed.glicemia - quedaPrevista);
+  const projExib = Math.max(0, projetada);
+
+  // Horário em que a rápida termina de agir
+  let horaStr = '';
+  if (ultimaDose) {
+    const fimMs = new Date(ultimaDose.dt).getTime() + DUR_RAPIDA_H * 3600000;
+    if (fimMs > Date.now()) {
+      const fim = new Date(fimMs);
+      const faltaMin = Math.round((fimMs - Date.now()) / 60000);
+      const faltaStr = faltaMin >= 60 ? (Math.round(faltaMin / 6) / 10) + 'h' : faltaMin + 'min';
+      horaStr = ' por volta das <strong>' + fim.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) + '</strong> (em ' + faltaStr + ')';
+    }
+  }
+
+  // Faixa de segurança → cor + mensagem (70 mg/dL = limite de hipoglicemia)
+  let cor, bg, bd, icone, msg;
+  if (projExib >= 90) {
+    cor = '#00ff99'; bg = 'rgba(0,255,153,0.07)'; bd = '#00ff9944'; icone = '✅';
+    msg = 'Tendência tranquila. Mesmo sem comer nada, deve estabilizar nesse valor — <strong>não precisa comer doce</strong> por causa da insulina.';
+  } else if (projExib >= 70) {
+    cor = '#ffcc44'; bg = 'rgba(255,170,0,0.08)'; bd = '#ffaa0044'; icone = '🟡';
+    msg = 'Deve ficar perto do limite. Fique de olho; se sentir fraqueza ou tontura, meça de novo.';
+  } else {
+    cor = '#ff6677'; bg = 'rgba(255,50,50,0.08)'; bd = '#ff445544'; icone = '⚠️';
+    msg = 'Pode baixar bastante. Se sentir fraqueza, tontura ou suor frio, coma um carboidrato e <strong>meça de novo</strong>.';
+  }
+
+  el.style.display = 'block';
+  el.style.background = bg;
+  el.style.border = '1px solid ' + bd;
+  el.innerHTML =
+    '<div style="font-size:0.72rem;color:#99a;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">📉 Estimativa quando a rápida terminar</div>' +
+    '<div style="font-size:1.05rem;color:' + cor + ';font-weight:700;">' + icone + ' ~' + projExib + ' mg/dL' + horaStr + '</div>' +
+    '<div style="font-size:0.84rem;color:#bbc;margin-top:5px;line-height:1.5;">' + msg + '</div>' +
+    '<div style="font-size:0.72rem;color:#667;margin-top:6px;line-height:1.5;">Baseado na última medição (' + ultimaMed.glicemia + ' mg/dL) e em ' + (Math.round(iobR * 10) / 10) + ' U de rápida ainda ativa. Estimativa — não considera comida nem atividade física.</div>';
 }
 
 // Mostra proxima-box sem abrir card de resultado
