@@ -537,6 +537,8 @@
       <span class="iob-val" id="sb-iob-rapida" style="color:#00e5ff">0 U</span>
     </div>
     <div class="iob-track"><div class="iob-fill" id="iob-fill" style="width:0%"></div></div>
+    <!-- LINHA DISCRETA: alvo (glicemia que vai atingir) + horario -->
+    <div id="iob-projecao-linha" style="display:none;font-weight:300;color:#fff;opacity:0.6;font-size:0.8rem;margin-top:5px;"></div>
     <!-- PROJECAO: glicemia estimada quando a rapida terminar de agir -->
     <div id="iob-projecao" style="display:none;margin-top:8px;padding:10px 12px;border-radius:10px;"></div>
     <div class="iob-row" style="margin-top:10px">
@@ -1989,16 +1991,18 @@ function atualizarStatusBar() {
 function atualizarProjecaoGlicemia(dados, iobR) {
   const el = document.getElementById('iob-projecao');
   if (!el) return;
+  const linha = document.getElementById('iob-projecao-linha');
+  const esconde = () => { el.style.display = 'none'; if (linha) linha.style.display = 'none'; };
 
   // Sem insulina rápida relevante em circulação → nada a projetar
-  if (!iobR || iobR < 0.1 || !dados || !dados.length) { el.style.display = 'none'; return; }
+  if (!iobR || iobR < 0.1 || !dados || !dados.length) { esconde(); return; }
 
   // Última medição REAL de glicemia (ignora registros só de insulina lenta)
   let ultimaMed = null;
   for (let i = dados.length - 1; i >= 0; i--) {
     if (dados[i]._tipo !== 'insulina lenta' && dados[i].glicemia > 0) { ultimaMed = dados[i]; break; }
   }
-  if (!ultimaMed) { el.style.display = 'none'; return; }
+  if (!ultimaMed) { esconde(); return; }
 
   // Última dose de rápida aplicada → define quando a ação termina (dose + 4h)
   let ultimaDose = null;
@@ -2013,13 +2017,15 @@ function atualizarProjecaoGlicemia(dados, iobR) {
 
   // Horário em que a rápida termina de agir
   let horaStr = '';
+  let horaAbs = '';
   if (ultimaDose) {
     const fimMs = new Date(ultimaDose.dt).getTime() + DUR_RAPIDA_H * 3600000;
     if (fimMs > Date.now()) {
       const fim = new Date(fimMs);
+      horaAbs = fim.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
       const faltaMin = Math.round((fimMs - Date.now()) / 60000);
       const faltaStr = faltaMin >= 60 ? (Math.round(faltaMin / 6) / 10) + 'h' : faltaMin + 'min';
-      horaStr = ' por volta das <strong>' + fim.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}) + '</strong> (em ' + faltaStr + ')';
+      horaStr = ' por volta das <strong>' + horaAbs + '</strong> (em ' + faltaStr + ')';
     }
   }
 
@@ -2044,6 +2050,12 @@ function atualizarProjecaoGlicemia(dados, iobR) {
     '<div style="font-size:1.05rem;color:' + cor + ';font-weight:700;">' + icone + ' ~' + projExib + ' mg/dL' + horaStr + '</div>' +
     '<div style="font-size:0.84rem;color:#bbc;margin-top:5px;line-height:1.5;">' + msg + '</div>' +
     '<div style="font-size:0.72rem;color:#667;margin-top:6px;line-height:1.5;">Baseado na última medição (' + ultimaMed.glicemia + ' mg/dL) e em ' + (Math.round(iobR * 10) / 10) + ' U de rápida ainda ativa. Estimativa — não considera comida nem atividade física.</div>';
+
+  // Linha discreta (resumo de uma olhada): alvo que vai atingir + horário
+  if (linha) {
+    linha.style.display = 'block';
+    linha.innerHTML = 'Alvo ~' + projExib + ' mg/dL' + (horaAbs ? ' às ' + horaAbs : '');
+  }
 }
 
 // Mostra proxima-box sem abrir card de resultado
