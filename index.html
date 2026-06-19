@@ -2016,42 +2016,18 @@ function atualizarProjecaoGlicemia(dados, iobR) {
   const projExib = Math.max(0, projetada);
 
   // Horário em que a rápida termina de agir
-  let horaStr = '';
   let horaAbs = '';
   if (ultimaDose) {
     const fimMs = new Date(ultimaDose.dt).getTime() + DUR_RAPIDA_H * 3600000;
     if (fimMs > Date.now()) {
-      const fim = new Date(fimMs);
-      horaAbs = fim.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-      const faltaMin = Math.round((fimMs - Date.now()) / 60000);
-      const faltaStr = faltaMin >= 60 ? (Math.round(faltaMin / 6) / 10) + 'h' : faltaMin + 'min';
-      horaStr = ' por volta das <strong>' + horaAbs + '</strong> (em ' + faltaStr + ')';
+      horaAbs = new Date(fimMs).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     }
   }
 
-  // Faixa de segurança → cor + mensagem (70 mg/dL = limite de hipoglicemia)
-  let cor, bg, bd, icone, msg;
-  if (projExib >= 90) {
-    cor = '#00ff99'; bg = 'rgba(0,255,153,0.07)'; bd = '#00ff9944'; icone = '✅';
-    msg = 'Tendência tranquila. Mesmo sem comer nada, deve estabilizar nesse valor — <strong>não precisa comer doce</strong> por causa da insulina.';
-  } else if (projExib >= 70) {
-    cor = '#ffcc44'; bg = 'rgba(255,170,0,0.08)'; bd = '#ffaa0044'; icone = '🟡';
-    msg = 'Deve ficar perto do limite. Fique de olho; se sentir fraqueza ou tontura, meça de novo.';
-  } else {
-    cor = '#ff6677'; bg = 'rgba(255,50,50,0.08)'; bd = '#ff445544'; icone = '⚠️';
-    msg = 'Pode baixar bastante. Se sentir fraqueza, tontura ou suor frio, coma um carboidrato e <strong>meça de novo</strong>.';
-  }
+  // Box detalhado desativado — só a linha discreta (a pedido: menos texto)
+  el.style.display = 'none';
 
-  el.style.display = 'block';
-  el.style.background = bg;
-  el.style.border = '1px solid ' + bd;
-  el.innerHTML =
-    '<div style="font-size:0.72rem;color:#99a;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">📉 Estimativa quando a rápida terminar</div>' +
-    '<div style="font-size:1.05rem;color:' + cor + ';font-weight:700;">' + icone + ' ~' + projExib + ' mg/dL' + horaStr + '</div>' +
-    '<div style="font-size:0.84rem;color:#bbc;margin-top:5px;line-height:1.5;">' + msg + '</div>' +
-    '<div style="font-size:0.72rem;color:#667;margin-top:6px;line-height:1.5;">Baseado na última medição (' + ultimaMed.glicemia + ' mg/dL) e em ' + (Math.round(iobR * 10) / 10) + ' U de rápida ainda ativa. Estimativa — não considera comida nem atividade física.</div>';
-
-  // Linha discreta (resumo de uma olhada): alvo que vai atingir + horário
+  // Linha discreta: alvo que vai atingir + horário
   if (linha) {
     linha.style.display = 'block';
     linha.innerHTML = 'Alvo ~' + projExib + ' mg/dL' + (horaAbs ? ' às ' + horaAbs : '');
