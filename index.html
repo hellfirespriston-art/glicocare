@@ -658,12 +658,10 @@
 <!-- MODAL MEDIÇÃO NORMAL -->
 <div class="vcomer-modal" id="normal-modal">
   <div class="vcomer-box" style="border:2px solid #00ff9944;border-radius:22px;padding:32px 24px;max-width:380px;">
-    <div style="text-align:center;font-size:2.4rem;margin-bottom:10px;">📏</div>
-    <div style="text-align:center;font-size:1.5rem;font-weight:700;color:#00ff99;margin-bottom:6px;">Qual foi o valor?</div>
-    <div style="text-align:center;font-size:1rem;color:#aaa;margin-bottom:22px;line-height:1.5;">Digite o número que apareceu<br>no glicosímetro</div>
+    <div style="text-align:center;font-size:1.5rem;font-weight:700;color:#00ff99;margin-bottom:20px;">Qual foi o valor?</div>
     <div style="position:relative;margin-bottom:8px;">
       <input type="number" id="nm-glicemia" placeholder="140" min="20" max="600" inputmode="numeric"
-        style="font-size:3rem;font-weight:700;text-align:center;padding:22px 70px 22px 22px;width:100%;background:#0a0a20;border:2px solid #00ff9944;border-radius:16px;color:#00ff99;letter-spacing:1px;"
+        style="font-size:3rem;font-weight:700;text-align:center;padding:16px 70px 16px 22px;width:100%;background:#0a0a20;border:2px solid #00ff9944;border-radius:16px;color:#00ff99;letter-spacing:1px;"
         oninput="document.getElementById('nm-btn-registrar').disabled=!this.value"/>
       <span style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:0.95rem;color:#00ff9955;font-weight:700;pointer-events:none;">mg/dL</span>
     </div>
@@ -680,14 +678,13 @@
 <!-- MODAL VOU COMER -->
 <div class="vcomer-modal" id="vcomer-modal">
   <div class="vcomer-box" style="border:2px solid #00ff9944;border-radius:22px;padding:32px 24px;max-width:380px;">
-    <div style="text-align:center;font-size:2.4rem;margin-bottom:10px;">🍽️</div>
-    <div style="text-align:center;font-size:1.5rem;font-weight:700;color:#00ff99;margin-bottom:8px;">Antes de Comer</div>
-    <div style="text-align:center;font-size:1rem;color:#aaa;margin-bottom:20px;line-height:1.6;">Meça sua glicemia agora para saber se pode tomar as <strong style="color:#f0f0f0;"><span id="vcomer-dose-label">5</span> U</strong> prescritas pelo médico</div>
+    <div style="text-align:center;font-size:1.5rem;font-weight:700;color:#00ff99;margin-bottom:20px;">Antes de Comer</div>
+    <span id="vcomer-dose-label" style="display:none;">5</span>
     <div class="form-row">
       <label style="font-size:1.05rem;margin-bottom:10px;display:block;color:#ccc;">Glicemia atual (mg/dL)</label>
       <input type="number" id="vcomer-glicemia" placeholder="Ex: 120" min="20" max="600" inputmode="numeric"
         oninput="calcularBolusComer()"
-        style="font-size:2.2rem;font-weight:700;text-align:center;padding:18px;border:2px solid #00e5ff33;border-radius:14px;background:#0a0a20;color:#00e5ff;"/>
+        style="font-size:2.2rem;font-weight:700;text-align:center;padding:12px 18px;border:2px solid #00e5ff33;border-radius:14px;background:#0a0a20;color:#00e5ff;"/>
     </div>
     <div class="vcomer-result" id="vcomer-result" style="border-radius:14px;padding:20px;">
       <div class="vcomer-emoji" id="vcomer-emoji" style="font-size:3rem;margin-bottom:10px;"></div>
