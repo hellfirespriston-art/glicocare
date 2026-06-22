@@ -2,7 +2,10 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- interactive-widget=resizes-content: faz o teclado virtual encolher o LAYOUT inteiro
+       (nao so o viewport visual). Sem isso, no Chrome >=108 os modais position:fixed ficam
+       ancorados no layout de tamanho cheio e o teclado esconde o botao de confirmar. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content"/>
   <title>GlicoCare</title>
   <link rel="manifest" href="/manifest.json"/>
   <meta name="theme-color" content="#00e5ff"/>
