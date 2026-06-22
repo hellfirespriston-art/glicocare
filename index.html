@@ -290,10 +290,7 @@
     .res-glicemia { font-size:5rem; font-weight:700; line-height:1; min-width:140px; text-align:center; }
     .res-info { flex:1; min-width:200px; }
     .res-status { font-size:1.5rem; font-weight:700; margin-bottom:4px; }
-    .res-prox { font-size:1.1rem; color:#aaa; margin-bottom:2px; }
-    .res-prox strong { color:#00ff99; font-size:1.2rem; }
     .res-acao { background:rgba(255,68,102,0.12); border:1px solid #ff446655; border-radius:8px; padding:10px 14px; margin-top:8px; font-size:0.88rem; color:#ffaaaa; line-height:1.7; }
-    .res-acao.hiper { background:rgba(255,170,0,0.1); border-color:#ffaa0055; color:#ffcc88; }
     .res-doses { flex:1; min-width:320px; background:rgba(0,0,0,0.3); border:1px solid #1e3a5a; border-radius:10px; padding:20px; }
     .res-doses-title { font-size:0.85rem; color:#00e5ff; text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; font-weight:600; }
     .res-doses-row { display:flex; gap:14px; margin-bottom:10px; }
@@ -1044,8 +1041,6 @@
     <!-- STATUS + PRÓXIMA -->
     <div class="res-info">
       <div id="res-status" class="res-status">—</div>
-      <div class="res-prox">⏰ Próxima medição: <strong id="res-prox-time">—</strong></div>
-      <div style="font-size:0.85rem;color:#666;" id="res-prox-motivo"></div>
       <div id="res-acao" style="display:none;" class="res-acao"></div>
     </div>
     <!-- SUGESTÃO + DOSES -->
@@ -1743,18 +1738,15 @@ function calcProximaMedicao(glicemia, sugRapida, iobR) {
   document.getElementById('res-glicemia').style.color = cor;
   document.getElementById('res-status').textContent = statusTxt;
   document.getElementById('res-status').style.color = cor;
-  document.getElementById('res-prox-time').textContent = proxStr;
-  document.getElementById('res-prox-motivo').textContent = motivo;
 
+  // So mostra a acao de EMERGENCIA de hipoglicemia (glicemia < 70). As linhas de proxima
+  // medicao e o aviso de hiperglicemia foram tirados do card a pedido do SgarD (2026-06-22);
+  // a proxima medicao continua calculada e mostrada no box pequeno + barra de status.
   const acaoEl = document.getElementById('res-acao');
   if (glicemia < 70) {
     acaoEl.style.display = 'block';
     acaoEl.className = 'res-acao';
     acaoEl.innerHTML = '🍬 <strong>AÇÃO IMEDIATA:</strong> Consuma açúcar rapidamente!<br>• 1 copo de suco de laranja &nbsp;•&nbsp; 3-4 balas &nbsp;•&nbsp; 1 colher de açúcar em água<br>Aguarde 15min e meça novamente. Se não melhorar, chame ajuda!';
-  } else if (glicemia > 250) {
-    acaoEl.style.display = 'block';
-    acaoEl.className = 'res-acao hiper';
-    acaoEl.innerHTML = '⚠️ Glicemia muito elevada. Beba bastante água, evite carboidratos e verifique a necessidade de insulina com seu médico.';
   } else {
     acaoEl.style.display = 'none';
   }
