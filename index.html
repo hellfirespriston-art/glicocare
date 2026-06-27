@@ -33,6 +33,8 @@
     .hero-right .datestr { font-size:0.78rem; color:#888; margin-top:2px; }
     #btn-instalar { display:none; margin-top:5px; padding:3px 10px; background:rgba(0,229,255,0.12); border:1px solid rgba(0,229,255,0.4); border-radius:20px; color:#00e5ff; font-size:0.68rem; font-weight:700; cursor:pointer; letter-spacing:0.5px; }
     #btn-instalar:active { background:rgba(0,229,255,0.28); }
+    .helpbtn { width:28px; height:28px; border-radius:9px; background:rgba(0,229,255,0.1); border:1px solid rgba(0,229,255,0.35); display:flex; align-items:center; justify-content:center; color:#00e5ff; font-size:16px; font-weight:800; text-decoration:none; line-height:1; flex:0 0 auto; }
+    .helpbtn:active { background:rgba(0,229,255,0.25); }
 
     /* STATUS BAR */
     .statusbar {
@@ -513,6 +515,7 @@
   <div class="hero-content">
     <h1>💉 GlicoCare</h1>
     <p>Controle de Glicemia e Insulina — v1.0</p>
+    <a class="helpbtn" href="/manual.html" target="_blank" rel="noopener" title="manual de uso" aria-label="manual de uso" onclick="event.stopPropagation()">?</a>
   </div>
   <div class="hero-right">
     <div class="clock" id="clock">--:--:--</div>

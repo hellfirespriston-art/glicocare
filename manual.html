@@ -1,237 +1,257 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>GlicoCare — Manual de Uso</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GlicoCare - manual completo</title>
+<meta name="description" content="Manual completo do GlicoCare: como registrar glicemia, interpretar o IOB, usar o alarme e gerar o relatorio PDF.">
+<meta name="theme-color" content="#060612">
 <style>
-  @page { size: A4; margin: 18mm 18mm 18mm 18mm; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; font-size: 10.5pt; color: #1a1a1a; line-height: 1.5; }
+  :root{
+    --bg:#060612; --bg2:#040310; --card:#0d0d25; --card2:#111130; --line:#1e2050;
+    --txt:#e8eeff; --muted:#8898cc; --accent:#00e5ff; --accent2:#0066cc;
+    --shadow:0 12px 30px rgba(0,0,0,.45); --radius:18px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%; scroll-behavior:smooth}
+  body{margin:0; color:var(--txt); background:var(--bg);
+    background-image:radial-gradient(140% 60% at 50% -6%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%);
+    background-repeat:no-repeat; background-attachment:fixed;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.6}
+  .wrap{max-width:680px; margin:0 auto; padding:0 18px}
+  a{color:var(--accent)}
 
-  header { border-bottom: 3px solid #0044aa; padding-bottom: 10px; margin-bottom: 16px; display: flex; align-items: flex-end; justify-content: space-between; }
-  header h1 { font-size: 22pt; color: #0044aa; letter-spacing: -0.5px; }
-  header .sub { font-size: 9pt; color: #555; }
-  header .version { font-size: 9pt; color: #888; }
+  header{text-align:center; padding:40px 0 8px}
+  .logo{display:inline-flex; align-items:center; gap:11px}
+  .logo .dot{width:34px;height:34px;border-radius:11px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:grid;place-items:center}
+  .logo .dot svg{width:19px;height:19px}
+  h1{margin:0; font-size:34px; font-weight:800; letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; background-clip:text; color:transparent}
+  .sub{color:var(--muted); font-size:15px; margin:6px 0 0; text-align:center}
 
-  h2 { font-size: 12pt; color: #0044aa; border-left: 4px solid #0044aa; padding-left: 8px; margin: 18px 0 8px; }
-  h3 { font-size: 10.5pt; font-weight: bold; color: #222; margin: 10px 0 4px; }
+  nav.toc{background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; margin:22px 0 8px; box-shadow:0 6px 18px rgba(0,0,0,.18)}
+  nav.toc p{margin:0 0 8px; font-size:12px; letter-spacing:1.4px; text-transform:uppercase; color:var(--muted)}
+  nav.toc ol{margin:0; padding-left:20px}
+  nav.toc li{margin:3px 0}
+  nav.toc a{text-decoration:none}
+  nav.toc a:hover{text-decoration:underline}
 
-  p { margin-bottom: 6px; }
+  section{padding:26px 0 6px; border-top:1px solid var(--line); margin-top:14px}
+  section:first-of-type{border-top:none}
+  h2{font-size:22px; margin:0 0 4px; scroll-margin-top:14px}
+  h2 .num{color:var(--accent); font-weight:800; margin-right:8px}
+  h3{font-size:16px; margin:18px 0 4px; color:var(--txt)}
+  p{margin:8px 0}
+  .muted{color:var(--muted)}
+  ul,ol{margin:8px 0; padding-left:22px}
+  li{margin:5px 0}
 
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+  .warn{background:rgba(255,170,0,.08); border:1px solid rgba(255,170,0,.35); border-radius:12px;
+    padding:12px 14px; margin:10px 0; font-size:14px}
+  .warn strong{color:#ffcc44}
 
-  .box { border: 1px solid #ccd; border-radius: 6px; padding: 10px 12px; background: #f7f8fc; }
-  .box h3 { color: #0044aa; margin-bottom: 4px; }
+  .info{background:rgba(0,229,255,.06); border:1px solid rgba(0,229,255,.25); border-radius:12px;
+    padding:12px 14px; margin:10px 0; font-size:14px}
 
-  ul { padding-left: 18px; margin-bottom: 6px; }
-  ul li { margin-bottom: 3px; }
+  .tbl{width:100%; border-collapse:collapse; font-size:14px; margin:10px 0; border-radius:12px; overflow:hidden}
+  .tbl th{background:rgba(0,229,255,.12); color:var(--accent); padding:8px 10px; text-align:left; font-size:13px}
+  .tbl td{padding:7px 10px; border-bottom:1px solid var(--line); color:var(--muted)}
+  .tbl td strong{color:var(--txt)}
+  .tbl tr:last-child td{border-bottom:none}
+  .ok{color:#00ff99 !important}
+  .wx{color:#ffcc44 !important}
 
-  .tag { display: inline-block; background: #0044aa; color: white; border-radius: 4px; padding: 1px 7px; font-size: 8.5pt; font-weight: bold; margin-right: 4px; }
-  .tag.verde { background: #007a3d; }
-  .tag.roxo { background: #6600aa; }
-  .tag.cinza { background: #555; }
-  .tag.laranja { background: #b85000; }
+  .cards{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0}
+  @media(max-width:480px){.cards{grid-template-columns:1fr}}
+  .kcard{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px}
+  .kcard h3{font-size:14px; margin:0 0 5px; color:var(--accent)}
+  .kcard p{margin:0; font-size:13px; color:var(--muted)}
 
-  .alerta { background: #fff8e1; border: 1px solid #f0c040; border-radius: 6px; padding: 8px 12px; margin: 10px 0; font-size: 9.5pt; }
-  .alerta strong { color: #7a5000; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin-bottom: 8px; }
-  table th { background: #0044aa; color: white; padding: 5px 8px; text-align: left; }
-  table td { padding: 4px 8px; border-bottom: 1px solid #dde; }
-  table tr:nth-child(even) td { background: #f4f5fb; }
-
-  .zona { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
-
-  footer { border-top: 1px solid #ccd; margin-top: 20px; padding-top: 8px; font-size: 8.5pt; color: #888; display: flex; justify-content: space-between; }
-
-  .page-break { page-break-before: always; }
+  footer{text-align:center; color:var(--muted); font-size:13px; padding:34px 0 40px}
+  footer a{color:var(--accent); text-decoration:none; font-weight:600}
 </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <h1>💉 GlicoCare</h1>
-    <div class="sub">Controle de Glicemia e Insulina — Manual de Uso</div>
+  <div class="logo">
+    <span class="dot">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#001a33" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20M2 12h20"/>
+      </svg>
+    </span>
+    <h1>GlicoCare</h1>
   </div>
-  <div class="version">v1.0 — glicocare-delta.vercel.app</div>
+  <p class="sub">Manual completo de uso</p>
 </header>
 
-<!-- ══ VISÃO GERAL ══ -->
-<h2>Visão Geral</h2>
-<p>O GlicoCare é um aplicativo web (PWA) para controle de glicemia e insulina. Funciona no celular e no computador, sem necessidade de instalação. Os dados ficam salvos no próprio dispositivo.</p>
+<main class="wrap">
 
-<div class="grid3">
-  <div class="box">
-    <h3>➕ Registrar</h3>
-    <p>Informe a glicemia e registre a dose de insulina aplicada.</p>
+<nav class="toc">
+  <p>Neste manual</p>
+  <ol>
+    <li><a href="#antes-comer">Antes de se alimentar</a></li>
+    <li><a href="#registrar">Como registrar uma medicao</a></li>
+    <li><a href="#iob">IOB — insulina ativa no corpo</a></li>
+    <li><a href="#lenta">Insulina lenta matinal</a></li>
+    <li><a href="#intervalo">Intervalo ideal entre medicoes</a></li>
+    <li><a href="#alarme">Alarme de proxima medicao</a></li>
+    <li><a href="#analise">Aba Analise</a></li>
+    <li><a href="#config">Configuracoes</a></li>
+    <li><a href="#pdf">Relatorio PDF</a></li>
+    <li><a href="#avisos">Avisos importantes</a></li>
+  </ol>
+</nav>
+
+<section id="antes-comer">
+  <h2><span class="num">1</span>Antes de se alimentar</h2>
+  <p>Toda vez que for se alimentar, abra o app, toque em <strong>Vou Comer</strong> e informe a glicemia medida naquele momento. O app decide se pode tomar a dose prescrita antes da refeicao — e em que quantidade.</p>
+  <div class="warn">
+    <strong>Nunca aplique insulina antes de comer</strong> sem antes consultar esta tela.
   </div>
-  <div class="box">
-    <h3>📈 Gráfico</h3>
-    <p>Visualize a evolução da glicemia ao longo do tempo.</p>
+
+  <h3>O botao ? ao lado da dose sugerida</h3>
+  <p>Toque nele para ver o raciocinio completo: glicemia atual, glicemia alvo, fator de sensibilidade, IOB e o calculo passo a passo. Util para compartilhar com o medico se precisar explicar como o app chegou aquela sugestao.</p>
+</section>
+
+<section id="registrar">
+  <h2><span class="num">2</span>Como registrar uma medicao</h2>
+  <ol>
+    <li>Informe o valor de glicemia em mg/dL.</li>
+    <li>Confirme data e hora (preenchidas automaticamente com o horario local).</li>
+    <li>Selecione a refeicao: <strong>Vou comer</strong>, <strong>Ja comi</strong> ou <strong>Sem refeicao</strong>.</li>
+    <li>Toque em <strong>Registrar e Calcular</strong>.</li>
+  </ol>
+  <div class="cards">
+    <div class="kcard">
+      <h3>Dose sugerida</h3>
+      <p>Calculada com base na glicemia atual, alvo configurado, fator de sensibilidade e IOB ainda ativo.</p>
+    </div>
+    <div class="kcard">
+      <h3>Confirmar aplicacao</h3>
+      <p>Informe as unidades realmente aplicadas e confirme para salvar no historico.</p>
+    </div>
   </div>
-  <div class="box">
-    <h3>📋 Histórico</h3>
-    <p>Consulte todos os registros anteriores com detalhes.</p>
+</section>
+
+<section id="iob">
+  <h2><span class="num">3</span>IOB — insulina ativa no corpo</h2>
+  <p>O IOB (Insulin On Board) mostra quanto de insulina ainda esta atuando no organismo, evitando sobreposicao de doses perigosas. A barra na tela inicial exibe os dois tipos em tempo real.</p>
+  <div class="cards">
+    <div class="kcard">
+      <h3>Rapida ativa</h3>
+      <p>Insulina de acao rapida aplicada nas ultimas horas. Decai gradualmente ate zerar.</p>
+    </div>
+    <div class="kcard">
+      <h3>Lenta ativa</h3>
+      <p>Insulina basal ainda em circulacao. Fica ativa por ate 24h dependendo do tipo configurado.</p>
+    </div>
   </div>
-  <div class="box">
-    <h3>🧠 Análise</h3>
-    <p>Estatísticas: GMI, HbA1c estimada, TIR e variabilidade.</p>
+</section>
+
+<section id="lenta">
+  <h2><span class="num">4</span>Insulina lenta matinal</h2>
+  <p>Todo dia a partir das <strong>7h00</strong> o app exibe um aviso para registrar a dose de insulina lenta (basal). O valor padrao e o configurado em Config — da pra editar antes de confirmar.</p>
+  <ul>
+    <li><strong>Confirmei, tomei</strong> — registra a dose no horario atual.</li>
+    <li><strong>Nao vou tomar</strong> — descarta o aviso do dia.</li>
+  </ul>
+</section>
+
+<section id="intervalo">
+  <h2><span class="num">5</span>Intervalo ideal entre medicoes</h2>
+  <p>O horario sugerido nao e obrigatorio — qualquer medicao fora do horario entra normalmente no historico com o timestamp correto. O que importa para o aprendizado do app e o par:</p>
+  <ul>
+    <li>Medir <strong>antes</strong> de aplicar a insulina rapida.</li>
+    <li>Medir <strong>de novo 2 a 4 horas depois</strong> — quando a insulina ja fez efeito.</li>
+  </ul>
+  <p class="muted">E nesse intervalo que o app calcula quanto 1 unidade baixou a glicemia e ajusta o fator de sensibilidade automaticamente.</p>
+
+  <table class="tbl">
+    <tr><th>Situacao</th><th>Impacto</th></tr>
+    <tr><td>Mediu 30 min antes ou depois do sugerido</td><td><strong class="ok">Nenhum problema</strong></td></tr>
+    <tr><td>Esqueceu e mediu horas depois</td><td><strong class="ok">Registra normalmente</strong></td></tr>
+    <tr><td>Mediu logo apos aplicar insulina (&lt;1h)</td><td><strong class="wx">Atrapalha o aprendizado</strong></td></tr>
+    <tr><td>Mede → aplica → mede 2-4h depois</td><td><strong class="ok">Ideal para o aprendizado</strong></td></tr>
+    <tr><td>Horarios totalmente aleatorios todo dia</td><td><strong class="wx">Aprendizado demora a convergir</strong></td></tr>
+  </table>
+</section>
+
+<section id="alarme">
+  <h2><span class="num">6</span>Alarme de proxima medicao</h2>
+  <p>Na aba Registrar e possivel ativar um alarme sonoro para lembrar o horario da proxima medicao. O alarme emite bips e exibe um modal para ser encerrado.</p>
+  <ul>
+    <li>Horario silencioso configuravel (ex: 23h as 7h) — o alarme nao toca nesse intervalo.</li>
+    <li><strong>Excecao:</strong> hipoglicemia abaixo de 54 mg/dL sempre toca o alarme, mesmo no silencioso.</li>
+  </ul>
+</section>
+
+<section id="analise">
+  <h2><span class="num">7</span>Aba Analise</h2>
+  <p>Estatisticas calculadas a partir de todos os registros salvos no dispositivo.</p>
+  <table class="tbl">
+    <tr><th>Indicador</th><th>Significado</th><th>Meta geral</th></tr>
+    <tr><td><strong>GMI</strong></td><td>Estimativa do HbA1c pela media de glicemia</td><td>&lt; 7%</td></tr>
+    <tr><td><strong>HbA1c estimada</strong></td><td>Media dos ultimos ~3 meses</td><td>&lt; 7%</td></tr>
+    <tr><td><strong>CV</strong></td><td>Variabilidade — quanto a glicemia oscila</td><td>&lt; 36%</td></tr>
+    <tr><td><strong>TIR</strong></td><td>% de leituras dentro de 70–180 mg/dL</td><td>&gt; 70%</td></tr>
+  </table>
+
+  <h3>Zonas do TIR</h3>
+  <ul>
+    <li>Abaixo de 54 mg/dL — hipoglicemia severa</li>
+    <li>54 a 69 mg/dL — baixo</li>
+    <li>70 a 180 mg/dL — no alvo</li>
+    <li>181 a 250 mg/dL — alto</li>
+    <li>Acima de 250 mg/dL — muito alto</li>
+  </ul>
+</section>
+
+<section id="config">
+  <h2><span class="num">8</span>Configuracoes</h2>
+  <div class="cards">
+    <div class="kcard"><h3>Tipo de insulina lenta</h3><p>Lantus, Toujeo, Tresiba ou NPH. Afeta a duracao no IOB.</p></div>
+    <div class="kcard"><h3>Dose lenta padrao</h3><p>Valor pre-preenchido no aviso matinal de insulina lenta.</p></div>
+    <div class="kcard"><h3>Glicemia alvo (mg/dL)</h3><p>Meta usada no calculo da dose de insulina rapida. Padrao: 200 mg/dL.</p></div>
+    <div class="kcard"><h3>Fator de sensibilidade</h3><p>Quanto 1 unidade reduz a glicemia. O app aprende automaticamente (80% historico + 20% novo).</p></div>
+    <div class="kcard"><h3>Horario silencioso</h3><p>Intervalo em que o alarme de medicao nao toca.</p></div>
+    <div class="kcard"><h3>Periodo do alarme</h3><p>Intervalo entre medicoes (ex: a cada 2h).</p></div>
   </div>
-  <div class="box">
-    <h3>⚙️ Config</h3>
-    <p>Personalize tipo de insulina, dose, alvo e alarmes.</p>
+</section>
+
+<section id="pdf">
+  <h2><span class="num">9</span>Relatorio PDF</h2>
+  <p>Disponivel na aba Analise. Gera um relatorio medico em preto e branco com:</p>
+  <ul>
+    <li>GMI, HbA1c estimada e Coeficiente de Variacao</li>
+    <li>Tempo no Alvo (TIR) com as 5 zonas glicemicas</li>
+    <li>Grafico de glicemia cronologico</li>
+    <li>Medias por periodo do dia (madrugada, manha, tarde, noite)</li>
+    <li>Resumo de insulina aplicada (rapida e lenta)</li>
+    <li>Registro de hipoglicemias</li>
+    <li>Historico completo de medicoes</li>
+  </ul>
+</section>
+
+<section id="avisos">
+  <h2><span class="num">10</span>Avisos importantes</h2>
+  <div class="warn">
+    <strong>Aviso legal:</strong> O GlicoCare e uma ferramenta de apoio e registro. As sugestoes de dose sao estimativas baseadas em parametros configurados e <strong>nao substituem a orientacao do medico ou endocrinologista</strong>. Sempre consulte um profissional de saude antes de ajustar doses de insulina.
   </div>
-  <div class="box">
-    <h3>📄 PDF</h3>
-    <p>Gere relatório médico completo em preto e branco.</p>
+  <div class="info">
+    <strong>Dados locais:</strong> Os registros ficam salvos apenas no dispositivo (localStorage do navegador). Nao ha sincronizacao entre aparelhos. Nao limpe os dados do navegador para nao perder o historico.
   </div>
-</div>
+</section>
 
-<!-- ══ REGISTRAR ══ -->
-<h2>Como Registrar uma Medição</h2>
-
-<ol style="padding-left:18px; margin-bottom:8px;">
-  <li>Informe o valor de glicemia no campo <strong>Glicemia (mg/dL)</strong>.</li>
-  <li>Confirme a data e hora (preenchida automaticamente com o horário local).</li>
-  <li>Informe a refeição, se houver, e selecione: <strong>Vou comer</strong>, <strong>Já comi</strong> ou <strong>Sem refeição</strong>.</li>
-  <li>Clique em <strong>Registrar e Calcular</strong>.</li>
-</ol>
-
-<p>O aplicativo calcula automaticamente a dose sugerida de insulina rápida com base na glicemia atual, na glicemia alvo configurada, no fator de sensibilidade e no IOB (insulina ainda ativa no corpo).</p>
-
-<div class="grid">
-  <div class="box">
-    <h3>Dose Sugerida</h3>
-    <p>Exibida após o cálculo. Leve em conta o IOB para evitar hipoglicemia por sobreposição de doses.</p>
-  </div>
-  <div class="box">
-    <h3>Confirmar Aplicação</h3>
-    <p>Após ver a dose sugerida, informe as <strong>Unidades aplicadas</strong> e confirme para salvar no histórico.</p>
-  </div>
-</div>
-
-<!-- ══ IOB ══ -->
-<h2>IOB — Insulina Ativa no Corpo</h2>
-<p>O IOB (Insulin On Board) mostra quanto de insulina ainda está atuando no organismo, evitando sobreposição de doses perigosas.</p>
-
-<div class="grid">
-  <div class="box">
-    <h3><span style="color:#00aacc">💉</span> Rápida Ativa</h3>
-    <p>Insulina de ação rápida aplicada nas últimas horas. Decai gradualmente até zerar.</p>
-  </div>
-  <div class="box">
-    <h3><span style="color:#aa44ff">🟣</span> Lenta Ativa</h3>
-    <p>Insulina basal (lenta) ainda em circulação. Fica ativa por até 24h dependendo do tipo.</p>
-  </div>
-</div>
-
-<!-- ══ INSULINA LENTA ══ -->
-<h2>Insulina Lenta Matinal</h2>
-<p>Todo dia a partir das <strong>7h00</strong>, o app exibe um aviso para registrar a dose de insulina lenta (basal). O valor padrão é a dose configurada em Config. É possível editar o valor antes de confirmar.</p>
-<ul>
-  <li><strong>Confirmei, tomei</strong> — registra a dose no horário atual.</li>
-  <li><strong>Não vou tomar</strong> — descarta o aviso do dia.</li>
-</ul>
-
-<!-- ══ ALARME ══ -->
-<h2>Alarme de Próxima Medição</h2>
-<p>Na aba Registrar, é possível ativar um alarme sonoro para lembrar o horário da próxima medição. O alarme emite bips e exibe um modal para ser encerrado.</p>
-<ul>
-  <li>Horário silencioso configurável (ex: 23h às 7h) — o alarme não toca nesse intervalo.</li>
-  <li><strong>Exceção:</strong> hipoglicemia abaixo de 54 mg/dL sempre toca o alarme, independente do silencioso.</li>
-</ul>
-
-<!-- ══ PÁGINA 2 ══ -->
-<div class="page-break"></div>
-
-<header>
-  <div>
-    <h1>💉 GlicoCare</h1>
-    <div class="sub">Controle de Glicemia e Insulina — Manual de Uso</div>
-  </div>
-  <div class="version">v1.0 — página 2</div>
-</header>
-
-<!-- ══ ANÁLISE ══ -->
-<h2>Aba Análise</h2>
-<p>Exibe estatísticas calculadas a partir dos registros salvos no dispositivo.</p>
-
-<table>
-  <tr><th>Indicador</th><th>O que significa</th><th>Meta geral</th></tr>
-  <tr><td><strong>GMI</strong> (Glucose Management Indicator)</td><td>Estimativa do HbA1c com base na glicemia média</td><td>&lt; 7%</td></tr>
-  <tr><td><strong>HbA1c Estimada</strong></td><td>Média de glicemia nos últimos ~3 meses</td><td>&lt; 7%</td></tr>
-  <tr><td><strong>CV</strong> (Coeficiente de Variação)</td><td>Variabilidade glicêmica — quanto a glicemia oscila</td><td>&lt; 36%</td></tr>
-  <tr><td><strong>TIR</strong> (Tempo no Alvo)</td><td>% de leituras dentro da faixa 70–180 mg/dL</td><td>&gt; 70%</td></tr>
-</table>
-
-<h3>Zonas do TIR</h3>
-<ul>
-  <li><span class="zona" style="background:#cc0022"></span><strong>Muito Baixo</strong> — abaixo de 54 mg/dL (hipoglicemia severa)</li>
-  <li><span class="zona" style="background:#ff4466"></span><strong>Baixo</strong> — 54 a 69 mg/dL</li>
-  <li><span class="zona" style="background:#00cc66"></span><strong>No Alvo</strong> — 70 a 180 mg/dL</li>
-  <li><span class="zona" style="background:#ffaa00"></span><strong>Alto</strong> — 181 a 250 mg/dL</li>
-  <li><span class="zona" style="background:#ff5500"></span><strong>Muito Alto</strong> — acima de 250 mg/dL</li>
-</ul>
-
-<!-- ══ CONFIG ══ -->
-<h2>Configurações</h2>
-
-<div class="grid">
-  <div class="box">
-    <h3>Tipo de Insulina Lenta</h3>
-    <p>Lantus, Toujeo, Tresiba ou NPH. Afeta o cálculo de duração da insulina basal no IOB.</p>
-  </div>
-  <div class="box">
-    <h3>Dose Lenta Padrão</h3>
-    <p>Valor pré-preenchido no aviso matinal de insulina lenta.</p>
-  </div>
-  <div class="box">
-    <h3>Glicemia Alvo (mg/dL)</h3>
-    <p>Meta de glicemia usada no cálculo da dose de insulina rápida. Padrão: 200 mg/dL.</p>
-  </div>
-  <div class="box">
-    <h3>Fator de Sensibilidade</h3>
-    <p>Quantos mg/dL 1 unidade de insulina reduz. O app aprende automaticamente (80% histórico + 20% novo).</p>
-  </div>
-  <div class="box">
-    <h3>Horário Silencioso</h3>
-    <p>Intervalo em que o alarme de medição não toca (ex: 23h–7h).</p>
-  </div>
-  <div class="box">
-    <h3>Período do Alarme</h3>
-    <p>Intervalo entre medições (ex: a cada 2h). O app calcula o próximo horário automaticamente.</p>
-  </div>
-</div>
-
-<!-- ══ PDF ══ -->
-<h2>Relatório PDF</h2>
-<p>Disponível na aba <strong>Análise</strong>. Gera um relatório médico em preto e branco com:</p>
-<ul>
-  <li>GMI, HbA1c estimada e Coeficiente de Variação</li>
-  <li>Tempo no Alvo (TIR) com as 5 zonas glicêmicas</li>
-  <li>Gráfico de glicemia cronológico</li>
-  <li>Médias por período do dia (madrugada, manhã, tarde, noite)</li>
-  <li>Resumo de insulina aplicada (rápida e lenta)</li>
-  <li>Registro de hipoglicemias</li>
-  <li>Histórico completo de medições</li>
-</ul>
-
-<!-- ══ AVISOS ══ -->
-<h2>Avisos Importantes</h2>
-
-<div class="alerta">
-  <strong>⚠️ Aviso Legal:</strong> O GlicoCare é uma ferramenta de apoio e registro. As sugestões de dose são estimativas baseadas em parâmetros configurados e <strong>não substituem a orientação do médico ou endocrinologista</strong>. Sempre consulte um profissional de saúde antes de ajustar doses de insulina.
-</div>
-
-<div class="alerta">
-  <strong>📱 Dados locais:</strong> Os registros ficam salvos apenas no dispositivo (localStorage do navegador). Não há sincronização entre dispositivos. Não limpe os dados do navegador para não perder o histórico.
-</div>
+</main>
 
 <footer>
-  <span>GlicoCare v1.0 — glicocare-delta.vercel.app</span>
-  <span>Gerado em 02/06/2026</span>
+  <p><a href="https://glicocare-delta.vercel.app" rel="noopener">Abrir o GlicoCare</a></p>
+  <p>GlicoCare — controle de glicemia e insulina</p>
 </footer>
 
 </body>
