@@ -31,6 +31,8 @@
     .hero-right { position:absolute; right:16px; top:50%; transform:translateY(-50%); z-index:1; text-align:right; }
     .hero-right .clock { font-size:1.3rem; color:#00e5ff; font-weight:400; }
     .hero-right .datestr { font-size:0.78rem; color:#888; margin-top:2px; }
+    #btn-instalar { display:none; margin-top:5px; padding:3px 10px; background:rgba(0,229,255,0.12); border:1px solid rgba(0,229,255,0.4); border-radius:20px; color:#00e5ff; font-size:0.68rem; font-weight:700; cursor:pointer; letter-spacing:0.5px; }
+    #btn-instalar:active { background:rgba(0,229,255,0.28); }
 
     /* STATUS BAR */
     .statusbar {
@@ -515,6 +517,7 @@
   <div class="hero-right">
     <div class="clock" id="clock">--:--:--</div>
     <div class="datestr" id="hero-date"></div>
+    <button id="btn-instalar" onclick="instalarApp()">+ Instalar</button>
   </div>
 </div>
 
@@ -3152,6 +3155,25 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
+}
+
+// ── INSTALAR PWA ──
+let _deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredInstall = e;
+  const b = document.getElementById('btn-instalar');
+  if (b) b.style.display = 'inline-block';
+});
+window.addEventListener('appinstalled', () => {
+  const b = document.getElementById('btn-instalar');
+  if (b) b.style.display = 'none';
+  _deferredInstall = null;
+});
+function instalarApp() {
+  if (!_deferredInstall) return;
+  _deferredInstall.prompt();
+  _deferredInstall.userChoice.then(() => { _deferredInstall = null; });
 }
 </script>
 </body>
