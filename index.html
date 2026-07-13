@@ -31,8 +31,6 @@
     .hero-right { position:absolute; right:16px; top:50%; transform:translateY(-50%); z-index:1; text-align:right; }
     .hero-right .clock { font-size:1.3rem; color:#00e5ff; font-weight:400; }
     .hero-right .datestr { font-size:0.78rem; color:#888; margin-top:2px; }
-    #btn-instalar { display:none; margin-top:5px; padding:3px 10px; background:rgba(0,229,255,0.12); border:1px solid rgba(0,229,255,0.4); border-radius:20px; color:#00e5ff; font-size:0.68rem; font-weight:700; cursor:pointer; letter-spacing:0.5px; }
-    #btn-instalar:active { background:rgba(0,229,255,0.28); }
     .helpbtn { width:28px; height:28px; border-radius:9px; background:rgba(0,229,255,0.1); border:1px solid rgba(0,229,255,0.35); display:flex; align-items:center; justify-content:center; color:#00e5ff; font-size:16px; font-weight:800; text-decoration:none; line-height:1; flex:0 0 auto; }
     .helpbtn:active { background:rgba(0,229,255,0.25); }
 
@@ -195,20 +193,22 @@
     /* MODAL INSULINA LENTA */
     .lenta-modal { display:none; position:fixed; left:0; right:0; top:0; height:var(--vvh, 100%); background:#000000cc; z-index:1000; justify-content:center; align-items:flex-start; overflow-y:auto; padding:14px 0; }
     .lenta-modal.show { display:flex; }
-    .lenta-modal-box { background:#12001f; border:2px solid #cc44ff; border-radius:20px; padding:36px 28px; text-align:center; max-width:360px; width:94%; margin:auto; }
-    .lenta-modal-icon { font-size:3.5rem; }
-    .lenta-modal-title { font-size:1.5rem; font-weight:700; color:#cc44ff; margin:14px 0 8px; }
-    .lenta-modal-sub { font-size:1.05rem; color:#ccc; margin-bottom:24px; line-height:1.6; }
-    .lenta-dose-row { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:24px; }
+    .lenta-modal-box { background:#12001f; border:2px solid #cc44ff; border-radius:20px; padding:20px 28px 28px; text-align:center; max-width:360px; width:94%; margin:0 auto; }
+    .lenta-modal-title { font-size:1.5rem; font-weight:700; color:#cc44ff; margin:0 0 8px; }
+    .lenta-modal-sub { font-size:1.05rem; color:#ccc; margin-bottom:16px; line-height:1.5; }
+    .lenta-dose-row { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:18px; }
     .lenta-dose-row input { background:#0a0a20; border:2px solid #cc44ff; color:#f0f0f0; padding:14px 16px; border-radius:10px; font-size:2.2rem; font-weight:700; width:110px; text-align:center; }
+    #inp-lenta-glicemia { border-color:#00ff99; }
     .lenta-dose-row span { color:#cc44ff; font-size:1.5rem; font-weight:700; }
-    .lenta-rapida-label { font-size:1.1rem; color:#ddd; text-align:center; margin-bottom:14px; font-weight:600; }
-    .lenta-toggle { display:flex; gap:10px; margin-bottom:16px; }
-    .lenta-toggle button { flex:1; padding:16px 10px; border-radius:12px; font-size:1.1rem; font-weight:700; cursor:pointer; border:2px solid; transition:all 0.2s; }
-    .lenta-toggle .t-nao { background:#1a0a2a; color:#cc44ffbb; border-color:#cc44ff55; }
-    .lenta-toggle .t-nao.ativo { background:#2a0a3a; color:#cc44ff; border-color:#cc44ff; }
-    .lenta-toggle .t-sim { background:#0a1a2a; color:#00b8ccbb; border-color:#00e5ff55; }
-    .lenta-toggle .t-sim.ativo { background:#003344; color:#00e5ff; border-color:#00e5ff; box-shadow:0 0 12px #00e5ff44; }
+    .lenta-rapida-label { font-size:1.1rem; color:#ddd; text-align:center; margin-bottom:10px; font-weight:600; }
+    .gc-roleta { display:flex; align-items:center; justify-content:center; gap:4px; background:#0a0a20; border:2px solid #cc44ff; border-radius:16px; padding:4px; margin:0 auto; max-width:260px; user-select:none; }
+    .gc-roleta-seta { width:56px; height:56px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:700; border-radius:12px; cursor:pointer; touch-action:manipulation; }
+    .gc-roleta-seta:active { background:rgba(255,255,255,.1); }
+    .gc-roleta-valor { flex:1; min-width:0; background:transparent; border:none; color:#f0f0f0; font-size:2.2rem; font-weight:700; text-align:center; -webkit-appearance:none; appearance:none; }
+    .gc-roleta-unidade { font-size:0.85rem; margin-top:6px; font-weight:700; text-align:center; }
+    .gc-roleta-mini { max-width:150px; padding:2px; gap:2px; }
+    .gc-roleta-mini .gc-roleta-seta { width:34px; height:34px; font-size:1.3rem; border-radius:8px; }
+    .gc-roleta-mini .gc-roleta-valor { font-size:1.15rem; }
     .lenta-btn-row { display:flex; gap:10px; }
     .btn-lenta-confirmar { flex:1; background:#cc44ff; color:#000; font-weight:700; font-size:1rem; padding:15px; border:none; border-radius:10px; cursor:pointer; }
     .btn-lenta-pular { flex:1; background:#1a1a2a; color:#888; font-size:0.95rem; padding:15px; border:1px solid #333; border-radius:10px; cursor:pointer; }
@@ -282,7 +282,7 @@
     /* CARD RESULTADO */
     .resultado-card {
       display:none; position:fixed; top:0; left:0; right:0; z-index:999;
-      padding:20px; background:linear-gradient(180deg,rgba(6,6,18,0.98) 0%,rgba(6,6,18,0.95) 100%);
+      padding:20px 20px 64px; background:linear-gradient(180deg,rgba(6,6,18,0.98) 0%,rgba(6,6,18,0.95) 100%);
       border-bottom:2px solid #00e5ff;
       box-shadow:0 8px 40px rgba(0,0,0,0.8);
       animation:slideDown 0.3s ease;
@@ -291,6 +291,7 @@
     .resultado-card.hipo { border-bottom-color:#ff4466; }
     @keyframes slideDown { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
     .res-inner { max-width:1100px; margin:0 auto; display:flex; align-items:flex-start; gap:24px; flex-wrap:wrap; }
+    .res-fechar-row { width:100%; text-align:center; margin-top:32px; }
     .res-glicemia { font-size:5rem; font-weight:700; line-height:1; min-width:140px; text-align:center; }
     .res-info { flex:1; min-width:200px; }
     .res-status { font-size:1.5rem; font-weight:700; margin-bottom:4px; }
@@ -303,7 +304,7 @@
     .res-doses-hint { font-size:0.78rem; color:#555; margin-top:8px; }
     .res-doses-sug { display:flex; justify-content:space-between; align-items:center; font-size:0.95rem; padding:8px 0; border-bottom:1px solid #1a1a3a; }
     .res-doses-sug:last-of-type { border-bottom:none; margin-bottom:6px; }
-    .res-fechar { background:transparent; border:1px solid #333; color:#666; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:0.85rem; transition:all 0.2s; white-space:nowrap; align-self:flex-start; }
+    .res-fechar { background:transparent; border:1px solid #667788; color:#ddd; padding:16px 40px; border-radius:12px; cursor:pointer; font-size:1.05rem; font-weight:600; transition:all 0.2s; }
     .res-fechar:hover { border-color:#00e5ff; color:#00e5ff; }
 
     /* AVISO LEGAL */
@@ -422,7 +423,7 @@
     .dev-historia p { margin-bottom:14px; }
     .dev-historia p:last-child { margin-bottom:0; }
     .dev-assinatura { margin-top:22px; padding-top:18px; border-top:1px solid #111827; font-size:0.78rem; color:#334455; text-align:center; line-height:1.6; }
-    .dev-fechar { display:block; width:100%; margin-top:20px; background:none; border:1px solid #1a2a3a; color:#556677; padding:12px; border-radius:10px; cursor:pointer; font-size:0.9rem; transition:all 0.3s; }
+    .dev-fechar { display:block; width:100%; margin-top:28px; background:none; border:1px solid #556677; color:#ddd; padding:18px; border-radius:12px; cursor:pointer; font-size:1.05rem; font-weight:600; text-align:center; transition:all 0.3s; }
     .dev-fechar:hover { color:#00e5ffaa; border-color:#00e5ff33; }
 
     /* MODAL APOIE */
@@ -462,8 +463,8 @@
     .apoie-btn-copiar:hover { background:rgba(0,229,255,0.12); }
     .apoie-agradecimento { font-size:0.75rem; color:#667788; margin-top:16px; line-height:1.6; }
     .apoie-fechar {
-      margin-top:16px; background:none; border:1px solid #2a3a4a;
-      color:#778899; padding:10px 28px; border-radius:10px; cursor:pointer; font-size:0.88rem;
+      display:block; width:100%; margin-top:24px; background:none; border:1px solid #667788;
+      color:#ddd; padding:16px 28px; border-radius:12px; cursor:pointer; font-size:1.05rem; font-weight:600; text-align:center;
     }
 
     /* MODAL AVISO LEGAL */
@@ -502,7 +503,11 @@
     </div>
     <div class="form-row" style="margin-bottom:18px;">
       <label>Glicemia alvo (mg/dL)</label>
-      <input type="number" id="np-alvo" placeholder="Ex: 190" min="70" max="300" step="5" style="background:#0d0d25;border:1px solid #2a3a6a;color:#f0f0f0;padding:11px 14px;border-radius:8px;font-size:1rem;width:100%;"/>
+      <div class="gc-roleta" style="border-color:#00e5ff;">
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('np-alvo',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+        <input type="number" id="np-alvo" class="gc-roleta-valor" data-inicial="190" placeholder="Ex: 190" min="70" max="300" step="5" style="color:#00e5ff;"/>
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('np-alvo',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+      </div>
     </div>
     <div style="display:flex;gap:10px;">
       <button onclick="criarPerfil()" style="flex:1;background:#00e5ff;color:#000;font-weight:700;padding:12px;border:none;border-radius:8px;cursor:pointer;">Criar</button>
@@ -516,11 +521,11 @@
     <h1>💉 GlicoCare</h1>
     <p>Controle de Glicemia e Insulina — v1.0</p>
     <a class="helpbtn" href="/manual.html" target="_blank" rel="noopener" title="manual de uso" aria-label="manual de uso" onclick="event.stopPropagation()">?</a>
+    <a class="helpbtn" href="https://sgard-apps.vercel.app" target="_blank" rel="noopener" title="ver todos os apps" aria-label="ver todos os apps" onclick="event.stopPropagation()" style="width:auto;padding:0 10px;font-size:12px;">Loja</a>
   </div>
   <div class="hero-right">
     <div class="clock" id="clock">--:--:--</div>
     <div class="datestr" id="hero-date"></div>
-    <button id="btn-instalar" onclick="instalarApp()">+ Instalar</button>
   </div>
 </div>
 
@@ -626,23 +631,29 @@
 <!-- MODAL INSULINA LENTA (global — fora das tabs para funcionar em qualquer aba) -->
 <div class="lenta-modal" id="lenta-modal">
   <div class="lenta-modal-box">
-    <div class="lenta-modal-icon">💉</div>
     <div class="lenta-modal-title">Insulina da Manhã</div>
-    <div class="lenta-modal-sub">Quantas unidades você vai aplicar?</div>
-    <div class="lenta-dose-row">
-      <input type="number" id="inp-lenta-modal" value="20" min="0" max="80" step="1"/>
-      <span>u</span>
+    <div class="lenta-modal-sub">Qual foi a medição antes de aplicar?</div>
+    <div class="gc-roleta" style="border-color:#00ff99;margin-bottom:6px;">
+      <span class="gc-roleta-seta" style="color:#00ff99;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-lenta-glicemia',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+      <input type="number" id="inp-lenta-glicemia" class="gc-roleta-valor" data-inicial="140" placeholder="140" min="20" max="600" step="1" onfocus="this.select()"/>
+      <span class="gc-roleta-seta" style="color:#00ff99;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-lenta-glicemia',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
     </div>
-    <div style="border-top:1px solid #2a1a40;padding-top:20px;margin-bottom:20px;">
-      <div class="lenta-rapida-label">Vai aplicar insulina rápida também?</div>
-      <div class="lenta-toggle">
-        <button id="lenta-rapida-nao" class="t-nao ativo" onclick="toggleLentaRapida(false)">❌ Não</button>
-        <button id="lenta-rapida-sim" class="t-sim" onclick="toggleLentaRapida(true)">✅ Sim</button>
+    <div class="gc-roleta-unidade" style="color:#00ff99;margin-bottom:16px;">mg/dL</div>
+    <div class="lenta-modal-sub">Quantas unidades você vai aplicar?</div>
+    <div class="gc-roleta" style="border-color:#cc44ff;margin-bottom:6px;">
+      <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-lenta-modal',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+      <input type="number" id="inp-lenta-modal" class="gc-roleta-valor" data-inicial="20" value="20" min="0" max="80" step="1"/>
+      <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-lenta-modal',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+    </div>
+    <div class="gc-roleta-unidade" style="color:#cc44ff;">u</div>
+    <div style="border-top:1px solid #2a1a40;padding-top:16px;margin-top:16px;margin-bottom:16px;">
+      <div class="lenta-rapida-label">Insulina rápida também?</div>
+      <div class="gc-roleta" style="border-color:#00e5ff;margin-bottom:6px;">
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-rapida-junto',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+        <input type="number" id="inp-rapida-junto" class="gc-roleta-valor" data-inicial="5" value="5" min="0" max="80" step="1"/>
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-rapida-junto',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
       </div>
-      <div id="lenta-rapida-row" style="display:none;align-items:center;justify-content:center;gap:10px;margin-top:4px;">
-        <input type="number" id="inp-rapida-junto" value="5" min="0" max="80" step="1" style="background:#0a0a20;border:2px solid #00e5ff;color:#f0f0f0;padding:12px;border-radius:10px;font-size:2rem;font-weight:700;width:100px;text-align:center;"/>
-        <span style="color:#00e5ff;font-size:1.3rem;font-weight:700;">u rápida</span>
-      </div>
+      <div class="gc-roleta-unidade" style="color:#00e5ff;">u rápida</div>
     </div>
     <div class="lenta-btn-row">
       <button class="btn-lenta-confirmar" onclick="confirmarLentaModal()">✅ Aplicar agora</button>
@@ -655,14 +666,15 @@
 <div class="vcomer-modal" id="normal-modal">
   <div class="vcomer-box" style="border:2px solid #00ff9944;border-radius:22px;padding:32px 24px;max-width:380px;">
     <div style="text-align:center;font-size:1.5rem;font-weight:700;color:#00ff99;margin-bottom:20px;">Qual foi o valor?</div>
-    <div style="position:relative;margin-bottom:8px;">
-      <input type="number" id="nm-glicemia" placeholder="140" min="20" max="600" inputmode="numeric"
-        style="font-size:3rem;font-weight:700;text-align:center;padding:16px 70px 16px 22px;width:100%;background:#0a0a20;border:2px solid #00ff9944;border-radius:16px;color:#00ff99;letter-spacing:1px;"
-        oninput="document.getElementById('nm-btn-registrar').disabled=!this.value"/>
-      <span style="position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:0.95rem;color:#00ff9955;font-weight:700;pointer-events:none;">mg/dL</span>
+    <div class="gc-roleta" style="border-color:#00ff99;margin-bottom:6px;">
+      <span class="gc-roleta-seta" style="color:#00ff99;" onpointerdown="event.preventDefault();gcRoletaIniciar('nm-glicemia',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+      <input type="number" id="nm-glicemia" class="gc-roleta-valor" data-inicial="140" placeholder="140" min="20" max="600" step="1"
+        oninput="document.getElementById('nm-btn-registrar').disabled=!this.value" onfocus="this.select()"/>
+      <span class="gc-roleta-seta" style="color:#00ff99;" onpointerdown="event.preventDefault();gcRoletaIniciar('nm-glicemia',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
     </div>
+    <div class="gc-roleta-unidade" style="color:#00ff9955;margin-bottom:8px;">mg/dL</div>
     <div style="display:flex;gap:12px;margin-top:20px;">
-      <button onclick="fecharMedicaoNormal()" style="flex:1;background:#1a1a3a;color:#aaa;padding:20px;border:1px solid #333;border-radius:14px;cursor:pointer;font-size:1.05rem;">Fechar</button>
+      <button onclick="fecharMedicaoNormal()" style="flex:1;background:#1a1a3a;color:#eee;padding:20px;border:1px solid #667788;border-radius:14px;cursor:pointer;font-size:1.05rem;">Fechar</button>
       <button id="nm-btn-registrar" onclick="registrarNormal()" disabled
         style="flex:2;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;padding:20px;border:1px solid #00ff9955;border-radius:14px;cursor:pointer;font-size:1.2rem;font-weight:700;">
         ✅ Registrar
@@ -677,13 +689,20 @@
     <div style="text-align:center;font-size:1.5rem;font-weight:700;color:#00ff99;margin-bottom:20px;">Antes de Comer</div>
     <span id="vcomer-dose-label" style="display:none;">5</span>
     <div class="form-row">
-      <label style="font-size:1.05rem;margin-bottom:10px;display:block;color:#ccc;">Glicemia atual (mg/dL)</label>
-      <input type="number" id="vcomer-glicemia" placeholder="Ex: 120" min="20" max="600" inputmode="numeric"
-        oninput="calcularBolusComer()"
-        style="font-size:2.2rem;font-weight:700;text-align:center;padding:12px 18px;border:2px solid #00e5ff33;border-radius:14px;background:#0a0a20;color:#00e5ff;"/>
+      <label style="font-size:1.05rem;margin-bottom:10px;display:block;color:#ccc;text-align:center;">Glicemia atual</label>
+      <div class="gc-roleta" style="border-color:#00e5ff;margin-bottom:6px;">
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('vcomer-glicemia',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+        <input type="number" id="vcomer-glicemia" class="gc-roleta-valor" data-inicial="120" placeholder="Ex: 120" min="20" max="600" step="1"
+          oninput="calcularBolusComer()" onfocus="this.select()" style="color:#00e5ff;"/>
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('vcomer-glicemia',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+      </div>
+      <div class="gc-roleta-unidade" style="color:#00e5ff99;">mg/dL</div>
+    </div>
+    <div id="vcomer-aviso" style="display:none;background:rgba(255,170,0,0.08);border:1px solid #ffaa0055;border-radius:10px;padding:12px 14px;margin-top:16px;font-size:0.82rem;color:#ffcc66;line-height:1.6;">
+      A dose de <strong id="vcomer-dose-base"></strong> U é a dose padrão prescrita pelo médico — não leva em conta o que você vai comer. Comida rica em carboidrato (doce, pão, massa, arroz em excesso) pede mais insulina; refeição leve pede menos. Ajuste pra cima ou pra baixo conforme o prato antes de aplicar.
     </div>
     <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
-      <button onclick="fecharVouComer()" style="flex:1;min-width:80px;background:#1a1a3a;color:#aaa;padding:20px;border:1px solid #333;border-radius:14px;cursor:pointer;font-size:1.05rem;">Fechar</button>
+      <button onclick="fecharVouComer()" style="flex:1;min-width:80px;background:#1a1a3a;color:#eee;padding:20px;border:1px solid #667788;border-radius:14px;cursor:pointer;font-size:1.05rem;">Fechar</button>
       <button id="vcomer-btn-anotar" onclick="anotarDoseRefeicao()" style="flex:2;min-width:0;display:none;background:linear-gradient(135deg,#004d22,#002211);color:#00ff99;padding:20px;border:1px solid #00ff9955;border-radius:14px;cursor:pointer;font-size:1.05rem;font-weight:700;">✅ Tomei as <span id="vcomer-btn-dose">5</span> U — Registrar</button>
     </div>
   </div>
@@ -711,7 +730,11 @@
     <div style="font-size:1.1rem;font-weight:700;color:#00e5ff;margin-bottom:16px;">✏️ Editar Registro</div>
     <div class="form-row">
       <label>Glicemia (mg/dL)</label>
-      <input type="number" id="edit-glicemia" min="20" max="600" placeholder="mg/dL"/>
+      <div class="gc-roleta gc-roleta-mini" style="border-color:#00e5ff;">
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('edit-glicemia',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+        <input type="number" id="edit-glicemia" class="gc-roleta-valor" data-inicial="140" min="20" max="600" step="1" placeholder="mg/dL" onfocus="this.select()" style="color:#00e5ff;"/>
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('edit-glicemia',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+      </div>
     </div>
     <div class="form-row">
       <label>Data e Hora</label>
@@ -719,11 +742,19 @@
     </div>
     <div class="form-row">
       <label>Insulina Rápida (U)</label>
-      <input type="number" id="edit-rapida" min="0" max="50" step="0.5" placeholder="0"/>
+      <div class="gc-roleta gc-roleta-mini" style="border-color:#00e5ff;">
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('edit-rapida',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+        <input type="number" id="edit-rapida" class="gc-roleta-valor" data-inicial="0" min="0" max="50" step="0.5" placeholder="0" onfocus="this.select()" style="color:#00e5ff;"/>
+        <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('edit-rapida',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+      </div>
     </div>
     <div class="form-row">
       <label>Insulina Lenta (U)</label>
-      <input type="number" id="edit-lenta" min="0" max="80" step="1" placeholder="0"/>
+      <div class="gc-roleta gc-roleta-mini" style="border-color:#cc44ff;">
+        <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('edit-lenta',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+        <input type="number" id="edit-lenta" class="gc-roleta-valor" data-inicial="0" min="0" max="80" step="1" placeholder="0" onfocus="this.select()" style="color:#cc44ff;"/>
+        <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('edit-lenta',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+      </div>
     </div>
     <div id="edit-antes-row" class="form-row" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
       <label style="margin:0;color:#bbb;">🍽️ Medição antes de comer</label>
@@ -857,7 +888,11 @@
           <small>Pré-preenchida no aviso matinal da lenta</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
-          <input type="number" class="config-input" id="cfg-dose-lenta" value="20" min="1" max="80" step="1"/>
+          <div class="gc-roleta gc-roleta-mini" style="border-color:#cc44ff;">
+            <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-lenta',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+            <input type="number" class="gc-roleta-valor" id="cfg-dose-lenta" data-inicial="20" value="20" min="1" max="80" step="1" style="color:#cc44ff;"/>
+            <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-lenta',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+          </div>
           <span style="color:#cc44ff;font-weight:700;font-size:0.9rem;">U</span>
         </div>
       </div>
@@ -866,7 +901,11 @@
           <small>Prescrita pelo médico — usada no botão "Vou Comer"</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
-          <input type="number" class="config-input" id="cfg-dose-refeicao" value="5" min="1" max="30" step="0.5"/>
+          <div class="gc-roleta gc-roleta-mini" style="border-color:#00e5ff;">
+            <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-refeicao',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+            <input type="number" class="gc-roleta-valor" id="cfg-dose-refeicao" data-inicial="5" value="5" min="1" max="30" step="0.5" style="color:#00e5ff;"/>
+            <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-refeicao',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+          </div>
           <span style="color:#aaa;font-size:0.9rem;">U</span>
         </div>
       </div>
@@ -875,7 +914,11 @@
           <small>App pergunta sobre a lenta uma vez por dia a partir desse horário</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
-          <input type="number" class="config-input" id="cfg-hora-reset-lenta" value="7" min="0" max="23" step="1"/>
+          <div class="gc-roleta gc-roleta-mini" style="border-color:#667788;">
+            <span class="gc-roleta-seta" style="color:#ccc;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-hora-reset-lenta',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+            <input type="number" class="gc-roleta-valor" id="cfg-hora-reset-lenta" data-inicial="7" value="7" min="0" max="23" step="1" style="color:#ccc;"/>
+            <span class="gc-roleta-seta" style="color:#ccc;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-hora-reset-lenta',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+          </div>
           <span style="color:#aaa;font-size:0.9rem;">h</span>
         </div>
       </div>
@@ -889,7 +932,11 @@
           <small>Alvo usado no cálculo da dose de insulina rápida</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
-          <input type="number" class="config-input" id="cfg-glicemia-alvo" value="200" min="70" max="300" step="5"/>
+          <div class="gc-roleta gc-roleta-mini" style="border-color:#00ff99;">
+            <span class="gc-roleta-seta" style="color:#00ff99;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-glicemia-alvo',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+            <input type="number" class="gc-roleta-valor" id="cfg-glicemia-alvo" data-inicial="200" value="200" min="70" max="300" step="5" style="color:#00ff99;"/>
+            <span class="gc-roleta-seta" style="color:#00ff99;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-glicemia-alvo',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+          </div>
           <span style="color:#aaa;font-size:0.9rem;">mg/dL</span>
         </div>
       </div>
@@ -906,7 +953,11 @@
         <div class="config-label">Ajuste manual
           <small>Quanto maior, menos insulina o app vai sugerir</small>
         </div>
-        <input type="number" class="config-input" id="cfg-fator-manual" value="40" min="10" max="200" step="1" oninput="onFatorManualChange()"/>
+        <div class="gc-roleta gc-roleta-mini" style="border-color:#00e5ff;">
+          <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-fator-manual',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+          <input type="number" class="gc-roleta-valor" id="cfg-fator-manual" data-inicial="40" value="40" min="10" max="200" step="1" oninput="onFatorManualChange()" style="color:#00e5ff;"/>
+          <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-fator-manual',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
+        </div>
       </div>
       <div class="config-row">
         <div class="config-label">Auto-aprendizado
@@ -1057,8 +1108,10 @@
       <!-- Destaque grande da dose sugerida -->
       <div style="text-align:center;margin-bottom:18px;">
         <div style="font-size:0.72rem;color:#00e5ff;text-transform:uppercase;letter-spacing:2.5px;font-weight:700;margin-bottom:10px;">💉 Dose Sugerida</div>
-        <div style="background:rgba(0,229,255,0.07);border:2px solid rgba(0,229,255,0.35);border-radius:18px;padding:18px 32px;display:inline-flex;align-items:baseline;gap:6px;min-width:160px;justify-content:center;box-shadow:0 0 24px rgba(0,229,255,0.12);">
-          <span id="res-sug-rapida" style="color:#00e5ff;font-weight:900;font-size:4.5rem;line-height:1;letter-spacing:-2px;text-shadow:0 0 20px rgba(0,229,255,0.5);">—</span>
+        <div style="background:rgba(0,229,255,0.07);border:2px solid rgba(0,229,255,0.35);border-radius:18px;padding:12px 18px;display:inline-flex;align-items:center;gap:8px;min-width:200px;justify-content:center;box-shadow:0 0 24px rgba(0,229,255,0.12);">
+          <span class="gc-roleta-seta" style="color:#00e5ff;width:48px;height:64px;font-size:2.2rem;" onpointerdown="event.preventDefault();gcRoletaIniciar('res-sug-rapida',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
+          <input type="number" id="res-sug-rapida" class="gc-roleta-valor" data-inicial="0" value="0" min="0" max="80" step="1" oninput="atualizarBtnConfirmarTexto()" style="color:#00e5ff;font-weight:900;font-size:4.5rem;line-height:1;letter-spacing:-2px;text-shadow:0 0 20px rgba(0,229,255,0.5);width:110px;"/>
+          <span class="gc-roleta-seta" style="color:#00e5ff;width:48px;height:64px;font-size:2.2rem;" onpointerdown="event.preventDefault();gcRoletaIniciar('res-sug-rapida',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
           <span style="color:#00e5ffbb;font-size:1.8rem;font-weight:700;">U</span>
         </div>
         <div style="margin-top:8px;">
@@ -1070,7 +1123,7 @@
       </div>
       <button class="btn btn-success" id="btn-confirmar" style="width:100%;margin-top:6px;" onclick="confirmarDose()">✅ Confirmar 0u aplicadas</button>
     </div>
-    <button class="res-fechar" onclick="fecharResultado()">✕ Fechar</button>
+    <div class="res-fechar-row"><button class="res-fechar" onclick="fecharResultado()">✕ Fechar</button></div>
   </div>
 </div>
 
@@ -1168,17 +1221,21 @@ function excluirPerfil(id) {
   }
 }
 
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
 function renderCfgPerfis() {
   const perfis = loadPerfis();
   const ativo  = activeProfileId();
   const atual  = perfis.find(p => p.id === ativo);
   document.getElementById('cfg-perfil-atual').innerHTML =
-    atual ? `Perfil ativo: <strong style="color:#00e5ff">${atual.name}</strong> (alvo: ${atual.alvo} mg/dL)` : '';
+    atual ? `Perfil ativo: <strong style="color:#00e5ff">${escapeHtml(atual.name)}</strong> (alvo: ${atual.alvo} mg/dL)` : '';
   const lista = document.getElementById('cfg-perfil-lista');
   lista.innerHTML = perfis.map(p => `
     <div style="display:flex;justify-content:space-between;align-items:center;background:#0a0a20;border:1px solid ${p.id===ativo?'#00e5ff44':'#1e2a5a'};border-radius:8px;padding:10px 14px;">
       <div>
-        <div style="font-weight:600;color:${p.id===ativo?'#00e5ff':'#ccc'}">${p.name}${p.id===ativo?' ✓':''}</div>
+        <div style="font-weight:600;color:${p.id===ativo?'#00e5ff':'#ccc'}">${escapeHtml(p.name)}${p.id===ativo?' ✓':''}</div>
         <div style="font-size:0.75rem;color:#666;">Alvo: ${p.alvo} mg/dL</div>
       </div>
       <div style="display:flex;gap:6px;">
@@ -1194,7 +1251,7 @@ function mostrarSeletorPerfil() {
   const lista = document.getElementById('perfil-lista');
   lista.innerHTML = perfis.map(p => `
     <button class="perfil-btn" onclick="selecionarPerfil('${p.id}')">
-      <div class="pb-name">${p.name}</div>
+      <div class="pb-name">${escapeHtml(p.name)}</div>
       <div class="pb-alvo">Alvo: ${p.alvo} mg/dL</div>
     </button>`).join('');
   document.getElementById('perfil-overlay').classList.add('show');
@@ -1314,6 +1371,10 @@ function ajustarFatorAutoAprendizado(dadosOrdenados) {
   if (comGlic.length < 2) return;
   const ultimo  = comGlic[comGlic.length - 1];
   const anterior = comGlic[comGlic.length - 2];
+  if (!anterior.aplicou) return; // dose não confirmada como aplicada — não aprender
+  if (anterior.sugRapida == null) return; // bolus de refeição/basal, não é dose de correção
+  const horas = (new Date(ultimo.dt).getTime() - new Date(anterior.dt).getTime()) / 3600000;
+  if (horas <= 1 || horas >= 5) return; // fora da janela de ação da rápida (mesma guarda de getFatorSens)
   const doseRapida = anterior.rapida || 0;
   if (doseRapida <= 0) return; // sem dose, sem aprendizado
   const quedaReal = anterior.glicemia - ultimo.glicemia;
@@ -1466,19 +1527,37 @@ setInterval(atualizarDatetime, 60000);
 initConfig();
 renderCfgPerfis();
 
-// ── LENTA DO DIA (botão histórico) ──
-function toggleLentaRapida(sim) {
-  const btnSim = document.getElementById('lenta-rapida-sim');
-  const btnNao = document.getElementById('lenta-rapida-nao');
-  const row = document.getElementById('lenta-rapida-row');
-  btnSim.classList.toggle('ativo', sim);
-  btnNao.classList.toggle('ativo', !sim);
-  row.style.display = sim ? 'flex' : 'none';
+// ── ROLETA (seta esquerda/direita ajusta 1 unidade, segurar repete) ──
+let _gcRoletaTimer = null;
+function gcRoletaAjustar(id, delta) {
+  const inp = document.getElementById(id);
+  const min = parseFloat(inp.min);
+  const max = parseFloat(inp.max);
+  const step = parseFloat(inp.step) || 1;
+  let v = parseFloat(inp.value);
+  v = isNaN(v) ? (parseFloat(inp.dataset.inicial) || 0) : v + delta * step;
+  if (!isNaN(min)) v = Math.max(min, v);
+  if (!isNaN(max)) v = Math.min(max, v);
+  inp.value = v;
+  inp.dispatchEvent(new Event('input', {bubbles:true}));
+}
+function gcRoletaIniciar(id, delta) {
+  gcRoletaAjustar(id, delta);
+  clearTimeout(_gcRoletaTimer);
+  _gcRoletaTimer = setTimeout(function repetir() {
+    gcRoletaAjustar(id, delta);
+    _gcRoletaTimer = setTimeout(repetir, 90);
+  }, 450);
+}
+function gcRoletaParar() {
+  clearTimeout(_gcRoletaTimer);
 }
 
+// ── LENTA DO DIA (botão histórico) ──
 function abrirLentaDoDia() {
   document.getElementById('inp-lenta-modal').value = loadConfig().doseLenta;
-  toggleLentaRapida(false);
+  document.getElementById('inp-lenta-glicemia').value = '';
+  document.getElementById('inp-rapida-junto').value = 5;
   document.getElementById('lenta-modal').classList.add('show');
 }
 
@@ -1515,14 +1594,15 @@ function verificarLentaMatinal() {
   if (visto === hoje) return;          // já respondeu hoje
   if (agora.getHours() < loadConfig().horaResetLenta) return; // só libera a partir da hora configurada
 
-  toggleLentaRapida(false);
+  document.getElementById('inp-lenta-glicemia').value = '';
+  document.getElementById('inp-rapida-junto').value = 5;
   document.getElementById('lenta-modal').classList.add('show');
 }
 
 function confirmarLentaModal() {
   const dose = parseFloat(document.getElementById('inp-lenta-modal').value) || 0;
-  const doseRapidaJunto = document.getElementById('lenta-rapida-row').style.display !== 'none'
-    ? (parseFloat(document.getElementById('inp-rapida-junto').value) || 0) : 0;
+  const glicemiaLenta = parseFloat(document.getElementById('inp-lenta-glicemia').value) || null;
+  const doseRapidaJunto = parseFloat(document.getElementById('inp-rapida-junto').value) || 0;
   const hoje = new Date().toDateString();
   localStorage.setItem('gc_lenta_' + activeProfileId(), hoje);
   localStorage.setItem('gc_lentadose_' + activeProfileId(), dose);
@@ -1538,7 +1618,7 @@ function confirmarLentaModal() {
     const agora = new Date();
     const dtStr = new Date(agora.getTime() - agora.getTimezoneOffset()*60000).toISOString().slice(0,16);
     const cfgL = loadConfig();
-    dados.push({ id: Date.now(), dt: dtStr, glicemia: null, rapida: doseRapidaJunto, lenta: dose, sugLenta: cfgL.doseLenta||20, aplicou: true, sugRapida: null, _tipo: 'insulina lenta' });
+    dados.push({ id: Date.now(), dt: dtStr, glicemia: glicemiaLenta, rapida: doseRapidaJunto, lenta: dose, sugLenta: cfgL.doseLenta||20, aplicou: true, sugRapida: null, _tipo: 'insulina lenta' });
   }
 
   dados.sort((a,b) => new Date(a.dt) - new Date(b.dt));
@@ -1641,79 +1721,6 @@ function getFatorSens(dados) {
   return pares.reduce((a,b)=>a+b,0) / pares.length;
 }
 
-// ── CALCULAR SUGESTÃO ──
-function calcularSugestao() {
-  const glicemia = parseFloat(document.getElementById('inp-glicemia').value);
-  if (!glicemia || glicemia < 20) return;
-
-  const dados = loadData();
-  const iobR = calcIOB(dados, 'rapida');
-  const iobL = calcIOB(dados, 'lenta');
-  const fator = getFatorSensAtual();
-  const alvo  = getGlicemiaAlvo();
-
-  // Sugestão rápida
-  let sugRapida = 0;
-  if (glicemia > alvo) {
-    sugRapida = (glicemia - alvo) / fator;
-    sugRapida = Math.max(0, sugRapida - iobR);
-    sugRapida = Math.round(sugRapida * 2) / 2;
-  }
-
-  // Sugestão lenta (se IOB lenta < 5U e horário matutino)
-  const hora = new Date().getHours();
-  let sugLenta = 0;
-  if (iobL < 5 && hora >= 6 && hora <= 10) {
-    sugLenta = dados.length > 0 ? (calcMediaLenta(dados) || 0) : 0;
-  }
-
-  // Monta explicação
-  const bruta = (glicemia - alvo) / fator;
-  let explicacao = '';
-  if (glicemia <= alvo) {
-    explicacao = `✅ Glicemia de ${glicemia} mg/dL está no alvo (≤${alvo} mg/dL). Nenhuma correção necessária.`;
-  } else {
-    explicacao = `📐 Glicemia ${glicemia} mg/dL − alvo ${alvo} mg/dL = <strong style="color:#fff">${(glicemia-alvo)} mg/dL acima</strong><br>`;
-    explicacao += `➗ Fator de sensibilidade: 1 U reduz ~${fator.toFixed(0)} mg/dL → dose bruta: <strong style="color:#fff">${bruta.toFixed(1)} U</strong><br>`;
-    if (iobR > 0) {
-      explicacao += `⏳ IOB ativo: −${iobR.toFixed(1)} U já em circulação → dose final: <strong style="color:#00e5ff">${Math.ceil(sugRapida)} U</strong>`;
-    } else {
-      explicacao += `💉 Sem IOB ativo → dose final: <strong style="color:#00e5ff">${Math.ceil(sugRapida)} U</strong>`;
-    }
-  }
-
-  // Exibe sugestão
-  document.getElementById('sugestao-box').style.display = 'block';
-  document.getElementById('sug-rapida').textContent = sugRapida > 0 ? Math.ceil(sugRapida) + ' U' : '0 U (não necessária)';
-  document.getElementById('sug-lenta').textContent = sugLenta > 0 ? Math.ceil(sugLenta) + ' U' : '0 U (IOB ativo)';
-  document.getElementById('sug-iob-desc').textContent = iobR.toFixed(1) + ' U rápida + ' + iobL.toFixed(1) + ' U lenta';
-  const expEl = document.getElementById('sug-explicacao');
-  expEl.innerHTML = explicacao; expEl.style.display = 'block';
-
-  // Mostra campos de dose e preenche com sugestão
-  document.getElementById('doses-box').style.display = 'block';
-  document.getElementById('inp-rapida').value = sugRapida > 0 ? Math.ceil(sugRapida) : 0;
-  document.getElementById('inp-lenta').value = sugLenta > 0 ? Math.ceil(sugLenta) : 0;
-
-  if (iobR > 1) {
-    document.getElementById('sug-aviso-iob').style.display = 'block';
-  } else {
-    document.getElementById('sug-aviso-iob').style.display = 'none';
-  }
-
-  // Próxima medição
-  calcProximaMedicao(glicemia, sugRapida, iobR);
-
-  // Display glicemia
-  atualizarDisplayGlicemia(glicemia);
-}
-
-function calcMediaLenta(dados) {
-  const lentas = dados.filter(r=>r.lenta>0).map(r=>r.lenta);
-  if (!lentas.length) return 0;
-  return lentas.reduce((a,b)=>a+b,0)/lentas.length;
-}
-
 // ── PRÓXIMA MEDIÇÃO ──
 function calcProximaMedicao(glicemia, sugRapida, iobR) {
   let horas = 4, motivo = '';
@@ -1765,10 +1772,9 @@ function calcProximaMedicao(glicemia, sugRapida, iobR) {
 
 function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
   document.getElementById('res-doses-box').style.display = 'block';
-  document.getElementById('res-sug-rapida').textContent = sugRapida > 0 ? Math.ceil(sugRapida) : '0';
   const val = sugRapida > 0 ? Math.ceil(sugRapida) : 0;
-  window._doseSugerida = val;
-  document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}u aplicadas`;
+  document.getElementById('res-sug-rapida').value = val;
+  atualizarBtnConfirmarTexto();
   document.getElementById('btn-confirmar').classList.add('pronto');
   const icon = document.getElementById('res-tooltip-icon');
   const balao = document.getElementById('res-tooltip-text');
@@ -1776,8 +1782,14 @@ function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
   else { icon.style.display = 'none'; }
 }
 
+function atualizarBtnConfirmarTexto() {
+  const val = parseInt(document.getElementById('res-sug-rapida').value) || 0;
+  window._doseSugerida = val;
+  document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}u aplicadas`;
+}
+
 function confirmarDose() {
-  const rapida = window._doseSugerida || 0;
+  const rapida = parseInt(document.getElementById('res-sug-rapida').value) || 0;
   // Atualiza o registro de glicemia (usando ID, não índice) com as doses confirmadas
   let dados = loadData();
   const idReg = window._ultimoRegistroGlicemiaId;
@@ -2297,6 +2309,7 @@ function renderHistorico() {
               <span class="hist-status-badge" style="background:#1e0030;color:#cc44ffaa;">BASAL</span>
             </div>
             <div class="hist-meta">${hora}</div>
+            ${r.glicemia != null ? `<div class="hist-insulin" style="color:#f0f0f0;">🩸 ${Math.round(r.glicemia)} mg/dL antes de aplicar</div>` : ''}
             ${lentaInfoStr}
             ${r.rapida > 0 ? `<div class="hist-insulin" style="color:#00e5ff;margin-top:3px;">💉 ${Math.ceil(r.rapida)}u rápida junto</div>` : ''}
           </div>
@@ -2379,9 +2392,8 @@ function abrirEditModal(id) {
   document.getElementById('edit-dt').value = r.dt.slice(0,16);
   document.getElementById('edit-rapida').value = r.rapida || 0;
   document.getElementById('edit-lenta').value = r.lenta || 0;
-  // Oculta glicemia e "antes de comer" se for registro de lenta
+  // Oculta "antes de comer" se for registro de lenta (glicemia agora é editável em ambos os tipos)
   const isLenta = r._tipo === 'insulina lenta';
-  document.getElementById('edit-glicemia').closest('.form-row').style.display = isLenta ? 'none' : '';
   document.getElementById('edit-antes-row').style.display = isLenta ? 'none' : 'flex';
   document.getElementById('edit-antes').checked = !!r._antes;
   document.getElementById('edit-modal').style.display = 'flex';
@@ -2439,9 +2451,13 @@ function registrarNormal() {
 // ── VOU COMER ──
 function abrirVouComer() {
   document.getElementById('vcomer-glicemia').value = '';
-  document.getElementById('vcomer-btn-anotar').style.display = 'none';
   document.getElementById('vcomer-modal').classList.add('show');
-  setTimeout(()=>document.getElementById('vcomer-glicemia').focus(), 100);
+  calcularBolusComer();
+  setTimeout(()=>{
+    const el = document.getElementById('vcomer-glicemia');
+    el.focus();
+    el.select();
+  }, 100);
 }
 function fecharVouComer() {
   document.getElementById('vcomer-modal').classList.remove('show');
@@ -2449,10 +2465,13 @@ function fecharVouComer() {
 function calcularBolusComer() {
   const g = parseFloat(document.getElementById('vcomer-glicemia').value);
   const btnAnotar = document.getElementById('vcomer-btn-anotar');
-  if (!g || g < 20) { btnAnotar.style.display='none'; return; }
+  const aviso = document.getElementById('vcomer-aviso');
+  if (!g || g < 20) { btnAnotar.style.display='none'; aviso.style.display='none'; return; }
   const alvo = getGlicemiaAlvo();
   const dose = Math.ceil(getDoseRefeicao());
   document.getElementById('vcomer-dose-label').textContent = dose;
+  document.getElementById('vcomer-dose-base').textContent = dose;
+  aviso.style.display = 'block';
 
   // Botão de registro — SEMPRE aparece, pra garantir que a medição entre no histórico.
   // O quadro explicativo (emoji/recomendacao/porque) foi removido a pedido do SgarD,
@@ -2461,6 +2480,7 @@ function calcularBolusComer() {
   const podeTomar = !(g < 70 || g < alvo - 40);
   btnAnotar.disabled = false;
   btnAnotar.style.display = 'block';
+  aviso.style.display = podeTomar ? 'block' : 'none';
   if (podeTomar) {
     const doseAnotar = (g < alvo) ? Math.ceil(dose / 2) : dose;
     btnAnotar.dataset.dose = doseAnotar;
@@ -3163,24 +3183,35 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// ── INSTALAR PWA ──
-let _deferredInstall = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  _deferredInstall = e;
-  const b = document.getElementById('btn-instalar');
-  if (b) b.style.display = 'inline-block';
-});
-window.addEventListener('appinstalled', () => {
-  const b = document.getElementById('btn-instalar');
-  if (b) b.style.display = 'none';
-  _deferredInstall = null;
-});
-function instalarApp() {
-  if (!_deferredInstall) return;
-  _deferredInstall.prompt();
-  _deferredInstall.userChoice.then(() => { _deferredInstall = null; });
-}
+// ── INSTALAR PWA (botao flutuante, mesmo padrao do Gastei/Apaga/Erva/Frequencias) ──
+(function(){
+  var COR='#00e5ff', INK='#032a33';
+  if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
+  var deferred=null;
+  function botao(){
+    var b=document.getElementById('instalarApp');
+    if(b) return b;
+    b=document.createElement('button');
+    b.id='instalarApp'; b.type='button';
+    b.innerHTML='<span style="font-size:16px;line-height:0">&#8623;</span> Instalar app';
+    b.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:88px;z-index:9999;'+
+      'display:none;align-items:center;gap:7px;border:none;border-radius:999px;padding:11px 20px;'+
+      'font:600 14px system-ui,-apple-system,sans-serif;background:'+COR+';color:'+INK+';'+
+      'box-shadow:0 10px 26px rgba(0,0,0,.5);cursor:pointer';
+    document.body.appendChild(b);
+    return b;
+  }
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault(); deferred=e;
+    var b=botao(); b.style.display='inline-flex';
+    b.onclick=function(){ b.style.display='none'; deferred.prompt(); deferred.userChoice.finally(function(){ deferred=null; }); };
+  });
+  window.addEventListener('appinstalled',function(){ var b=document.getElementById('instalarApp'); if(b) b.remove(); });
+  if(/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream){
+    var b=botao(); b.style.display='inline-flex';
+    b.onclick=function(){ alert('Para instalar: toque no botao Compartilhar do Safari e escolha "Adicionar a Tela de Inicio".'); };
+  }
+})();
 </script>
 <!-- Vercel Web Analytics -->
 <script defer src="/_vercel/insights/script.js"></script>
