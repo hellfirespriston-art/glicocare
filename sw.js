@@ -2,7 +2,7 @@
 // Estrategia: network-first pra navegacao/HTML (sempre pega a versao nova quando
 // online; usa cache so como fallback offline) e cache-first pros assets estaticos.
 // Isso mantem o app INSTALAVEL (PWA/PWABuilder feliz) SEM prender numa versao velha.
-const CACHE = 'glicocare-v3';
+const CACHE = 'glicocare-v7';
 const ASSETS = ['/', '/index.html', '/img/bg.jpg', '/manifest.json', '/img/icon.png'];
 
 self.addEventListener('install', e => {
