@@ -2,8 +2,12 @@
 // Estrategia: network-first pra navegacao/HTML (sempre pega a versao nova quando
 // online; usa cache so como fallback offline) e cache-first pros assets estaticos.
 // Isso mantem o app INSTALAVEL (PWA/PWABuilder feliz) SEM prender numa versao velha.
-const CACHE = 'glicocare-v7';
-const ASSETS = ['/', '/index.html', '/img/bg.jpg', '/manifest.json', '/img/icon.png'];
+// 22/07/2026 00:35 - v8: as bibliotecas do grafico e do PDF sairam do CDN e agora sao
+// arquivos daqui de dentro, entao entram na lista de coisas guardadas pra usar offline.
+// 22/07/2026 01:25 - v9: dose de insulina virou numero inteiro (index.html).
+const CACHE = 'glicocare-v9';
+const ASSETS = ['/', '/index.html', '/img/bg.jpg', '/manifest.json', '/img/icon.png',
+  '/vendor/chart.min.js', '/vendor/jspdf.umd.min.js', '/vendor/jspdf.plugin.autotable.min.js'];
 
 self.addEventListener('install', e => {
   self.skipWaiting();   // ativa a versao nova na hora

@@ -10,9 +10,19 @@
   <link rel="manifest" href="/manifest.json"/>
   <meta name="theme-color" content="#00e5ff"/>
   <link rel="apple-touch-icon" href="img/icon.png"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <!-- 22/07/2026 00:35 - as tres bibliotecas sairam do CDN e passaram a morar dentro do app.
+       Tres motivos, na ordem de gravidade:
+       1) "chart.js" sem versao baixava SEMPRE a mais nova. No dia em que o Chart.js virar 5
+          e mudar a API, o app da minha mae quebra sozinho, sem eu ter tocado em nada.
+       2) Nenhuma tinha conferencia de integridade: quem invadisse o CDN (ou o wi-fi dela)
+          trocava o arquivo por outro, e o codigo estranho rodaria dentro do app de saude,
+          com acesso a todo o historico de glicemia.
+       3) Sem internet, o grafico e o PDF simplesmente nao carregavam na primeira vez.
+       Agora sao arquivos locais: versao congelada (Chart 4.4.1, jsPDF 2.5.1, autotable 3.8.2),
+       nada vem de fora e funciona offline desde a primeira abertura. -->
+  <script src="vendor/chart.min.js"></script>
+  <script src="vendor/jspdf.umd.min.js"></script>
+  <script src="vendor/jspdf.plugin.autotable.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Segoe UI',sans-serif; background:#060612; color:#f0f0f0; min-height:100vh; font-size:16px; }
@@ -621,7 +631,7 @@
 
   <!-- inputs ocultos usados por registrar() -->
   <input type="number" id="inp-glicemia" style="display:none;" min="20" max="600"/>
-  <input type="number" id="inp-rapida" style="display:none;" value="0" min="0" max="80" step="0.5"/>
+  <input type="number" id="inp-rapida" style="display:none;" value="0" min="0" max="80" step="1"/>
   <input type="datetime-local" id="inp-datetime" readonly style="display:none;"/>
   <div id="sugestao-box" style="display:none;"></div>
   <div id="doses-box" style="display:none;"></div>
@@ -744,7 +754,7 @@
       <label>Insulina Rápida (U)</label>
       <div class="gc-roleta gc-roleta-mini" style="border-color:#00e5ff;">
         <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('edit-rapida',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
-        <input type="number" id="edit-rapida" class="gc-roleta-valor" data-inicial="0" min="0" max="50" step="0.5" placeholder="0" onfocus="this.select()" style="color:#00e5ff;"/>
+        <input type="number" id="edit-rapida" class="gc-roleta-valor" data-inicial="0" min="0" max="50" step="1" placeholder="0" onfocus="this.select()" style="color:#00e5ff;"/>
         <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('edit-rapida',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
       </div>
     </div>
@@ -874,10 +884,11 @@
       <h3>💉 Insulina</h3>
       <div class="config-row">
         <div class="config-label">Tipo de lenta
-          <small>Define a duração no cálculo de IOB</small>
+          <small>Define a duração no cálculo de IOB (número informativo — não entra no cálculo de dose)</small>
         </div>
         <select class="config-select" id="cfg-insulina-tipo">
-          <option value="24">Lantus / Glargina U100 — 24h</option>
+          <option value="20">Lantus / Glargina U100 — 20h (dose menor)</option>
+          <option value="24">Lantus / Glargina U100 — 24h (dose maior)</option>
           <option value="36">Toujeo / Glargina U300 — 36h</option>
           <option value="42">Tresiba / Degludeca — 42h</option>
           <option value="14">NPH — 14h</option>
@@ -903,7 +914,7 @@
         <div style="display:flex;align-items:center;gap:6px;">
           <div class="gc-roleta gc-roleta-mini" style="border-color:#00e5ff;">
             <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-refeicao',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
-            <input type="number" class="gc-roleta-valor" id="cfg-dose-refeicao" data-inicial="5" value="5" min="1" max="30" step="0.5" style="color:#00e5ff;"/>
+            <input type="number" class="gc-roleta-valor" id="cfg-dose-refeicao" data-inicial="5" value="5" min="1" max="30" step="1" style="color:#00e5ff;"/>
             <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-refeicao',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
           </div>
           <span style="color:#aaa;font-size:0.9rem;">U</span>
@@ -1394,6 +1405,26 @@ const DUR_LENTA_H  = 20;   // fallback (usa getDurLenta() no runtime)
 const GLICEMIA_ALVO = 200; // fallback (alinhado ao alvo padrao do app)
 const FATOR_SENS_DEFAULT = 40; // fallback
 
+/* 21/07/2026 21:15 - CORRECAO IMPORTANTE (dose de insulina).
+   Ate hoje TODA dose era exibida e gravada com Math.ceil(), ou seja, arredondada
+   sempre PRA CIMA: uma sugestao real de 3,1 U virava 4 U - quase 30% de insulina a
+   mais, e o erro so acontecia num sentido. Num app de insulina o vies tem que ser
+   simetrico.
+   22/07/2026 01:20 - AJUSTE A PEDIDO DELE: dose agora e SEMPRE numero inteiro.
+   A seringa/caneta que ela usa marca de 1 em 1 unidade, entao meia unidade era
+   um numero que ninguem consegue aplicar de verdade. O arredondamento continua
+   simetrico (pro inteiro mais proximo), sem vies pra cima.
+   3,1 -> 3   3,3 -> 3   3,8 -> 4 */
+function doseU(x){
+  const n = Number(x);
+  if (!isFinite(n) || n <= 0) return 0;
+  return Math.round(n);
+}
+/* mesma coisa, ja como texto pra tela: sempre inteiro, sem virgula */
+function doseTxt(x){
+  return String(doseU(x));
+}
+
 // ── STORAGE ──
 const LIMITE_REGISTROS = 8760; // ~1 ano de medições hora em hora
 
@@ -1513,13 +1544,46 @@ function atualizarDatetime() {
 migrarParaPerfis();
 mostrarSeletorPerfil();
 
+/* 21/07/2026 23:10 - LIMPEZA UNICA dos numeros quebrados que JA estao gravados.
+   Consertar a roleta e a tela de edicao so impede quebrado novo; o historico antigo
+   continuaria com 3.0000000000000004 la dentro. Isso aqui passa uma vez em cada perfil,
+   encaixa cada valor no seu passo (tudo de 1 em 1) e marca que ja passou, pra nao
+   repetir a cada abertura. Nao apaga registro nenhum: so limpa o numero.
+   22/07/2026 01:20 - a dose virou inteira, entao a marca mudou de nome ('_inteiros')
+   pra limpeza rodar DE NOVO em quem ja tinha aberto o app com meia unidade gravada. */
+function limparQuebrados() {
+  if (localStorage.getItem('gc_limpeza_inteiros')) return;
+  try {
+    let mexidos = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || k.indexOf('gc_data_') !== 0) continue;
+      const dados = JSON.parse(localStorage.getItem(k) || '[]');
+      let mudou = false;
+      dados.forEach(r => {
+        const g = r.glicemia ? gcSnap(r.glicemia, 1) : r.glicemia;
+        const ra = gcSnap(r.rapida || 0, 1);
+        const le = gcSnap(r.lenta  || 0, 1);
+        const sg = r.sugRapida ? gcSnap(r.sugRapida, 1) : r.sugRapida;
+        if (g !== r.glicemia || ra !== (r.rapida||0) || le !== (r.lenta||0) || sg !== r.sugRapida) {
+          r.glicemia = g; r.rapida = ra; r.lenta = le; if (r.sugRapida != null) r.sugRapida = sg;
+          mudou = true; mexidos++;
+        }
+      });
+      if (mudou) localStorage.setItem(k, JSON.stringify(dados));
+    }
+    localStorage.setItem('gc_limpeza_inteiros', String(mexidos));
+  } catch (e) { /* se der qualquer coisa, o app abre igual - so nao limpa */ }
+}
+
 function initApp() {
+  limparQuebrados();
   atualizarDatetime();
   initConfig();
   renderCfgPerfis();
   atualizarStatusBar();
   renderHistorico();
-  document.getElementById('vcomer-dose-label').textContent = Math.ceil(getDoseRefeicao());
+  document.getElementById('vcomer-dose-label').textContent = doseTxt(getDoseRefeicao());
 }
 
 atualizarDatetime();
@@ -1529,6 +1593,16 @@ renderCfgPerfis();
 
 // ── ROLETA (seta esquerda/direita ajusta 1 unidade, segurar repete) ──
 let _gcRoletaTimer = null;
+/* 21/07/2026 23:05 - encaixa um numero no passo do campo e mata o resto binario.
+   gcSnap(3.0000000000000004, 1) -> 3       gcSnap(5.599999999999999, 1) -> 6
+   gcSnap(3.7, 1) -> 4                     gcSnap(142.4, 1) -> 142
+   O +Number(...) no fim e o que joga fora a sujeira de ponto flutuante de vez. */
+function gcSnap(v, step) {
+  if (!isFinite(v)) return 0;
+  const s = (isFinite(step) && step > 0) ? step : 1;
+  const casas = (String(s).split('.')[1] || '').length;
+  return Number((Math.round(v / s) * s).toFixed(casas));
+}
 function gcRoletaAjustar(id, delta) {
   const inp = document.getElementById(id);
   const min = parseFloat(inp.min);
@@ -1538,6 +1612,13 @@ function gcRoletaAjustar(id, delta) {
   v = isNaN(v) ? (parseFloat(inp.dataset.inicial) || 0) : v + delta * step;
   if (!isNaN(min)) v = Math.max(min, v);
   if (!isNaN(max)) v = Math.min(max, v);
+  /* 21/07/2026 23:05 - CORRECAO dos numeros quebrados.
+     Somar 0,5 varias vezes em ponto flutuante produz lixo binario: apertando a setinha
+     o campo mostrava 3.0000000000000004 ou 5.599999999999999. E se o registro ja tinha
+     um valor fora do passo (3,7), somar 0,5 so carregava a quebra pra frente.
+     Agora o valor e encaixado no passo do campo e o resto binario e cortado:
+     doses andam de meio em meio, glicemia anda de 1 em 1. */
+  v = gcSnap(v, step);
   inp.value = v;
   inp.dispatchEvent(new Event('input', {bubbles:true}));
 }
@@ -1567,9 +1648,14 @@ function atualizarBtnLentaDia() {
   if (!btn || !status) return;
   const hoje = new Date().toDateString();
   const visto = localStorage.getItem('gc_lenta_' + activeProfileId());
-  const dose = parseFloat(localStorage.getItem('gc_lentadose_' + activeProfileId()) || '0');
+  // Soma TODAS as aplicacoes de lenta de hoje (20/07/2026) — antes mostrava
+  // so a ultima, o que escondia a dose da manha quando havia uma segunda a noite.
+  const inicioHoje = new Date(); inicioHoje.setHours(0,0,0,0);
+  const dose = loadData()
+    .filter(r => r._tipo === 'insulina lenta' && new Date(r.dt) >= inicioHoje)
+    .reduce((s, r) => s + (r.lenta || 0), 0);
   if (visto === hoje && dose > 0) {
-    status.textContent = `${Math.ceil(dose)} U aplicada ✅ — toque para corrigir`;
+    status.textContent = `${doseTxt(dose)} U aplicada ✅ — toque para corrigir`;
     btn.style.borderColor = '#00ff9966';
     btn.style.background = 'linear-gradient(135deg,#001a0d,#000d06)';
     btn.style.color = '#00ff99';
@@ -1608,10 +1694,12 @@ function confirmarLentaModal() {
   localStorage.setItem('gc_lentadose_' + activeProfileId(), dose);
   document.getElementById('lenta-modal').classList.remove('show');
 
-  // Remove qualquer entrada de lenta existente de hoje para evitar duplicata
+  // ── NAO APAGA APLICACAO ANTERIOR DO DIA (20/07/2026) ──
+  // Antes esse bloco apagava qualquer lenta ja registrada hoje antes de somar
+  // a nova. Isso destruia a dose da manha quando uma segunda dose de lenta
+  // era cadastrada a noite (uso real: lenta de manha + lenta de noite pra
+  // cobrir a madrugada). Cada aplicacao agora fica com seu proprio horario.
   let dados = loadData();
-  const inicioHoje = new Date(); inicioHoje.setHours(0,0,0,0);
-  dados = dados.filter(r => !(r._tipo === 'insulina lenta' && new Date(r.dt) >= inicioHoje));
 
   if (dose > 0) {
     // Registra automaticamente com o horário do clique (hora local)
@@ -1642,6 +1730,29 @@ setTimeout(() => {
   atualizarBtnLentaDia();
   verificarLentaMatinal();
 }, 500);
+
+// ── RE-CHECAGEM DA LENTA (20/07/2026 01:05) ──
+// Antes, verificarLentaMatinal() rodava UMA vez so, 500ms depois do load. Isso
+// abria 2 furos reais: (1) app aberto em segundo plano virando o dia nunca mais
+// perguntava; (2) abrir o app ANTES da horaResetLenta fazia ele desistir do dia
+// inteiro. A funcao ja se protege sozinha (sai fora se ja respondeu hoje ou se
+// ainda nao deu a hora), entao chamar de novo e seguro e nao gera spam.
+function reverificarLenta() {
+  try {
+    if (document.getElementById('lenta-modal').classList.contains('show')) return;
+    verificarLentaMatinal();
+    atualizarBtnLentaDia();
+  } catch (e) { /* app ainda carregando: tenta de novo no proximo ciclo */ }
+}
+
+// app voltou pro foco (tirou do bolso, saiu do sleep, trocou de aba)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) reverificarLenta();
+});
+window.addEventListener('focus', reverificarLenta);
+
+// app aberto na tela: quando bater a hora, o aviso aparece SOZINHO
+setInterval(reverificarLenta, 60000);
 
 // ── TABS ──
 function switchTab(id, el) {
@@ -1685,6 +1796,29 @@ function switchTab(id, el) {
   }, { passive: true });
 })();
 
+// ── CURVA DA INSULINA LENTA (20/07/2026 01:40) ──
+// Antes o app usava RETA (1 - t/dur) pra todo mundo. Reta so descreve bem uma
+// insulina de acao plana (glargina/degludeca). Pra NPH, que tem PICO no meio e
+// morre bem antes, a reta mente feio: mostra sobra que ja nao existe.
+// Aqui a forma da curva passa a depender da familia da insulina.
+// IMPORTANTE: este numero e SO INFORMATIVO. Ele aparece na barra roxa e em
+// nenhum momento entra em calculo de dose (conferido: sugRapida usa so iobR).
+function perfilLenta(dur) {
+  // dur vem do seletor de tipo de insulina na config
+  if (dur <= 16) return { nome: 'NPH', k: 0.70 };            // sobe, pica e cai cedo
+  if (dur >= 40) return { nome: 'degludeca', k: 1.00 };      // ultra plana
+  return { nome: 'glargina', k: 1.00 };                      // plana: reta descreve bem
+}
+
+// fracao da dose ainda ATIVA depois de `h` horas
+function fracRestanteLenta(h, dur) {
+  if (h < 0 || h >= dur) return 0;
+  const x = h / dur;
+  const k = perfilLenta(dur).k;
+  // k = 1 -> reta (acao plana). k < 1 -> gasta mais rapido no comeco (tem pico).
+  return Math.max(0, 1 - Math.pow(x, k));
+}
+
 // ── IOB CALCULADO ──
 function calcIOB(dados, tipoFiltro) {
   const agora = Date.now();
@@ -1693,10 +1827,17 @@ function calcIOB(dados, tipoFiltro) {
     if (!r.aplicou) continue;
     const dtMs = new Date(r.dt).getTime();
     const horasAtras = (agora - dtMs) / 3600000;
+    /* 21/07/2026 22:10 - guarda nova. Registro com data no FUTURO (relogio do celular
+       errado, ou dedo escorregando na data) dava horasAtras negativo, e a conta
+       "1 - horas/duracao" passava de 1: o app achava que tinha MAIS insulina ativa do
+       que foi aplicada e sugeria dose de MENOS. Agora registro no futuro nao conta. */
+    if (!isFinite(horasAtras) || horasAtras < 0) continue;
     const dur = tipoFiltro === 'rapida' ? DUR_RAPIDA_H : getDurLenta();
     const dose = tipoFiltro === 'rapida' ? (r.rapida||0) : (r.lenta||0);
     if (horasAtras < dur && dose > 0) {
-      const restante = 1 - (horasAtras / dur);
+      const restante = tipoFiltro === 'rapida'
+        ? 1 - (horasAtras / dur)               // rapida: NAO mexido de proposito (entra em calculo de dose)
+        : fracRestanteLenta(horasAtras, dur);
       iob += dose * restante;
     }
   }
@@ -1772,7 +1913,7 @@ function calcProximaMedicao(glicemia, sugRapida, iobR) {
 
 function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
   document.getElementById('res-doses-box').style.display = 'block';
-  const val = sugRapida > 0 ? Math.ceil(sugRapida) : 0;
+  const val = doseU(sugRapida);
   document.getElementById('res-sug-rapida').value = val;
   atualizarBtnConfirmarTexto();
   document.getElementById('btn-confirmar').classList.add('pronto');
@@ -1783,9 +1924,11 @@ function preencherSugestaoCard(sugRapida, sugLenta, iobR, iobL, tooltipTexto) {
 }
 
 function atualizarBtnConfirmarTexto() {
-  const val = parseInt(document.getElementById('res-sug-rapida').value) || 0;
+  /* 21/07/2026 21:15 - era parseInt, que jogava fora a meia unidade:
+     quem digitava 3,5 confirmava 3. Agora le o numero inteiro com a fracao. */
+  const val = doseU(parseFloat(String(document.getElementById('res-sug-rapida').value).replace(',', '.')));
   window._doseSugerida = val;
-  document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${val}u aplicadas`;
+  document.getElementById('btn-confirmar').textContent = `✅ Confirmar ${doseTxt(val)}u aplicadas`;
 }
 
 function confirmarDose() {
@@ -1832,6 +1975,13 @@ function registrar() {
   const _now = new Date(); const _local = new Date(_now.getTime() - _now.getTimezoneOffset()*60000);
   const dtFinal = dt || _local.toISOString().slice(0,16);
   if (!glicemia) { alert('Preencha a glicemia!'); return; }
+  /* 21/07/2026 22:10 - faixa nova. Antes qualquer numero passava: um zero a mais na
+     digitacao (1200 no lugar de 120) virava sugestao de insulina absurda, sem nenhum
+     aviso. 20 a 600 cobre a leitura de qualquer glicosimetro domestico. */
+  if (glicemia < 20 || glicemia > 600) {
+    alert('Glicemia de ' + glicemia + ' mg/dL nao parece certa.\n\nConfira o numero no aparelho (o normal fica entre 20 e 600).');
+    return;
+  }
 
   // Proteção contra entrada duplicada (exceto se o usuário confirmou)
   if (!_pendingRegistrar) {
@@ -1887,11 +2037,11 @@ function registrar() {
   } else {
     const acima = glicemia - alvo2;
     tooltipCard = `Sua glicemia está ${acima} mg/dL acima do alvo (${alvo2} mg/dL). `;
-    tooltipCard += `Como 1 unidade de insulina reduz cerca de ${fator.toFixed(0)} mg/dL no seu caso, seriam necessárias ${Math.ceil(bruta2)} unidades para corrigir. `;
+    tooltipCard += `Como 1 unidade de insulina reduz cerca de ${fator.toFixed(0)} mg/dL no seu caso, seriam necessárias ${doseTxt(bruta2)} unidades para corrigir. `;
     if (iobR > 0) {
-      tooltipCard += `Mas você ainda tem ${Math.ceil(iobR)} unidade(s) ativa(s) no corpo de aplicações anteriores, então foram descontadas — resultando em ${Math.ceil(sugRapida)} unidade(s) sugerida(s).`;
+      tooltipCard += `Mas você ainda tem ${doseTxt(iobR)} unidade(s) ativa(s) no corpo de aplicações anteriores, então foram descontadas — resultando em ${doseTxt(sugRapida)} unidade(s) sugerida(s).`;
     } else {
-      tooltipCard += `Como não há insulina ativa no seu corpo no momento, a sugestão é de ${Math.ceil(sugRapida)} unidade(s).`;
+      tooltipCard += `Como não há insulina ativa no seu corpo no momento, a sugestão é de ${doseTxt(sugRapida)} unidade(s).`;
     }
   }
 
@@ -1990,9 +2140,9 @@ function atualizarStatusBar() {
   const iobMax = 30;
   const iobMaxLenta = 40;
 
-  document.getElementById('sb-iob-rapida').textContent = Math.ceil(iobR) + ' U';
+  document.getElementById('sb-iob-rapida').textContent = doseTxt(iobR) + ' U';
   document.getElementById('iob-fill').style.width = Math.min(100, (iobR/iobMax)*100) + '%';
-  document.getElementById('sb-iob-lenta').textContent = Math.ceil(iobL) + ' U';
+  document.getElementById('sb-iob-lenta').textContent = doseTxt(iobL) + ' U';
   document.getElementById('iob-fill-lenta').style.width = Math.min(100, (iobL/iobMaxLenta)*100) + '%';
 
   atualizarDisplayGlicemia(ultimo.glicemia);
@@ -2298,7 +2448,7 @@ function renderHistorico() {
       if (r._tipo === 'insulina lenta') {
         let lentaInfoStr;
         if (r.lenta > 0) {
-          lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ff;">💉 ${Math.ceil(r.lenta)}u aplicada ✅</div>`;
+          lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ff;">💉 ${doseTxt(r.lenta)}u aplicada ✅</div>`;
         } else {
           lentaInfoStr = `<div class="hist-insulin" style="color:#cc44ffaa;">não aplicou</div>`;
         }
@@ -2311,7 +2461,7 @@ function renderHistorico() {
             <div class="hist-meta">${hora}</div>
             ${r.glicemia != null ? `<div class="hist-insulin" style="color:#f0f0f0;">🩸 ${Math.round(r.glicemia)} mg/dL antes de aplicar</div>` : ''}
             ${lentaInfoStr}
-            ${r.rapida > 0 ? `<div class="hist-insulin" style="color:#00e5ff;margin-top:3px;">💉 ${Math.ceil(r.rapida)}u rápida junto</div>` : ''}
+            ${r.rapida > 0 ? `<div class="hist-insulin" style="color:#00e5ff;margin-top:3px;">💉 ${doseTxt(r.rapida)}u rápida junto</div>` : ''}
           </div>
           <div class="hist-btns">
             <button class="badge-edit" onclick="abrirEditModal(${r.id})">✏️</button>
@@ -2332,10 +2482,10 @@ function renderHistorico() {
 
       const insulina = [];
       if (r.sugRapida != null && r.sugRapida > 0) {
-        if (r.rapida > 0) insulina.push(`🔵 ${Math.ceil(r.sugRapida)}u sugerido · ${Math.ceil(r.rapida)}u tomado ✅`);
-        else insulina.push(`🔵 ${Math.ceil(r.sugRapida)}u sugerido · não tomou`);
+        if (r.rapida > 0) insulina.push(`🔵 ${doseTxt(r.sugRapida)}u sugerido · ${doseTxt(r.rapida)}u tomado ✅`);
+        else insulina.push(`🔵 ${doseTxt(r.sugRapida)}u sugerido · não tomou`);
       }
-      if (r.rapida > 0 && (r.sugRapida == null || r.sugRapida <= 0)) insulina.push(`💉 ${Math.ceil(r.rapida)}u rápida ✅`);
+      if (r.rapida > 0 && (r.sugRapida == null || r.sugRapida <= 0)) insulina.push(`💉 ${doseTxt(r.rapida)}u rápida ✅`);
       const insulinaStr = insulina.length
         ? `<div class="hist-insulin">${insulina.join('<br>')}</div>`
         : `<div class="hist-insulin" style="color:#333;">sem insulina</div>`;
@@ -2386,12 +2536,15 @@ function abrirEditModal(id) {
   if (!r) return;
   _editId = id;
   // Preenche campos
-  document.getElementById('edit-glicemia').value = r.glicemia || '';
+  /* 21/07/2026 23:05 - o registro podia estar gravado quebrado (3.0000000000000004 de
+     uma soma antiga, ou 3,7 de uma versao anterior do calculo). Abrir a edicao agora
+     ja mostra o numero limpo, no passo do campo. */
+  document.getElementById('edit-glicemia').value = r.glicemia ? gcSnap(r.glicemia, 1) : '';
   // Converte dt para formato datetime-local
   const dtLocal = new Date(new Date(r.dt).getTime() - new Date().getTimezoneOffset()*60000);
   document.getElementById('edit-dt').value = r.dt.slice(0,16);
-  document.getElementById('edit-rapida').value = r.rapida || 0;
-  document.getElementById('edit-lenta').value = r.lenta || 0;
+  document.getElementById('edit-rapida').value = gcSnap(r.rapida || 0, 1);
+  document.getElementById('edit-lenta').value  = gcSnap(r.lenta  || 0, 1);
   // Oculta "antes de comer" se for registro de lenta (glicemia agora é editável em ambos os tipos)
   const isLenta = r._tipo === 'insulina lenta';
   document.getElementById('edit-antes-row').style.display = isLenta ? 'none' : 'flex';
@@ -2410,11 +2563,17 @@ function salvarEdicao() {
   const idx = dados.findIndex(r => r.id === _editId);
   if (idx === -1) return;
   const r = dados[idx];
-  const novaGlicemia = parseFloat(document.getElementById('edit-glicemia').value);
+  /* 21/07/2026 23:05 - o que sai daqui vai GRAVADO no historico, entao e aqui que o
+     numero quebrado tem que morrer: nada entra no arquivo fora do passo. */
+  const novaGlicemia = gcSnap(parseFloat(document.getElementById('edit-glicemia').value), 1);
   const novaDt = document.getElementById('edit-dt').value;
-  const novaRapida = parseFloat(document.getElementById('edit-rapida').value) || 0;
-  const novaLenta = parseFloat(document.getElementById('edit-lenta').value) || 0;
+  const novaRapida = gcSnap(parseFloat(document.getElementById('edit-rapida').value) || 0, 1);
+  const novaLenta  = gcSnap(parseFloat(document.getElementById('edit-lenta').value)  || 0, 1);
   if (r._tipo !== 'insulina lenta' && !novaGlicemia) { alert('Informe a glicemia!'); return; }
+  if (r._tipo !== 'insulina lenta' && (novaGlicemia < 20 || novaGlicemia > 600)) {
+    alert('Glicemia de ' + novaGlicemia + ' mg/dL nao parece certa.\n\nConfira o numero no aparelho (o normal fica entre 20 e 600).');
+    return;
+  }
   if (!novaDt) { alert('Informe a data e hora!'); return; }
   dados[idx].dt = novaDt;
   if (r._tipo !== 'insulina lenta') dados[idx].glicemia = novaGlicemia;
@@ -2466,10 +2625,12 @@ function calcularBolusComer() {
   const g = parseFloat(document.getElementById('vcomer-glicemia').value);
   const btnAnotar = document.getElementById('vcomer-btn-anotar');
   const aviso = document.getElementById('vcomer-aviso');
-  if (!g || g < 20) { btnAnotar.style.display='none'; aviso.style.display='none'; return; }
+  /* 21/07/2026 22:10 - passou a ter teto tambem: 1200 digitado no lugar de 120 nao pode
+     virar sugestao de dose. Fora da faixa, o botao de anotar simplesmente nao aparece. */
+  if (!g || g < 20 || g > 600) { btnAnotar.style.display='none'; aviso.style.display='none'; return; }
   const alvo = getGlicemiaAlvo();
-  const dose = Math.ceil(getDoseRefeicao());
-  document.getElementById('vcomer-dose-label').textContent = dose;
+  const dose = doseU(getDoseRefeicao());
+  document.getElementById('vcomer-dose-label').textContent = doseTxt(dose);
   document.getElementById('vcomer-dose-base').textContent = dose;
   aviso.style.display = 'block';
 
@@ -2482,7 +2643,7 @@ function calcularBolusComer() {
   btnAnotar.style.display = 'block';
   aviso.style.display = podeTomar ? 'block' : 'none';
   if (podeTomar) {
-    const doseAnotar = (g < alvo) ? Math.ceil(dose / 2) : dose;
+    const doseAnotar = (g < alvo) ? doseU(dose / 2) : dose;
     btnAnotar.dataset.dose = doseAnotar;
     btnAnotar.style.background = 'linear-gradient(135deg,#004d22,#002211)';
     btnAnotar.style.color = '#00ff99';
