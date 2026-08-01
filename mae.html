@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>GlicoCare — Painel da mãe</title>
+<script src="vendor/chart.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 20px; min-height: 100vh;
+    background: #05050f; color: #e8e8f0;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+  h1 { font-size: 1.3rem; margin: 0 0 4px; color: #00e5ff; }
+  #sub { color: #666; font-size: 0.85rem; margin-bottom: 18px; }
+  #sub button {
+    background: none; border: 1px solid #2a1050; color: #00e5ff;
+    padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; margin-left: 8px;
+  }
+  .layout { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 24px; }
+  .cards { display: flex; flex-direction: column; gap: 12px; min-width: 220px; flex: 0 0 220px; }
+  .card {
+    background: #0d0d20; border: 1px solid #1a1a3a; border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .card .label { font-size: 0.75rem; color: #888; margin-bottom: 4px; }
+  .card .val { font-size: 1.4rem; font-weight: 700; }
+  .card .meta { font-size: 0.72rem; color: #666; margin-top: 3px; }
+  .chart-wrap {
+    flex: 1 1 420px; min-width: 300px; background: #0d0d20; border: 1px solid #1a1a3a;
+    border-radius: 12px; padding: 14px; height: 320px;
+  }
+  section { margin-bottom: 26px; }
+  section h2 { font-size: 1rem; color: #cc44ff; margin: 0 0 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid #1a1a3a; }
+  th { color: #666; font-weight: 500; font-size: 0.75rem; }
+  .vazio { color: #444; font-size: 0.85rem; padding: 14px 0; }
+  .zona-baixa { color: #ff4466; } .zona-ok { color: #00e5ff; }
+  .zona-alta { color: #ffaa00; } .zona-critica { color: #ff6633; }
+</style>
+</head>
+<body>
+<h1>Painel da mãe — GlicoCare</h1>
+<div id="sub">carregando…<button onclick="carregar()">Atualizar</button></div>
+
+<div class="layout">
+  <div class="cards">
+    <div class="card">
+      <div class="label">Última glicemia</div>
+      <div class="val" id="c-glicemia">—</div>
+      <div class="meta" id="c-glicemia-dt">—</div>
+    </div>
+    <div class="card">
+      <div class="label">Insulina nessa medição</div>
+      <div class="val" id="c-dose-ultima">—</div>
+    </div>
+    <div class="card">
+      <div class="label">Rápida ativa agora</div>
+      <div class="val" id="c-iob-rapida" style="color:#00e5ff">—</div>
+    </div>
+    <div class="card">
+      <div class="label">Lenta ativa agora</div>
+      <div class="val" id="c-iob-lenta" style="color:#cc44ff">—</div>
+    </div>
+  </div>
+  <div class="chart-wrap"><canvas id="grafico"></canvas></div>
+</div>
+
+<section>
+  <h2>Insulina lenta hoje</h2>
+  <div id="lenta-hoje"></div>
+</section>
+
+<section>
+  <h2>Demais registros de hoje</h2>
+  <div id="hoje-tabela"></div>
+</section>
+
+<section>
+  <h2>Histórico completo</h2>
+  <div id="hist-tabela"></div>
+</section>
+
+<script>
+const BLOB_URL = 'https://lmvaydutamjbul7b.public.blob.vercel-storage.com/glicocare/mae_87ea217ed9eae28de1.json';
+
+let DADOS = [], CFG = {};
+let chartInst = null;
+
+// ── mesma logica de IOB do app principal (index.html), pra bater com o que ela ve ──
+function perfilLenta(dur) {
+  if (dur <= 16) return { k: 0.70 };
+  if (dur >= 40) return { k: 1.00 };
+  return { k: 1.00 };
+}
+function fracRestanteLenta(h, dur) {
+  if (h < 0 || h >= dur) return 0;
+  const x = h / dur;
+  const k = perfilLenta(dur).k;
+  return Math.max(0, 1 - Math.pow(x, k));
+}
+function calcIOB(dados, tipo) {
+  const agora = Date.now();
+  let iob = 0;
+  const DUR_RAPIDA_H = 4;
+  const durLenta = CFG.insulinaTipo || 24;
+  for (const r of dados) {
+    if (!r.aplicou) continue;
+    const horasAtras = (agora - new Date(r.dt).getTime()) / 3600000;
+    if (!isFinite(horasAtras) || horasAtras < 0) continue;
+    const dur = tipo === 'rapida' ? DUR_RAPIDA_H : durLenta;
+    const dose = tipo === 'rapida' ? (r.rapida || 0) : (r.lenta || 0);
+    if (horasAtras < dur && dose > 0) {
+      const restante = tipo === 'rapida' ? 1 - (horasAtras / dur) : fracRestanteLenta(horasAtras, dur);
+      iob += dose * restante;
+    }
+  }
+  return Math.max(0, iob);
+}
+function doseTxt(x) { const n = Number(x); return (!isFinite(n) || n <= 0) ? '0' : String(Math.round(n)); }
+
+function zonaClasse(v) {
+  return v < 70 ? 'zona-baixa' : v <= 180 ? 'zona-ok' : v <= 250 ? 'zona-alta' : 'zona-critica';
+}
+function fmtDT(dt) {
+  const d = new Date(dt);
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+}
+function ehHoje(dt) {
+  const d = new Date(dt), h = new Date();
+  return d.toDateString() === h.toDateString();
+}
+
+function renderCartoes() {
+  const ordenado = [...DADOS].sort((a,b) => new Date(a.dt) - new Date(b.dt));
+  const ultima = ordenado[ordenado.length - 1];
+  if (ultima) {
+    document.getElementById('c-glicemia').textContent = ultima.glicemia + ' mg/dL';
+    document.getElementById('c-glicemia').className = 'val ' + zonaClasse(ultima.glicemia);
+    document.getElementById('c-glicemia-dt').textContent = fmtDT(ultima.dt);
+    const partes = [];
+    if (ultima.rapida) partes.push(doseTxt(ultima.rapida) + ' U rápida');
+    if (ultima.lenta) partes.push(doseTxt(ultima.lenta) + ' U lenta');
+    document.getElementById('c-dose-ultima').textContent = partes.length ? partes.join(' + ') : 'nenhuma';
+  }
+  document.getElementById('c-iob-rapida').textContent = doseTxt(calcIOB(DADOS, 'rapida')) + ' U';
+  document.getElementById('c-iob-lenta').textContent = doseTxt(calcIOB(DADOS, 'lenta')) + ' U';
+}
+
+function renderGrafico() {
+  const alvo = CFG.glicemiaAlvo || 200;
+  const recentes = [...DADOS].sort((a,b) => new Date(a.dt) - new Date(b.dt)).slice(-60);
+  const labels = recentes.map(r => new Date(r.dt).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) + ' ' + new Date(r.dt).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}));
+  const values = recentes.map(r => r.glicemia);
+  const cores = values.map(v => v < 70 ? '#ff4466' : v <= 180 ? '#00e5ff' : v <= 250 ? '#ffaa00' : '#ff6633');
+
+  if (chartInst) chartInst.destroy();
+  const ctx = document.getElementById('grafico').getContext('2d');
+  chartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Alvo', data: Array(labels.length).fill(alvo), borderColor: '#00ff99', borderDash: [6,4], borderWidth: 1.5, pointRadius: 0, fill: false },
+        { label: 'Glicemia', data: values, borderColor: '#ffffff', borderWidth: 2, pointRadius: 4, pointBackgroundColor: cores, fill: false, tension: 0.3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#666', maxTicksLimit: 8, font: { size: 10 } }, grid: { color: '#1a1a3a' } },
+        y: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: '#1a1a3a' }, min: 40, suggestedMax: 300 }
+      }
+    }
+  });
+}
+
+function renderLentaHoje() {
+  const hoje = DADOS.filter(r => ehHoje(r.dt) && r.aplicou && r.lenta > 0)
+    .sort((a,b) => new Date(b.dt) - new Date(a.dt));
+  const el = document.getElementById('lenta-hoje');
+  if (!hoje.length) { el.innerHTML = '<div class="vazio">Nenhuma insulina lenta registrada hoje.</div>'; return; }
+  el.innerHTML = '<table><tr><th>Hora</th><th>Dose</th></tr>' +
+    hoje.map(r => `<tr><td>${fmtDT(r.dt)}</td><td>${doseTxt(r.lenta)} U</td></tr>`).join('') +
+    '</table>';
+}
+
+function renderHojeTabela() {
+  const hoje = DADOS.filter(r => ehHoje(r.dt)).sort((a,b) => new Date(b.dt) - new Date(a.dt));
+  const el = document.getElementById('hoje-tabela');
+  if (!hoje.length) { el.innerHTML = '<div class="vazio">Nenhum registro hoje.</div>'; return; }
+  el.innerHTML = '<table><tr><th>Hora</th><th>Glicemia</th><th>Rápida</th></tr>' +
+    hoje.map(r => `<tr><td>${fmtDT(r.dt)}</td><td class="${zonaClasse(r.glicemia)}">${r.glicemia} mg/dL</td><td>${r.rapida ? doseTxt(r.rapida) + ' U' : '—'}</td></tr>`).join('') +
+    '</table>';
+}
+
+function renderHistTabela() {
+  const ordenado = [...DADOS].sort((a,b) => new Date(b.dt) - new Date(a.dt)).slice(0, 200);
+  const el = document.getElementById('hist-tabela');
+  if (!ordenado.length) { el.innerHTML = '<div class="vazio">Sem dados sincronizados ainda.</div>'; return; }
+  el.innerHTML = '<table><tr><th>Data/hora</th><th>Glicemia</th><th>Rápida</th><th>Lenta</th></tr>' +
+    ordenado.map(r => `<tr><td>${fmtDT(r.dt)}</td><td class="${zonaClasse(r.glicemia)}">${r.glicemia} mg/dL</td><td>${r.rapida ? doseTxt(r.rapida) + ' U' : '—'}</td><td>${r.lenta ? doseTxt(r.lenta) + ' U' : '—'}</td></tr>`).join('') +
+    '</table>';
+}
+
+async function carregar() {
+  document.getElementById('sub').firstChild.textContent = 'carregando…';
+  try {
+    const resp = await fetch(BLOB_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!resp.ok) throw new Error('sem dados ainda');
+    const j = await resp.json();
+    DADOS = j.dados || [];
+    CFG = j.cfg || {};
+    document.getElementById('sub').firstChild.textContent = 'última sincronização: ' + (j.ts ? fmtDT(j.ts) : '—');
+    renderCartoes();
+    renderGrafico();
+    renderLentaHoje();
+    renderHojeTabela();
+    renderHistTabela();
+  } catch (e) {
+    document.getElementById('sub').firstChild.textContent = 'ainda sem dados sincronizados (o celular dela precisa abrir o link de ativação ao menos uma vez)';
+  }
+}
+
+carregar();
+setInterval(renderCartoes, 5000);
+setInterval(carregar, 5 * 60000);
+</script>
+</body>
+</html>
