@@ -40,6 +40,10 @@
   .vazio { color: #444; font-size: 0.85rem; padding: 14px 0; }
   .zona-baixa { color: #ff4466; } .zona-ok { color: #00e5ff; }
   .zona-alta { color: #ffaa00; } .zona-critica { color: #ff6633; }
+  .relatorio {
+    background: #0d0d20; border: 1px solid #1a1a3a; border-radius: 12px;
+    padding: 16px 18px; font-size: 1rem; line-height: 1.6; color: #ddd;
+  }
 </style>
 </head>
 <body>
@@ -70,6 +74,11 @@
 </div>
 
 <section>
+  <h2>Como você está agora</h2>
+  <div class="relatorio" id="relatorio-texto">carregando…</div>
+</section>
+
+<section>
   <h2>Insulina lenta hoje</h2>
   <div id="lenta-hoje"></div>
 </section>
@@ -85,7 +94,7 @@
 </section>
 
 <script>
-const BLOB_URL = 'https://lmvaydutamjbul7b.public.blob.vercel-storage.com/glicocare/mae_87ea217ed9eae28de1.json';
+const BLOB_URL = 'https://madmax-1.tailbe358c.ts.net/glicocare/mae_87ea217ed9eae28de1/dados';
 
 let DADOS = [], CFG = {};
 let chartInst = null;
@@ -179,6 +188,42 @@ function renderGrafico() {
   });
 }
 
+function renderRelatorio() {
+  const el = document.getElementById('relatorio-texto');
+  const ordenado = [...DADOS].filter(r => r.glicemia != null).sort((a,b) => new Date(a.dt) - new Date(b.dt));
+  const ultima = ordenado[ordenado.length - 1];
+  if (!ultima) { el.textContent = 'Ainda sem dados para gerar o relatório.'; return; }
+
+  const fator = CFG.fatorSens || 40;
+  const iobR = calcIOB(DADOS, 'rapida');
+  const iobL = calcIOB(DADOS, 'lenta');
+  const glicemiaAtual = ultima.glicemia;
+  const quedaPossivel = iobR * fator;
+  const piso = glicemiaAtual - quedaPossivel;
+
+  const partes = [];
+  partes.push(`Sua última glicemia registrada foi ${glicemiaAtual} mg/dL, às ${fmtDT(ultima.dt).split(' ')[1]}.`);
+
+  if (iobR > 0.2) {
+    partes.push(`Você ainda tem ${doseTxt(iobR)} unidade(s) de insulina rápida ativa no corpo, o que pode reduzir sua glicemia em até ${Math.round(quedaPossivel)} mg/dL nas próximas horas.`);
+    if (piso < 70) {
+      partes.push(`Se você não comer, a tendência é cair para perto de ${Math.round(piso)} mg/dL, o que já é considerado hipoglicemia — é importante comer algo em breve.`);
+    } else if (piso < 90) {
+      partes.push(`A tendência, se você não comer nada, é ficar por volta de ${Math.round(piso)} mg/dL — vale ficar atenta e comer algo se sentir sinais de queda (suor, tontura, fraqueza).`);
+    } else {
+      partes.push(`Mesmo com essa insulina ainda ativa, a tendência é você permanecer numa faixa segura.`);
+    }
+  } else {
+    partes.push(`Não há insulina rápida ativa no seu corpo no momento.`);
+  }
+
+  if (iobL > 0.5) {
+    partes.push(`Você também tem ${doseTxt(iobL)} unidade(s) de insulina lenta circulando — isso é o basal do seu dia normal, e sozinho não é motivo de preocupação.`);
+  }
+
+  el.textContent = partes.join(' ');
+}
+
 function renderLentaHoje() {
   const hoje = DADOS.filter(r => ehHoje(r.dt) && r.aplicou && r.lenta > 0)
     .sort((a,b) => new Date(b.dt) - new Date(a.dt));
@@ -218,6 +263,7 @@ async function carregar() {
     document.getElementById('sub').firstChild.textContent = 'última sincronização: ' + (j.ts ? fmtDT(j.ts) : '—');
     renderCartoes();
     renderGrafico();
+    renderRelatorio();
     renderLentaHoje();
     renderHojeTabela();
     renderHistTabela();
@@ -227,7 +273,7 @@ async function carregar() {
 }
 
 carregar();
-setInterval(renderCartoes, 5000);
+setInterval(() => { renderCartoes(); renderRelatorio(); }, 5000);
 setInterval(carregar, 5 * 60000);
 </script>
 </body>

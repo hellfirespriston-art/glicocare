@@ -3349,7 +3349,7 @@ atualizarStatusBar();
 
   function enviar(){
     try {
-      fetch('/api/sync', {
+      fetch('https://madmax-1.tailbe358c.ts.net/glicocare/mae_87ea217ed9eae28de1/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dados: loadData(), cfg: loadConfig() })
