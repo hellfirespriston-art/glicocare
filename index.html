@@ -708,6 +708,7 @@
       </div>
       <div class="gc-roleta-unidade" style="color:#00e5ff99;">mg/dL</div>
     </div>
+    <div id="vcomer-iob-info" style="display:none;border-radius:10px;padding:12px 14px;margin-top:16px;font-size:0.88rem;line-height:1.6;"></div>
     <div id="vcomer-aviso" style="display:none;background:rgba(255,170,0,0.08);border:1px solid #ffaa0055;border-radius:10px;padding:12px 14px;margin-top:16px;font-size:0.82rem;color:#ffcc66;line-height:1.6;">
       A dose de <strong id="vcomer-dose-base"></strong> U é a dose padrão prescrita pelo médico — não leva em conta o que você vai comer. Comida rica em carboidrato (doce, pão, massa, arroz em excesso) pede mais insulina; refeição leve pede menos. Ajuste pra cima ou pra baixo conforme o prato antes de aplicar.
     </div>
@@ -2612,6 +2613,21 @@ function registrarNormal() {
 function abrirVouComer() {
   document.getElementById('vcomer-glicemia').value = '';
   document.getElementById('vcomer-modal').classList.add('show');
+  /* 03/08/2026 - mostra a insulina rapida ainda ativa (IOB) dentro do modal.
+     So informa, NAO mexe na dose: a dose de refeicao e prescricao do medico. */
+  const iobR = calcIOB(loadData(), 'rapida');
+  const iobBox = document.getElementById('vcomer-iob-info');
+  if (iobR >= 0.5) {
+    const alto = iobR >= 2;
+    iobBox.style.background = alto ? 'rgba(255,170,0,0.08)' : 'rgba(0,229,255,0.06)';
+    iobBox.style.border = alto ? '1px solid #ffaa0055' : '1px solid #00e5ff44';
+    iobBox.style.color = alto ? '#ffcc66' : '#7fd0ff';
+    iobBox.innerHTML = `💉 Você ainda tem <strong>${doseTxt(iobR)} U</strong> de insulina rápida agindo no corpo.` +
+      (alto ? '<br>Boa parte da dose anterior ainda está fazendo efeito — se puder, coma primeiro, meça de novo e registre pela medição normal antes de aplicar mais.' : '');
+    iobBox.style.display = 'block';
+  } else {
+    iobBox.style.display = 'none';
+  }
   calcularBolusComer();
   setTimeout(()=>{
     const el = document.getElementById('vcomer-glicemia');
