@@ -226,6 +226,59 @@
     /* GRAFICO */
     .chart-box { background:linear-gradient(135deg,#080818,#0d1130); border:1px solid #1e2a5a; border-radius:12px; padding:16px; }
     #grafico-glicemia { height:260px; display:block; }
+
+/* ── Quadro do jejum da manhã x lenta ── */
+.jejum-wrap { margin-top:22px; border-top:1px solid #1e2a5a; padding-top:18px; }
+.jejum-head { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:12px; }
+.jejum-titulo { font-size:0.95rem; font-weight:700; color:#00e5ff; }
+.jejum-sub { font-size:0.68rem; color:#667; margin-top:3px; line-height:1.35; max-width:230px; }
+.jejum-perseg { display:flex; gap:4px; flex-shrink:0; }
+.jejum-perbtn { background:#0d1130; border:1px solid #1e2a5a; color:#667; font-size:0.7rem;
+                padding:5px 9px; border-radius:7px; cursor:pointer; font-weight:600; }
+.jejum-perbtn.active { border-color:#00e5ff66; color:#00e5ff; background:rgba(0,229,255,0.08); }
+
+.jejum-tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+.jejum-tile { background:linear-gradient(135deg,#080818,#0d1130); border:1px solid #1e2a5a;
+              border-radius:10px; padding:9px 8px; text-align:center; }
+.jejum-tile-lab { font-size:0.6rem; color:#667; text-transform:uppercase; letter-spacing:0.4px; }
+.jejum-tile-val { font-size:1.15rem; font-weight:700; color:#00e5ff; margin-top:3px; line-height:1.1; }
+.jejum-tile-sub { font-size:0.62rem; color:#889; margin-top:2px; }
+
+.jejum-legenda { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:10px;
+                 font-size:0.66rem; color:#778; }
+.jejum-legenda span { display:flex; align-items:center; gap:5px; }
+.jejum-legenda i { width:9px; height:9px; border-radius:2px; display:inline-block; }
+
+.jejum-aviso { display:flex; gap:8px; align-items:flex-start; border-radius:9px; padding:9px 11px;
+               margin-top:8px; font-size:0.73rem; line-height:1.4; }
+.jejum-aviso b { display:block; margin-bottom:2px; }
+.jejum-aviso-perigo { background:rgba(255,68,102,0.08); border:1px solid #ff446655; color:#ff8099; }
+.jejum-aviso-atencao{ background:rgba(255,170,0,0.08);  border:1px solid #ffaa0055; color:#ffc766; }
+.jejum-aviso-ok     { background:rgba(0,255,153,0.07);  border:1px solid #00ff9944; color:#66ffc2; }
+
+.jejum-proto { margin-top:16px; background:linear-gradient(135deg,#080818,#0d1130);
+               border:1px solid #1e2a5a; border-radius:12px; padding:14px; }
+.jejum-proto-tit { font-size:0.82rem; font-weight:700; color:#00ff99; margin-bottom:12px; }
+.jejum-regra { display:flex; gap:10px; align-items:flex-start; padding:9px 0;
+               border-top:1px solid #141a38; font-size:0.74rem; color:#aab; line-height:1.45; }
+.jejum-regra:first-of-type { border-top:none; padding-top:0; }
+.jejum-regra b { color:#dde; }
+.jejum-regra-n { flex-shrink:0; width:20px; height:20px; border-radius:50%; background:#1e2a5a;
+                 color:#00e5ff; font-size:0.7rem; font-weight:700; display:flex;
+                 align-items:center; justify-content:center; margin-top:1px; }
+.jejum-regra-perigo .jejum-regra-n { background:#4a1424; color:#ff6688; }
+.jejum-regra-do { display:block; margin-top:4px; color:#00ff99cc; font-size:0.71rem; }
+.jejum-regra-do b { color:#00ff99; }
+.jejum-achado { margin-top:12px; background:rgba(255,170,0,0.06); border:1px solid #ffaa0044;
+                border-radius:9px; padding:11px 12px; font-size:0.73rem; color:#bba; line-height:1.5; }
+.jejum-achado-tit { font-size:0.72rem; font-weight:700; color:#ffaa00; margin-bottom:6px; }
+.jejum-achado b { color:#ffd280; }
+.jejum-achado-e { display:block; margin-top:7px; padding-top:7px; border-top:1px solid #ffaa0022; color:#998; }
+.jejum-achado-e b { color:#ffc766; }
+.jejum-proto-rodape { margin-top:12px; padding-top:10px; border-top:1px solid #141a38;
+                      font-size:0.66rem; color:#667; line-height:1.45; }
+#grafico-jejum { height:250px; display:block; }
+.jejum-vazio { text-align:center; color:#556; font-size:0.75rem; padding:28px 10px; }
     .chart-controls { display:flex; gap:12px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
     .chart-controls select { width:auto; }
 
@@ -789,6 +842,99 @@
     <button id="graf-btn-prox" onclick="grafNavDia(+1)" style="background:none;border:1px solid #1e2a5a;color:#00e5ff;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:1rem;-webkit-tap-highlight-color:transparent;">›</button>
   </div>
   <div class="chart-box"><canvas id="grafico-glicemia"></canvas></div>
+
+  <!-- ── JEJUM DA MANHÃ x DOSE DE LENTA (7 dias) ──
+       Serve pra acompanhar a insulina LENTA (basal). A basal é julgada pelo
+       jejum da manhã, não pelo pico depois de comer — pico é serviço da rápida.
+       Criado em 05/08/2026 a pedido do Sidney. -->
+  <div class="jejum-wrap">
+    <div class="jejum-head">
+      <div>
+        <div class="jejum-titulo">🌅 Jejum da manhã x Lenta</div>
+        <div class="jejum-sub">A dose de lenta se acompanha por aqui — não pelo pico do dia</div>
+      </div>
+      <div class="jejum-perseg">
+        <button class="jejum-perbtn active" data-dias="7"  onclick="jejumSetDias(7,this)">7d</button>
+        <button class="jejum-perbtn"        data-dias="14" onclick="jejumSetDias(14,this)">14d</button>
+        <button class="jejum-perbtn"        data-dias="30" onclick="jejumSetDias(30,this)">30d</button>
+      </div>
+    </div>
+
+    <div class="jejum-tiles" id="jejum-tiles"></div>
+
+    <div class="chart-box" style="padding-top:12px;"><canvas id="grafico-jejum"></canvas></div>
+
+    <div class="jejum-legenda">
+      <span><i style="background:#00e5ff"></i>Jejum</span>
+      <span><i style="background:#ffaa00"></i>Madrugada</span>
+      <span><i style="background:#cc44ff"></i>Lenta manhã</span>
+      <span><i style="background:#ff6633"></i>Lenta extra</span>
+    </div>
+
+    <div id="jejum-avisos"></div>
+
+    <!-- Protocolo fixo — fica escrito no app pra não depender de lembrar -->
+    <div class="jejum-proto">
+      <div class="jejum-proto-tit">📋 Como ajustar a lenta — as 4 regras</div>
+
+      <div class="jejum-regra">
+        <div class="jejum-regra-n">1</div>
+        <div>
+          <b>Espere 3 dias antes de mexer de novo.</b>
+          A glargina (Lantus/Basaglar) leva de 2 a 3 dias pra chegar no novo patamar.
+          Se subir todo dia, você julga a dose antes dela responder e passa do ponto sem perceber.
+          <span class="jejum-regra-do">Faça: subir <b>+2 U</b> e só reavaliar no 4º dia.</span>
+        </div>
+      </div>
+
+      <div class="jejum-regra">
+        <div class="jejum-regra-n">2</div>
+        <div>
+          <b>Julgue pelo jejum da manhã, não pelo pico do dia.</b>
+          A lenta segura o nível de fundo; o pico depois de comer é serviço da rápida.
+          É a linha azul deste gráfico que decide a próxima dose.
+          <span class="jejum-regra-do">Faça: comparar a manhã de hoje com a de 3 dias atrás.</span>
+        </div>
+      </div>
+
+      <div class="jejum-regra jejum-regra-perigo">
+        <div class="jejum-regra-n">3</div>
+        <div>
+          <b>Nunca use lenta pra corrigir glicemia alta na hora.</b>
+          Lenta não baixa pico agudo — quem faz isso é a rápida. Dose extra de lenta à tarde
+          é a maior causa de hipoglicemia de madrugada.
+          <span class="jejum-regra-do">Faça: alta no meio do dia = rápida. Barra laranja no gráfico = isso aconteceu.</span>
+        </div>
+      </div>
+
+      <div class="jejum-regra">
+        <div class="jejum-regra-n">4</div>
+        <div>
+          <b>Meça uma madrugada (~3h) a cada mudança de dose.</b>
+          Com a dose subindo, a madrugada é o único jeito de saber se passou do ponto —
+          o jejum das 8h já pode ter subido de volta e esconder um fundo baixo.
+          <span class="jejum-regra-do">Faça: 1 medição de madrugada na noite seguinte a cada aumento.</span>
+        </div>
+      </div>
+
+      <div class="jejum-achado">
+        <div class="jejum-achado-tit">🔎 Achado no histórico — 05/08/2026 (65 dias, 617 medições)</div>
+        A glicose <b>não sobe a noite toda</b>. Ela fica parada ou cai de leve das 20h até ~1h da manhã
+        (mediana <b>−20 mg/dL</b> em 36 pares), e só então dispara: da madrugada até o jejum a mediana é
+        <b>+109 mg/dL</b>, e subiu em <b>14 das 15 noites</b> medidas.
+        <span class="jejum-achado-e">Isso é fenômeno do amanhecer — hormônio, não falta de basal a noite inteira.
+        Importa porque a lenta é aplicada de manhã: ela age forte justamente no fim da tarde e da noite,
+        quando a glicose já estava caindo, e chega fraca às 5h, que é onde o problema está.
+        Subir a dose da manhã ataca a janela errada e aumenta risco de hipo à noite.
+        <b>Leve exatamente isso ao médico e pergunte sobre o horário da aplicação.</b></span>
+      </div>
+
+      <div class="jejum-proto-rodape">
+        Açúcar e medidor sempre do lado. Ajuste de dose é decisão do médico —
+        este quadro só mostra o que os números estão dizendo.
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════ HISTÓRICO ══════════ -->
@@ -1768,7 +1914,10 @@ function switchTab(id, el) {
   if (bnavEl) bnavEl.classList.add('active');
   document.getElementById('tab-'+id).classList.add('active');
   document.getElementById('iob-statusbar-row').style.display = id === 'registrar' ? '' : 'none';
-  if(id==='grafico') setTimeout(()=>{ renderGrafico(); if(chartInst) chartInst.resize(); },200);
+  if(id==='grafico') setTimeout(()=>{
+    renderGrafico();      if(chartInst)      chartInst.resize();
+    renderGraficoJejum(); if(chartJejumInst) chartJejumInst.resize();
+  },200);
   if(id==='historico') { renderHistorico(); atualizarBtnLentaDia(); }
   if(id==='analise') renderAnalise();
   if(id==='config') { renderCfgPerfis(); atualizarStorageInfo(); }
@@ -2397,6 +2546,205 @@ function renderGrafico() {
 
   // Passa o alvo para o plugin acessar no beforeDraw
   chartInst._glicAlvo = alvo;
+}
+
+// ══════════ JEJUM DA MANHÃ x DOSE DE LENTA ══════════
+// A basal se julga pelo jejum da manhã, não pelo pico do dia.
+// Criado 05/08/2026.
+var chartJejumInst = null;
+var _jejumDias = 7;
+
+function jejumSetDias(n, btn) {
+  _jejumDias = n;
+  document.querySelectorAll('.jejum-perbtn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderGraficoJejum();
+}
+
+// Monta uma linha por dia: jejum, madrugada, dose da manhã e doses extras
+function coletarJejum(nDias) {
+  const dados = loadData();
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const horaDe = r => { const x = new Date(r.dt); return x.getHours() + x.getMinutes()/60; };
+  const linhas = [];
+
+  for (let i = nDias - 1; i >= 0; i--) {
+    const d = new Date(hoje); d.setDate(d.getDate() - i);
+    const ini = d.getTime(), fim = ini + 86400000;
+    const doDia = dados
+      .filter(r => { const t = new Date(r.dt).getTime(); return t >= ini && t < fim; })
+      .sort((a,b) => new Date(a.dt) - new Date(b.dt));
+
+    // Doses de lenta efetivamente aplicadas no dia
+    const doses = doDia.filter(r => r.aplicou && (r.lenta || 0) > 0);
+    const lentaManha = doses.length ? doses[0].lenta : null;
+    const lentaExtra = doses.slice(1).reduce((s,r) => s + (r.lenta || 0), 0);
+
+    const leituras = doDia.filter(r => r.glicemia > 0);
+
+    // Jejum = primeira leitura da janela 05:00-11:00
+    const manha = leituras.filter(r => { const h = horaDe(r); return h >= 5 && h < 11; });
+    const jejum = manha.length ? manha[0].glicemia : null;
+    const jejumHora = manha.length ? new Date(manha[0].dt) : null;
+
+    // Madrugada = leitura mais próxima das 3h dentro de 00:00-05:00
+    const noite = leituras.filter(r => horaDe(r) < 5)
+      .sort((a,b) => Math.abs(horaDe(a)-3) - Math.abs(horaDe(b)-3));
+    const madrugada = noite.length ? noite[0].glicemia : null;
+
+    linhas.push({ data:d, jejum, jejumHora, madrugada, lentaManha, lentaExtra });
+  }
+  return linhas;
+}
+
+function renderGraficoJejum() {
+  const L = coletarJejum(_jejumDias);
+  const cfg = loadConfig();
+  const alvo = cfg.glicemiaAlvo || 180;
+  const tilesEl  = document.getElementById('jejum-tiles');
+  const avisosEl = document.getElementById('jejum-avisos');
+  const canvas   = document.getElementById('grafico-jejum');
+  if (!canvas) return;
+
+  const comJejum = L.filter(x => x.jejum != null);
+  if (!comJejum.length) {
+    if (chartJejumInst) { chartJejumInst.destroy(); chartJejumInst = null; }
+    tilesEl.innerHTML  = '';
+    avisosEl.innerHTML = '<div class="jejum-vazio">Sem medição de manhã (05h-11h) neste período.<br>' +
+                         'Meça ao acordar, antes de comer — é essa medida que ajusta a lenta.</div>';
+    return;
+  }
+
+  const SEM = ['dom','seg','ter','qua','qui','sex','sáb'];
+  // Rótulo em 2 linhas pra caber os 7 dias sem esconder nenhum
+  const labels = L.map(x => [ SEM[x.data.getDay()],
+    String(x.data.getDate()).padStart(2,'0') + '/' + String(x.data.getMonth()+1).padStart(2,'0') ]);
+
+  // ── Tiles de resumo ──
+  const ultimo   = comJejum[comJejum.length - 1];
+  const primeiro = comJejum[0];
+  const delta    = comJejum.length > 1 ? ultimo.jejum - primeiro.jejum : null;
+  const media    = Math.round(comJejum.reduce((s,x) => s + x.jejum, 0) / comJejum.length);
+  const corJ     = v => v < 70 ? '#ff4466' : v <= alvo ? '#00ff99' : v <= 250 ? '#ffaa00' : '#ff6633';
+
+  // Dose atual e há quantos dias ela não muda
+  const comDose = L.filter(x => x.lentaManha != null);
+  const doseAtual = comDose.length ? comDose[comDose.length-1].lentaManha : null;
+  let diasEstavel = null;
+  if (comDose.length) {
+    diasEstavel = 0;
+    for (let i = comDose.length - 1; i > 0; i--) {
+      if (comDose[i].lentaManha === comDose[i-1].lentaManha) diasEstavel++;
+      else break;
+    }
+  }
+
+  const setaTxt = delta == null ? '—' : (delta > 0 ? '+' : '') + delta;
+  const setaCor = delta == null ? '#667' : (delta < -10 ? '#00ff99' : delta > 10 ? '#ff6633' : '#ffaa00');
+
+  tilesEl.innerHTML =
+    '<div class="jejum-tile"><div class="jejum-tile-lab">Último jejum</div>' +
+      '<div class="jejum-tile-val" style="color:' + corJ(ultimo.jejum) + '">' + ultimo.jejum + '</div>' +
+      '<div class="jejum-tile-sub">' + SEM[ultimo.data.getDay()] + ' ' + String(ultimo.data.getDate()).padStart(2,'0') + '/' + String(ultimo.data.getMonth()+1).padStart(2,'0') + '</div></div>' +
+    '<div class="jejum-tile"><div class="jejum-tile-lab">No período</div>' +
+      '<div class="jejum-tile-val" style="color:' + setaCor + '">' + setaTxt + '</div>' +
+      '<div class="jejum-tile-sub">média ' + media + '</div></div>' +
+    '<div class="jejum-tile"><div class="jejum-tile-lab">Lenta hoje</div>' +
+      '<div class="jejum-tile-val" style="color:#cc44ff">' + (doseAtual != null ? doseAtual + ' U' : '—') + '</div>' +
+      '<div class="jejum-tile-sub">' + (diasEstavel == null ? 'sem dose' :
+         diasEstavel === 0 ? 'mudou hoje' : 'estável há ' + diasEstavel + 'd') + '</div></div>';
+
+  // ── Avisos dinâmicos ──
+  const av = [];
+  if (diasEstavel != null && diasEstavel < 3 && comDose.length > 1) {
+    av.push(['perigo','Dose ainda não estabilizou',
+      'A lenta mudou há ' + (diasEstavel === 0 ? 'menos de 1 dia' : diasEstavel + ' dia(s)') +
+      '. A glargina só chega no patamar novo em 2-3 dias — o jejum de hoje ainda é efeito da dose anterior. ' +
+      'Segure o aumento até completar 3 dias (regra 1).']);
+  }
+  const extrasRec = L.slice(-3).filter(x => x.lentaExtra > 0);
+  if (extrasRec.length) {
+    av.push(['perigo','Lenta extra fora da manhã',
+      extrasRec.length + ' dia(s) nos últimos 3 tiveram dose de lenta além da manhã (barra laranja). ' +
+      'Lenta não corrige pico agudo e é a maior causa de hipo de madrugada — use rápida pra isso (regra 3).']);
+  }
+  const semMadrugada = L.slice(-3).every(x => x.madrugada == null);
+  if (semMadrugada && diasEstavel != null && diasEstavel < 4) {
+    av.push(['atencao','Falta a medida de madrugada',
+      'Nenhuma leitura entre 00h e 05h nos últimos 3 dias, e a dose mudou faz pouco. ' +
+      'Sem a madrugada não dá pra saber se passou do ponto — o jejum das 8h já pode ter subido de volta (regra 4).']);
+  }
+  if (!av.length && comJejum.length > 1) {
+    av.push(['ok','Rota estável',
+      'Nenhum sinal de alerta no período: sem lenta extra, sem mudança de dose recente demais. ' +
+      'Siga comparando a manhã de hoje com a de 3 dias atrás.']);
+  }
+  avisosEl.innerHTML = av.map(a =>
+    '<div class="jejum-aviso jejum-aviso-' + a[0] + '"><div><b>' + a[1] + '</b>' + a[2] + '</div></div>').join('');
+
+  // ── Gráfico ──
+  if (chartJejumInst) chartJejumInst.destroy();
+  const maxU = Math.max(6, ...L.map(x => (x.lentaManha || 0) + (x.lentaExtra || 0)));
+
+  chartJejumInst = new Chart(canvas.getContext('2d'), {
+    data: {
+      labels,
+      datasets: [
+        { type:'bar', label:'Lenta manhã', yAxisID:'yU', order:4, stack:'basal',
+          data: L.map(x => x.lentaManha), backgroundColor:'#cc44ff55',
+          borderColor:'#cc44ff', borderWidth:1, borderRadius:3, barPercentage:0.5 },
+        { type:'bar', label:'Lenta extra', yAxisID:'yU', order:4, stack:'basal',
+          data: L.map(x => x.lentaExtra || null), backgroundColor:'#ff663366',
+          borderColor:'#ff6633', borderWidth:1, borderRadius:3, barPercentage:0.5 },
+        { type:'line', label:'Meta', yAxisID:'y', order:3,
+          data: L.map(() => alvo), borderColor:'#00ff9977', borderWidth:1.5,
+          borderDash:[6,4], pointRadius:0, fill:false },
+        // Só pontos: medição de madrugada é esparsa, ligar com linha inventaria tendência
+        { type:'line', label:'Madrugada', yAxisID:'y', order:1, showLine:false,
+          data: L.map(x => x.madrugada), fill:false,
+          pointRadius:5, pointStyle:'rectRot', pointBackgroundColor:'#ffaa00',
+          pointBorderColor:'#080818', pointBorderWidth:1.5 },
+        { type:'line', label:'Jejum', yAxisID:'y', order:0,
+          data: L.map(x => x.jejum), borderColor:'#00e5ff', borderWidth:2.5,
+          spanGaps:true, tension:0.3, fill:false, pointRadius:5, pointHoverRadius:7,
+          pointBorderColor:'#080818', pointBorderWidth:2,
+          pointBackgroundColor: L.map(x => x.jejum == null ? '#000' : corJ(x.jejum)) }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins: {
+        legend:{ display:false },
+        tooltip:{
+          callbacks:{
+            label: ctx => {
+              const v = ctx.parsed.y;
+              if (v == null) return null;
+              if (ctx.dataset.label === 'Meta') return null;
+              if (ctx.dataset.yAxisID === 'yU') return ' ' + ctx.dataset.label + ': ' + v + ' U';
+              const zona = v < 70 ? 'hipo' : v <= alvo ? 'na meta' : v <= 250 ? 'acima' : 'muito alta';
+              return ' ' + ctx.dataset.label + ': ' + v + ' mg/dL (' + zona + ')';
+            }
+          }
+        }
+      },
+      scales: {
+        x:  { stacked:true, ticks:{ color:'#666', font:{ size:9 }, maxRotation:0, autoSkip:_jejumDias > 10 },
+              grid:{ color:'#1a1a3a' } },
+        y:  { position:'left', min:40, suggestedMax:300,
+              ticks:{ color:'#666', font:{ size:10 }, callback:v => v },
+              grid:{ color:'#1a1a3a' },
+              title:{ display:true, text:'mg/dL — jejum', color:'#00e5ff99', font:{ size:10 } } },
+        // Escala das barras propositalmente "folgada" (~2x) pra elas ficarem
+        // na metade de baixo e não taparem a linha do jejum.
+        yU: { position:'right', stacked:true, min:0, suggestedMax:Math.ceil(maxU*1.9/10)*10,
+              ticks:{ color:'#666', font:{ size:10 }, stepSize:maxU <= 20 ? 5 : 10, callback:v => v + 'U' },
+              grid:{ display:false },
+              title:{ display:true, text:'unidades', color:'#cc44ff99', font:{ size:10 } } }
+      }
+    }
+  });
 }
 
 // ── HISTÓRICO ──
