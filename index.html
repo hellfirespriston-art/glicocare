@@ -868,6 +868,7 @@
       <span><i style="background:#00e5ff"></i>Jejum</span>
       <span><i style="background:#ffaa00"></i>Madrugada</span>
       <span><i style="background:#cc44ff"></i>Lenta manhã</span>
+      <span><i style="background:#3399ff"></i>Lenta noite</span>
       <span><i style="background:#ff6633"></i>Lenta extra</span>
     </div>
 
@@ -2575,10 +2576,17 @@ function coletarJejum(nDias) {
       .filter(r => { const t = new Date(r.dt).getTime(); return t >= ini && t < fim; })
       .sort((a,b) => new Date(a.dt) - new Date(b.dt));
 
-    // Doses de lenta efetivamente aplicadas no dia
+    // Doses de lenta efetivamente aplicadas no dia, por janela de horário:
+    // manhã (4h-12h) e noite (17h-24h) são esquema regular (ex.: BID 12+12);
+    // qualquer coisa fora dessas janelas é correção fora de hora ("extra").
     const doses = doDia.filter(r => r.aplicou && (r.lenta || 0) > 0);
-    const lentaManha = doses.length ? doses[0].lenta : null;
-    const lentaExtra = doses.slice(1).reduce((s,r) => s + (r.lenta || 0), 0);
+    let lentaManha = null, lentaNoite = null, lentaExtra = 0;
+    doses.forEach(r => {
+      const h = horaDe(r);
+      if (h >= 4 && h < 12)       lentaManha = (lentaManha || 0) + r.lenta;
+      else if (h >= 17 && h < 24) lentaNoite = (lentaNoite || 0) + r.lenta;
+      else                        lentaExtra += r.lenta;
+    });
 
     const leituras = doDia.filter(r => r.glicemia > 0);
 
@@ -2592,7 +2600,7 @@ function coletarJejum(nDias) {
       .sort((a,b) => Math.abs(horaDe(a)-3) - Math.abs(horaDe(b)-3));
     const madrugada = noite.length ? noite[0].glicemia : null;
 
-    linhas.push({ data:d, jejum, jejumHora, madrugada, lentaManha, lentaExtra });
+    linhas.push({ data:d, jejum, jejumHora, madrugada, lentaManha, lentaNoite, lentaExtra });
   }
   return linhas;
 }
@@ -2627,14 +2635,16 @@ function renderGraficoJejum() {
   const media    = Math.round(comJejum.reduce((s,x) => s + x.jejum, 0) / comJejum.length);
   const corJ     = v => v < 70 ? '#ff4466' : v <= alvo ? '#00ff99' : v <= 250 ? '#ffaa00' : '#ff6633';
 
-  // Dose atual e há quantos dias ela não muda
-  const comDose = L.filter(x => x.lentaManha != null);
-  const doseAtual = comDose.length ? comDose[comDose.length-1].lentaManha : null;
+  // Dose atual (basal total do dia = manhã + noite) e há quantos dias ela não muda
+  const totalBasal = x => (x.lentaManha || 0) + (x.lentaNoite || 0);
+  const comDose = L.filter(x => x.lentaManha != null || x.lentaNoite != null);
+  const doseAtual = comDose.length ? totalBasal(comDose[comDose.length-1]) : null;
+  const ehBID = comDose.length && comDose[comDose.length-1].lentaNoite != null;
   let diasEstavel = null;
   if (comDose.length) {
     diasEstavel = 0;
     for (let i = comDose.length - 1; i > 0; i--) {
-      if (comDose[i].lentaManha === comDose[i-1].lentaManha) diasEstavel++;
+      if (totalBasal(comDose[i]) === totalBasal(comDose[i-1])) diasEstavel++;
       else break;
     }
   }
@@ -2652,7 +2662,7 @@ function renderGraficoJejum() {
     '<div class="jejum-tile"><div class="jejum-tile-lab">Lenta hoje</div>' +
       '<div class="jejum-tile-val" style="color:#cc44ff">' + (doseAtual != null ? doseAtual + ' U' : '—') + '</div>' +
       '<div class="jejum-tile-sub">' + (diasEstavel == null ? 'sem dose' :
-         diasEstavel === 0 ? 'mudou hoje' : 'estável há ' + diasEstavel + 'd') + '</div></div>';
+         (ehBID ? '2x/dia · ' : '') + (diasEstavel === 0 ? 'mudou hoje' : 'estável há ' + diasEstavel + 'd')) + '</div></div>';
 
   // ── Avisos dinâmicos ──
   const av = [];
@@ -2664,8 +2674,8 @@ function renderGraficoJejum() {
   }
   const extrasRec = L.slice(-3).filter(x => x.lentaExtra > 0);
   if (extrasRec.length) {
-    av.push(['perigo','Lenta extra fora da manhã',
-      extrasRec.length + ' dia(s) nos últimos 3 tiveram dose de lenta além da manhã (barra laranja). ' +
+    av.push(['perigo','Lenta fora do horário programado',
+      extrasRec.length + ' dia(s) nos últimos 3 tiveram dose de lenta fora das janelas manhã/noite (barra laranja). ' +
       'Lenta não corrige pico agudo e é a maior causa de hipo de madrugada — use rápida pra isso (regra 3).']);
   }
   const semMadrugada = L.slice(-3).every(x => x.madrugada == null);
@@ -2684,7 +2694,7 @@ function renderGraficoJejum() {
 
   // ── Gráfico ──
   if (chartJejumInst) chartJejumInst.destroy();
-  const maxU = Math.max(6, ...L.map(x => (x.lentaManha || 0) + (x.lentaExtra || 0)));
+  const maxU = Math.max(6, ...L.map(x => (x.lentaManha || 0) + (x.lentaNoite || 0) + (x.lentaExtra || 0)));
 
   chartJejumInst = new Chart(canvas.getContext('2d'), {
     data: {
@@ -2693,6 +2703,9 @@ function renderGraficoJejum() {
         { type:'bar', label:'Lenta manhã', yAxisID:'yU', order:4, stack:'basal',
           data: L.map(x => x.lentaManha), backgroundColor:'#cc44ff55',
           borderColor:'#cc44ff', borderWidth:1, borderRadius:3, barPercentage:0.5 },
+        { type:'bar', label:'Lenta noite', yAxisID:'yU', order:4, stack:'basal',
+          data: L.map(x => x.lentaNoite), backgroundColor:'#3399ff55',
+          borderColor:'#3399ff', borderWidth:1, borderRadius:3, barPercentage:0.5 },
         { type:'bar', label:'Lenta extra', yAxisID:'yU', order:4, stack:'basal',
           data: L.map(x => x.lentaExtra || null), backgroundColor:'#ff663366',
           borderColor:'#ff6633', borderWidth:1, borderRadius:3, barPercentage:0.5 },
