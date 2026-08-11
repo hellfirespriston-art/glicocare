@@ -694,7 +694,7 @@
 <!-- MODAL INSULINA LENTA (global — fora das tabs para funcionar em qualquer aba) -->
 <div class="lenta-modal" id="lenta-modal">
   <div class="lenta-modal-box">
-    <div class="lenta-modal-title">Insulina da Manhã</div>
+    <div class="lenta-modal-title" id="lenta-modal-title">Insulina da Manhã</div>
     <div class="lenta-modal-sub">Qual foi a medição antes de aplicar?</div>
     <div class="gc-roleta" style="border-color:#00ff99;margin-bottom:6px;">
       <span class="gc-roleta-seta" style="color:#00ff99;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-lenta-glicemia',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
@@ -705,7 +705,7 @@
     <div class="lenta-modal-sub">Quantas unidades você vai aplicar?</div>
     <div class="gc-roleta" style="border-color:#cc44ff;margin-bottom:6px;">
       <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-lenta-modal',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
-      <input type="number" id="inp-lenta-modal" class="gc-roleta-valor" data-inicial="20" value="20" min="0" max="80" step="1"/>
+      <input type="number" id="inp-lenta-modal" class="gc-roleta-valor" data-inicial="10" value="10" min="0" max="80" step="1"/>
       <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-lenta-modal',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
     </div>
     <div class="gc-roleta-unidade" style="color:#cc44ff;">u</div>
@@ -713,14 +713,14 @@
       <div class="lenta-rapida-label">Insulina rápida também?</div>
       <div class="gc-roleta" style="border-color:#00e5ff;margin-bottom:6px;">
         <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-rapida-junto',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
-        <input type="number" id="inp-rapida-junto" class="gc-roleta-valor" data-inicial="5" value="5" min="0" max="80" step="1"/>
+        <input type="number" id="inp-rapida-junto" class="gc-roleta-valor" data-inicial="0" value="0" min="0" max="80" step="1"/>
         <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-rapida-junto',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
       </div>
       <div class="gc-roleta-unidade" style="color:#00e5ff;">u rápida</div>
     </div>
     <div class="lenta-btn-row">
       <button class="btn-lenta-confirmar" onclick="confirmarLentaModal()">✅ Aplicar agora</button>
-      <button class="btn-lenta-pular" onclick="pularLentaModal()">Não vou tomar hoje</button>
+      <button class="btn-lenta-pular" onclick="pularLentaModal()">Não vou tomar agora</button>
     </div>
   </div>
 </div>
@@ -1044,7 +1044,7 @@
       </div>
       <div class="config-row">
         <div class="config-label">Dose basal diária
-          <small>Pré-preenchida no aviso matinal da lenta</small>
+          <small>Referência prescrita, usada como dose sugerida no histórico. O aviso já abre com 10 U.</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <div class="gc-roleta gc-roleta-mini" style="border-color:#cc44ff;">
@@ -1069,13 +1069,13 @@
         </div>
       </div>
       <div class="config-row">
-        <div class="config-label">Hora do aviso diário
-          <small>App pergunta sobre a lenta uma vez por dia a partir desse horário</small>
+        <div class="config-label">Hora do aviso da manhã
+          <small>App pergunta sobre a lenta da manhã a partir desse horário. O aviso da noite é fixo às 20h.</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <div class="gc-roleta gc-roleta-mini" style="border-color:#667788;">
             <span class="gc-roleta-seta" style="color:#ccc;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-hora-reset-lenta',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
-            <input type="number" class="gc-roleta-valor" id="cfg-hora-reset-lenta" data-inicial="7" value="7" min="0" max="23" step="1" style="color:#ccc;"/>
+            <input type="number" class="gc-roleta-valor" id="cfg-hora-reset-lenta" data-inicial="8" value="8" min="0" max="23" step="1" style="color:#ccc;"/>
             <span class="gc-roleta-seta" style="color:#ccc;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-hora-reset-lenta',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
           </div>
           <span style="color:#aaa;font-size:0.9rem;">h</span>
@@ -1417,8 +1417,12 @@ function mostrarSeletorPerfil() {
 }
 
 // ── CONFIG ──
+// ponytail: hora da noite e padroes do aviso sao valores fixos; viram config se ele pedir.
+const HORA_LENTA_NOITE   = 20;  // 09/08/2026: segundo aviso de lenta, as 20h
+const LENTA_PADRAO_U     = 10;  // o aviso ja abre com 10 U de lenta
+const RAPIDA_JUNTO_PADRAO_U = 0;// e 0 de rapida
 function loadConfig() {
-  const def = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false, horaResetLenta: 7, doseRefeicao: 5 };
+  const def = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false, horaResetLenta: 8, doseRefeicao: 5 };
   return Object.assign(def, JSON.parse(localStorage.getItem('gc_cfg_' + activeProfileId()) || '{}'));
 }
 function saveConfig(cfg) { localStorage.setItem('gc_cfg_' + activeProfileId(), JSON.stringify(cfg)); }
@@ -1441,8 +1445,8 @@ function initConfig() {
   document.getElementById('cfg-aprendizado-info').style.display = cfg.autoAprendizado ? 'block' : 'none';
   document.getElementById('cfg-hora-reset-lenta').value = cfg.horaResetLenta;
   document.getElementById('cfg-dose-refeicao').value    = cfg.doseRefeicao ?? 5;
-  document.getElementById('inp-lenta-modal').value = cfg.doseLenta;
-  document.getElementById('inp-rapida-junto').value = cfg.doseRefeicao ?? 5;
+  document.getElementById('inp-lenta-modal').value = LENTA_PADRAO_U;
+  document.getElementById('inp-rapida-junto').value = RAPIDA_JUNTO_PADRAO_U;
 }
 
 function simularDados() {
@@ -1783,11 +1787,25 @@ function gcRoletaParar() {
   clearTimeout(_gcRoletaTimer);
 }
 
+// ── LENTA: DOIS AVISOS POR DIA (09/08/2026) ──
+// Manha (horaResetLenta) e noite (HORA_LENTA_NOITE). A trava continua sendo UMA
+// chave so, gc_lenta_<perfil>, agora guardando "<data>|<turno>" — assim todos os
+// limpadores que ja conheciam essa chave seguem valendo sem saber de turno.
+function turnoLentaAgora(d) { return (d || new Date()).getHours() >= HORA_LENTA_NOITE ? 'noite' : 'manha'; }
+function chaveLenta()      { return 'gc_lenta_' + activeProfileId(); }
+function marcaLenta(turno) { return new Date().toDateString() + '|' + turno; }
+
+function prepararModalLenta() {
+  const turno = turnoLentaAgora();
+  document.getElementById('inp-lenta-modal').value   = LENTA_PADRAO_U;
+  document.getElementById('inp-lenta-glicemia').value = '';
+  document.getElementById('inp-rapida-junto').value  = RAPIDA_JUNTO_PADRAO_U;
+  document.getElementById('lenta-modal-title').textContent = turno === 'noite' ? 'Insulina da Noite' : 'Insulina da Manhã';
+}
+
 // ── LENTA DO DIA (botão histórico) ──
 function abrirLentaDoDia() {
-  document.getElementById('inp-lenta-modal').value = loadConfig().doseLenta;
-  document.getElementById('inp-lenta-glicemia').value = '';
-  document.getElementById('inp-rapida-junto').value = 5;
+  prepararModalLenta();
   document.getElementById('lenta-modal').classList.add('show');
 }
 
@@ -1795,21 +1813,20 @@ function atualizarBtnLentaDia() {
   const btn = document.getElementById('lenta-dia-btn');
   const status = document.getElementById('lenta-dia-status');
   if (!btn || !status) return;
-  const hoje = new Date().toDateString();
-  const visto = localStorage.getItem('gc_lenta_' + activeProfileId());
+  const respondeu = localStorage.getItem(chaveLenta()) === marcaLenta(turnoLentaAgora());
   // Soma TODAS as aplicacoes de lenta de hoje (20/07/2026) — antes mostrava
   // so a ultima, o que escondia a dose da manha quando havia uma segunda a noite.
   const inicioHoje = new Date(); inicioHoje.setHours(0,0,0,0);
   const dose = loadData()
     .filter(r => r._tipo === 'insulina lenta' && new Date(r.dt) >= inicioHoje)
     .reduce((s, r) => s + (r.lenta || 0), 0);
-  if (visto === hoje && dose > 0) {
+  if (respondeu && dose > 0) {
     status.textContent = `${doseTxt(dose)} U aplicada ✅ — toque para corrigir`;
     btn.style.borderColor = '#00ff9966';
     btn.style.background = 'linear-gradient(135deg,#001a0d,#000d06)';
     btn.style.color = '#00ff99';
-  } else if (visto === hoje && dose === 0) {
-    status.textContent = 'Não tomada hoje — toque para corrigir';
+  } else if (respondeu && dose === 0) {
+    status.textContent = 'Não tomada — toque para corrigir';
     btn.style.borderColor = '#ffaa0066';
     btn.style.background = 'linear-gradient(135deg,#1a1200,#0d0900)';
     btn.style.color = '#ffaa00';
@@ -1821,16 +1838,14 @@ function atualizarBtnLentaDia() {
   }
 }
 
-// ── INSULINA LENTA MATINAL ──
+// ── INSULINA LENTA: AVISO DA MANHÃ E DA NOITE ──
 function verificarLentaMatinal() {
-  const agora = new Date();
-  const hoje = new Date().toDateString();
-  const visto = localStorage.getItem('gc_lenta_' + activeProfileId());
-  if (visto === hoje) return;          // já respondeu hoje
-  if (agora.getHours() < loadConfig().horaResetLenta) return; // só libera a partir da hora configurada
+  const turno = turnoLentaAgora();
+  // antes da hora da manha nao pergunta nada; depois das 20h o turno ja virou noite
+  if (turno === 'manha' && new Date().getHours() < loadConfig().horaResetLenta) return;
+  if (localStorage.getItem(chaveLenta()) === marcaLenta(turno)) return; // já respondeu neste turno
 
-  document.getElementById('inp-lenta-glicemia').value = '';
-  document.getElementById('inp-rapida-junto').value = 5;
+  prepararModalLenta();
   document.getElementById('lenta-modal').classList.add('show');
 }
 
@@ -1838,8 +1853,7 @@ function confirmarLentaModal() {
   const dose = parseFloat(document.getElementById('inp-lenta-modal').value) || 0;
   const glicemiaLenta = parseFloat(document.getElementById('inp-lenta-glicemia').value) || null;
   const doseRapidaJunto = parseFloat(document.getElementById('inp-rapida-junto').value) || 0;
-  const hoje = new Date().toDateString();
-  localStorage.setItem('gc_lenta_' + activeProfileId(), hoje);
+  localStorage.setItem(chaveLenta(), marcaLenta(turnoLentaAgora()));
   localStorage.setItem('gc_lentadose_' + activeProfileId(), dose);
   document.getElementById('lenta-modal').classList.remove('show');
 
@@ -1854,8 +1868,7 @@ function confirmarLentaModal() {
     // Registra automaticamente com o horário do clique (hora local)
     const agora = new Date();
     const dtStr = new Date(agora.getTime() - agora.getTimezoneOffset()*60000).toISOString().slice(0,16);
-    const cfgL = loadConfig();
-    dados.push({ id: Date.now(), dt: dtStr, glicemia: glicemiaLenta, rapida: doseRapidaJunto, lenta: dose, sugLenta: cfgL.doseLenta||20, aplicou: true, sugRapida: null, _tipo: 'insulina lenta' });
+    dados.push({ id: Date.now(), dt: dtStr, glicemia: glicemiaLenta, rapida: doseRapidaJunto, lenta: dose, sugLenta: LENTA_PADRAO_U, aplicou: true, sugRapida: null, _tipo: 'insulina lenta' });
   }
 
   dados.sort((a,b) => new Date(a.dt) - new Date(b.dt));
@@ -1866,8 +1879,7 @@ function confirmarLentaModal() {
 }
 
 function pularLentaModal() {
-  const hoje = new Date().toDateString();
-  localStorage.setItem('gc_lenta_' + activeProfileId(), hoje);
+  localStorage.setItem(chaveLenta(), marcaLenta(turnoLentaAgora()));
   localStorage.setItem('gc_lentadose_' + activeProfileId(), 0);
   document.getElementById('lenta-modal').classList.remove('show');
   atualizarBtnLentaDia();
@@ -1875,7 +1887,7 @@ function pularLentaModal() {
 
 // Ao carregar: atualiza dose, botão e verifica se modal de lenta deve aparecer
 setTimeout(() => {
-  document.getElementById('inp-lenta-modal').value = loadConfig().doseLenta;
+  document.getElementById('inp-lenta-modal').value = LENTA_PADRAO_U;
   atualizarBtnLentaDia();
   verificarLentaMatinal();
 }, 500);
