@@ -705,7 +705,7 @@
     <div class="lenta-modal-sub">Quantas unidades você vai aplicar?</div>
     <div class="gc-roleta" style="border-color:#cc44ff;margin-bottom:6px;">
       <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-lenta-modal',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
-      <input type="number" id="inp-lenta-modal" class="gc-roleta-valor" data-inicial="10" value="10" min="0" max="80" step="1"/>
+      <input type="number" id="inp-lenta-modal" class="gc-roleta-valor" data-inicial="25" value="25" min="0" max="80" step="1"/>
       <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('inp-lenta-modal',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
     </div>
     <div class="gc-roleta-unidade" style="color:#cc44ff;">u</div>
@@ -1044,12 +1044,12 @@
       </div>
       <div class="config-row">
         <div class="config-label">Dose basal diária
-          <small>Referência prescrita, usada como dose sugerida no histórico. O aviso já abre com 10 U.</small>
+          <small>Referência prescrita, usada como dose sugerida no histórico. O aviso já abre com 25 U.</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <div class="gc-roleta gc-roleta-mini" style="border-color:#cc44ff;">
             <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-lenta',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
-            <input type="number" class="gc-roleta-valor" id="cfg-dose-lenta" data-inicial="20" value="20" min="1" max="80" step="1" style="color:#cc44ff;"/>
+            <input type="number" class="gc-roleta-valor" id="cfg-dose-lenta" data-inicial="25" value="25" min="1" max="80" step="1" style="color:#cc44ff;"/>
             <span class="gc-roleta-seta" style="color:#cc44ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-lenta',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
           </div>
           <span style="color:#cc44ff;font-weight:700;font-size:0.9rem;">U</span>
@@ -1062,7 +1062,7 @@
         <div style="display:flex;align-items:center;gap:6px;">
           <div class="gc-roleta gc-roleta-mini" style="border-color:#00e5ff;">
             <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-refeicao',-1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">‹</span>
-            <input type="number" class="gc-roleta-valor" id="cfg-dose-refeicao" data-inicial="5" value="5" min="1" max="30" step="1" style="color:#00e5ff;"/>
+            <input type="number" class="gc-roleta-valor" id="cfg-dose-refeicao" data-inicial="6" value="6" min="1" max="30" step="1" style="color:#00e5ff;"/>
             <span class="gc-roleta-seta" style="color:#00e5ff;" onpointerdown="event.preventDefault();gcRoletaIniciar('cfg-dose-refeicao',1)" onpointerup="gcRoletaParar()" onpointerleave="gcRoletaParar()" onpointercancel="gcRoletaParar()">›</span>
           </div>
           <span style="color:#aaa;font-size:0.9rem;">U</span>
@@ -1070,7 +1070,7 @@
       </div>
       <div class="config-row">
         <div class="config-label">Hora do aviso da manhã
-          <small>App pergunta sobre a lenta da manhã a partir desse horário. O aviso da noite é fixo às 20h.</small>
+          <small>App pergunta sobre a lenta da manhã a partir desse horário. É o único aviso do dia.</small>
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
           <div class="gc-roleta gc-roleta-mini" style="border-color:#667788;">
@@ -1357,7 +1357,7 @@ function criarPerfil() {
   perfis.push({ id: pid, name: nome, alvo });
   savePerfis(perfis);
   // config inicial com o alvo informado
-  const cfgDef = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: alvo, fatorSens: 40, autoAprendizado: false };
+  const cfgDef = { insulinaTipo: 24, doseLenta: 25, glicemiaAlvo: alvo, fatorSens: 40, autoAprendizado: false };
   localStorage.setItem('gc_cfg_' + pid, JSON.stringify(cfgDef));
   document.getElementById('criar-perfil-modal').classList.remove('show');
   selecionarPerfil(pid);
@@ -1417,12 +1417,11 @@ function mostrarSeletorPerfil() {
 }
 
 // ── CONFIG ──
-// ponytail: hora da noite e padroes do aviso sao valores fixos; viram config se ele pedir.
-const HORA_LENTA_NOITE   = 20;  // 09/08/2026: segundo aviso de lenta, as 20h
-const LENTA_PADRAO_U     = 10;  // o aviso ja abre com 10 U de lenta
+// 20/08/2026: aviso da noite REMOVIDO — a lenta agora e so de manha (25 U/dia).
+const LENTA_PADRAO_U     = 25;  // o aviso ja abre com 25 U de lenta
 const RAPIDA_JUNTO_PADRAO_U = 0;// e 0 de rapida
 function loadConfig() {
-  const def = { insulinaTipo: 24, doseLenta: 20, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false, horaResetLenta: 8, doseRefeicao: 5 };
+  const def = { insulinaTipo: 24, doseLenta: 25, glicemiaAlvo: 200, fatorSens: 40, autoAprendizado: false, horaResetLenta: 8, doseRefeicao: 6 };
   return Object.assign(def, JSON.parse(localStorage.getItem('gc_cfg_' + activeProfileId()) || '{}'));
 }
 function saveConfig(cfg) { localStorage.setItem('gc_cfg_' + activeProfileId(), JSON.stringify(cfg)); }
@@ -1430,7 +1429,7 @@ function saveConfig(cfg) { localStorage.setItem('gc_cfg_' + activeProfileId(), J
 function getFatorSensAtual() { return loadConfig().fatorSens; }
 function getDurLenta()       { return loadConfig().insulinaTipo; }
 function getGlicemiaAlvo()   { return loadConfig().glicemiaAlvo; }
-function getDoseRefeicao()   { return loadConfig().doseRefeicao ?? 5; }
+function getDoseRefeicao()   { return loadConfig().doseRefeicao ?? 6; }
 
 function initConfig() {
   const cfg = loadConfig();
@@ -1444,7 +1443,7 @@ function initConfig() {
   document.getElementById('cfg-badge-auto').className      = 'config-badge ' + (cfg.autoAprendizado ? 'badge-auto' : 'badge-manual');
   document.getElementById('cfg-aprendizado-info').style.display = cfg.autoAprendizado ? 'block' : 'none';
   document.getElementById('cfg-hora-reset-lenta').value = cfg.horaResetLenta;
-  document.getElementById('cfg-dose-refeicao').value    = cfg.doseRefeicao ?? 5;
+  document.getElementById('cfg-dose-refeicao').value    = cfg.doseRefeicao ?? 6;
   document.getElementById('inp-lenta-modal').value = LENTA_PADRAO_U;
   document.getElementById('inp-rapida-junto').value = RAPIDA_JUNTO_PADRAO_U;
 }
@@ -1462,7 +1461,7 @@ function simularDados() {
       dados.push({ id: dt.getTime()+idx, dt: dt.toISOString().slice(0,16), glicemia: g, rapida: idx===0?0:Math.round(4+Math.random()*4), lenta:0, aplicou: idx!==0, sugRapida:5 });
     });
     const dl = new Date(now - d*86400000); dl.setHours(7,5,0,0);
-    dados.push({ id:dl.getTime()+99, dt:dl.toISOString().slice(0,16), glicemia:null, rapida:0, lenta:cfg.doseLenta||20, sugLenta:cfg.doseLenta||20, aplicou:true, sugRapida:null, _tipo:'insulina lenta' });
+    dados.push({ id:dl.getTime()+99, dt:dl.toISOString().slice(0,16), glicemia:null, rapida:0, lenta:cfg.doseLenta||25, sugLenta:cfg.doseLenta||25, aplicou:true, sugRapida:null, _tipo:'insulina lenta' });
   }
   saveData(dados);
   atualizarStatusBar();
@@ -1495,12 +1494,12 @@ function limparDados() {
 function salvarConfig() {
   const cfg = loadConfig();
   cfg.insulinaTipo   = parseInt(document.getElementById('cfg-insulina-tipo').value);
-  cfg.doseLenta      = parseFloat(document.getElementById('cfg-dose-lenta').value) || 20;
+  cfg.doseLenta      = parseFloat(document.getElementById('cfg-dose-lenta').value) || 25;
   cfg.glicemiaAlvo   = parseFloat(document.getElementById('cfg-glicemia-alvo').value) || 200;
   if (!cfg.autoAprendizado) cfg.fatorSens = parseFloat(document.getElementById('cfg-fator-manual').value) || 40;
   cfg.autoAprendizado    = document.getElementById('cfg-auto-aprendizado').checked;
   cfg.horaResetLenta     = parseInt(document.getElementById('cfg-hora-reset-lenta').value) || 7;
-  cfg.doseRefeicao       = parseFloat(document.getElementById('cfg-dose-refeicao').value) || 5;
+  cfg.doseRefeicao       = parseFloat(document.getElementById('cfg-dose-refeicao').value) || 6;
   saveConfig(cfg);
   document.getElementById('cfg-fator-display').textContent = Math.round(cfg.fatorSens);
   const msg = document.getElementById('cfg-salvo-msg');
@@ -1787,20 +1786,19 @@ function gcRoletaParar() {
   clearTimeout(_gcRoletaTimer);
 }
 
-// ── LENTA: DOIS AVISOS POR DIA (09/08/2026) ──
-// Manha (horaResetLenta) e noite (HORA_LENTA_NOITE). A trava continua sendo UMA
-// chave so, gc_lenta_<perfil>, agora guardando "<data>|<turno>" — assim todos os
-// limpadores que ja conheciam essa chave seguem valendo sem saber de turno.
-function turnoLentaAgora(d) { return (d || new Date()).getHours() >= HORA_LENTA_NOITE ? 'noite' : 'manha'; }
+// ── LENTA: UM AVISO POR DIA, SO DE MANHA (20/08/2026) ──
+// O turno da noite (09/08/2026) foi removido a pedido do SgarD: a lenta da mae
+// agora e 25 U uma vez ao dia, de manha. turnoLentaAgora() ficou fixo em 'manha'
+// pra chave gc_lenta_<perfil> ("<data>|manha") continuar valendo sem migracao.
+function turnoLentaAgora() { return 'manha'; }
 function chaveLenta()      { return 'gc_lenta_' + activeProfileId(); }
 function marcaLenta(turno) { return new Date().toDateString() + '|' + turno; }
 
 function prepararModalLenta() {
-  const turno = turnoLentaAgora();
   document.getElementById('inp-lenta-modal').value   = LENTA_PADRAO_U;
   document.getElementById('inp-lenta-glicemia').value = '';
   document.getElementById('inp-rapida-junto').value  = RAPIDA_JUNTO_PADRAO_U;
-  document.getElementById('lenta-modal-title').textContent = turno === 'noite' ? 'Insulina da Noite' : 'Insulina da Manhã';
+  document.getElementById('lenta-modal-title').textContent = 'Insulina da Manhã';
 }
 
 // ── LENTA DO DIA (botão histórico) ──
@@ -1838,12 +1836,11 @@ function atualizarBtnLentaDia() {
   }
 }
 
-// ── INSULINA LENTA: AVISO DA MANHÃ E DA NOITE ──
+// ── INSULINA LENTA: AVISO SO DE MANHA ──
 function verificarLentaMatinal() {
-  const turno = turnoLentaAgora();
-  // antes da hora da manha nao pergunta nada; depois das 20h o turno ja virou noite
-  if (turno === 'manha' && new Date().getHours() < loadConfig().horaResetLenta) return;
-  if (localStorage.getItem(chaveLenta()) === marcaLenta(turno)) return; // já respondeu neste turno
+  // antes da hora da manha nao pergunta nada
+  if (new Date().getHours() < loadConfig().horaResetLenta) return;
+  if (localStorage.getItem(chaveLenta()) === marcaLenta(turnoLentaAgora())) return; // já respondeu hoje
 
   prepararModalLenta();
   document.getElementById('lenta-modal').classList.add('show');

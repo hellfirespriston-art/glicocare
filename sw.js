@@ -5,7 +5,8 @@
 // 22/07/2026 00:35 - v8: as bibliotecas do grafico e do PDF sairam do CDN e agora sao
 // arquivos daqui de dentro, entao entram na lista de coisas guardadas pra usar offline.
 // 22/07/2026 01:25 - v9: dose de insulina virou numero inteiro (index.html).
-const CACHE = 'glicocare-v9';
+// 20/08/2026 - v10: aviso da lenta so de manha (25 U); rapida da refeicao 6 U (index.html).
+const CACHE = 'glicocare-v10';
 const ASSETS = ['/', '/index.html', '/img/bg.jpg', '/manifest.json', '/img/icon.png',
   '/vendor/chart.min.js', '/vendor/jspdf.umd.min.js', '/vendor/jspdf.plugin.autotable.min.js'];
 
