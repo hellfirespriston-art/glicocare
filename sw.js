@@ -6,6 +6,7 @@
 // arquivos daqui de dentro, entao entram na lista de coisas guardadas pra usar offline.
 // 22/07/2026 01:25 - v9: dose de insulina virou numero inteiro (index.html).
 // 20/08/2026 - v10: aviso da lenta so de manha (25 U); rapida da refeicao 6 U (index.html).
+// 21/09/2026: limpeza so apaga caches 'glicocare-*' pra nao apagar o cache do GlicoCare Facil (/facil/).
 const CACHE = 'glicocare-v10';
 const ASSETS = ['/', '/index.html', '/img/bg.jpg', '/manifest.json', '/img/icon.png',
   '/vendor/chart.min.js', '/vendor/jspdf.umd.min.js', '/vendor/jspdf.plugin.autotable.min.js'];
@@ -19,7 +20,7 @@ self.addEventListener('activate', e => {
   // limpa caches antigos (glicocare-v1 etc) pra nao acumular lixo
   e.waitUntil(
     caches.keys().then(keys => Promise.all(
-      keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+      keys.filter(k => k.startsWith('glicocare-') && k !== CACHE).map(k => caches.delete(k))
     )).then(() => self.clients.claim())
   );
 });

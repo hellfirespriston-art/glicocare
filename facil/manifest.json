@@ -1,0 +1,16 @@
+{
+  "id": "/facil/",
+  "name": "GlicoCare Fácil",
+  "short_name": "Glico Fácil",
+  "description": "Anotar glicemia e insulina com botões grandes",
+  "start_url": "/facil/",
+  "scope": "/facil/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d17",
+  "theme_color": "#0b0d17",
+  "icons": [
+    { "src": "/facil/icon.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/facil/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

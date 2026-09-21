@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GlicoCare Fácil</title>
+<link rel="manifest" href="/facil/manifest.json">
+<meta name="theme-color" content="#0b0d17">
+<link rel="apple-touch-icon" href="/facil/icon.png">
+<!-- GlicoCare Fácil: versão simplificada pra quem enxerga pouco. Mora no MESMO site do
+     GlicoCare completo, então lê e grava os MESMOS registros (localStorage gc_*): os dois
+     apps enxergam tudo, e a sincronização com o painel da mãe continua igual. -->
+<style>
+:root{
+  --bg:#0b0d17; --card:#171b2e; --card2:#232a45; --linha:#343c62;
+  --txt:#ffffff; --sub:#cdd3e6; --fraco:#8f97b3;
+  --verde:#2fe07c; --azul:#3cc8ff; --roxo:#c77dff; --laranja:#ffb020; --vermelho:#ff4d5e; --verm2:#ff6a3d;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--txt)}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:20px;line-height:1.35;min-height:100dvh;-webkit-user-select:none;user-select:none}
+button{font-family:inherit;cursor:pointer;border:0}
+b{font-weight:900}
+.tela{display:none;flex-direction:column;gap:12px;min-height:100dvh;padding:14px 16px calc(20px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto}
+.tela.ativa{display:flex}
+.centro{text-align:center}
+.col{display:flex;flex-direction:column;gap:14px}
+
+.cab{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:2px 4px}
+.cab-data{font-size:1.05rem;color:var(--sub);font-weight:700}
+.cab-hora{font-size:1.9rem;font-weight:900;font-variant-numeric:tabular-nums}
+.topo{display:flex;align-items:center;gap:12px;min-height:62px}
+.voltar{flex:0 0 auto;white-space:nowrap;background:var(--card2);color:var(--txt);font-size:1.2rem;font-weight:800;padding:12px 20px;border-radius:16px;min-height:60px;border:2px solid var(--linha)}
+.titulo{font-size:1.3rem;font-weight:900;letter-spacing:.02em}
+
+.cartao{background:var(--card);border-radius:24px;padding:12px 14px;text-align:center;border:4px solid var(--linha)}
+.rot{font-size:1.05rem;font-weight:800;color:var(--sub);letter-spacing:.06em}
+.num{font-size:clamp(3.8rem,21vw,6.5rem);font-weight:900;line-height:1.02;font-variant-numeric:tabular-nums}
+.unid{font-size:1.1rem;color:var(--fraco);font-weight:700}
+.status{display:inline-block;margin-top:8px;font-size:1.4rem;font-weight:900;padding:4px 18px;border-radius:999px;color:#0b0d17}
+.quando{margin-top:8px;font-size:1.15rem;color:var(--sub)}
+.prox{font-size:1.2rem;font-weight:800}
+
+.bt{width:100%;min-height:84px;border-radius:22px;font-size:clamp(1.25rem,6.2vw,1.6rem);font-weight:900;letter-spacing:.02em;display:flex;align-items:center;justify-content:center;gap:14px;padding:12px 18px;line-height:1.15}
+.bt .txt{flex:1;text-align:left}
+.bt.so-texto .txt{text-align:center}
+.bt small{display:block;font-size:1rem;font-weight:700;opacity:.9;margin-top:4px;letter-spacing:0}
+.bt svg{width:46px;height:46px;flex:0 0 46px}
+.bt-verde{background:var(--verde);color:#03170b}
+.bt-azul{background:var(--azul);color:#03202c}
+.bt-roxo{background:var(--roxo);color:#1d0630}
+.bt-verm{background:#e0293d;color:#fff}
+.bt-cinza{background:var(--card2);color:var(--txt);border:2px solid var(--linha)}
+.bt:active{transform:scale(.98);filter:brightness(1.12)}
+.bt:disabled{opacity:.3}
+.banner{background:#2d0f4a;color:#fff;border:4px solid var(--roxo);animation:pulsa 1.6s ease-in-out infinite}
+@keyframes pulsa{50%{box-shadow:0 0 0 9px rgba(199,125,255,.28)}}
+
+.pergunta{font-size:1.25rem;font-weight:800;text-align:center;color:var(--sub)}
+.visor{background:#05060d;border:4px solid var(--linha);border-radius:22px;text-align:center;padding:4px 10px 8px}
+.visor .num{font-size:clamp(3.6rem,21vw,5.6rem)}
+.teclas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tecla{background:var(--card2);color:#fff;font-size:2.5rem;font-weight:900;border-radius:18px;min-height:clamp(60px,9.5dvh,84px);border:2px solid var(--linha);font-variant-numeric:tabular-nums}
+.tecla:active{background:var(--linha)}
+.tecla.zero{grid-column:span 2}
+.tecla.apagar{font-size:1.25rem;background:#3a1f2c;border-color:#62344a}
+
+.passo{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:6px}
+.passo button{width:86px;height:86px;border-radius:50%;font-size:3.2rem;font-weight:900;background:var(--card2);color:#fff;border:3px solid var(--linha);line-height:1}
+.passo button:active{background:var(--linha)}
+.passo .val{min-width:110px;text-align:center;font-size:4.8rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.nota{font-size:1.05rem;color:var(--sub);text-align:center;margin-top:8px;line-height:1.4}
+
+.caixa{border-radius:20px;padding:16px;font-size:1.25rem;line-height:1.45}
+.caixa.info{background:#0f2635;border:3px solid #2a6a8a}
+.caixa.alerta{background:#33250a;border:3px solid var(--laranja)}
+.caixa.perigo{background:#3a0d14;border:4px solid var(--vermelho)}
+.caixa.ok{background:#0b2b19;border:3px solid var(--verde)}
+.caixa .grande{font-size:1.5rem;font-weight:900;display:block;margin-bottom:6px}
+.caixa ul{margin:6px 0 6px 24px}
+
+.ouvir{align-self:center;background:none;border:2px solid var(--linha);color:var(--sub);font-size:1.15rem;font-weight:800;padding:10px 22px;border-radius:999px;display:flex;gap:10px;align-items:center}
+.ouvir svg{width:28px;height:28px}
+.link{align-self:center;color:var(--fraco);font-size:1.05rem;text-decoration:underline;background:none;padding:12px}
+
+.dia{font-size:1.1rem;font-weight:900;color:var(--sub);letter-spacing:.06em;margin-top:8px}
+.item{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid var(--linha);border-radius:18px;padding:12px 14px;width:100%;color:#fff;text-align:left;min-height:74px}
+.item .h{font-size:1.3rem;font-weight:800;min-width:66px;font-variant-numeric:tabular-nums}
+.item .g{font-size:2.1rem;font-weight:900;min-width:76px;font-variant-numeric:tabular-nums}
+.item .tags{display:flex;flex-wrap:wrap;gap:6px;flex:1;justify-content:flex-end}
+.tag{font-size:1rem;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.tag.r{background:#0f2f40;color:var(--azul)} .tag.l{background:#2b1440;color:var(--roxo)} .tag.c{background:#33260a;color:var(--laranja)}
+
+#anotado{position:fixed;inset:0;background:rgba(4,22,11,.96);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:50}
+#anotado.show{display:flex}
+#anotado svg{width:150px;height:150px;color:var(--verde)}
+#anotado div{font-size:2.8rem;font-weight:900;color:var(--verde)}
+
+#dlg{position:fixed;inset:0;background:rgba(0,0,0,.86);display:none;align-items:flex-end;justify-content:center;z-index:40;padding:16px}
+#dlg.show{display:flex}
+.dlg-box{background:var(--card);border:3px solid var(--linha);border-radius:26px;padding:22px 18px;width:100%;max-width:520px;display:flex;flex-direction:column;gap:14px}
+.dlg-tit{font-size:1.6rem;font-weight:900}
+.dlg-txt{font-size:1.3rem;color:var(--sub);line-height:1.45}
+</style>
+</head>
+<body>
+
+<!-- ============ INÍCIO ============ -->
+<section class="tela" id="tela-inicio">
+  <div class="cab"><div class="cab-data" id="cab-data"></div><div class="cab-hora" id="cab-hora"></div></div>
+
+  <button class="bt banner" id="btn-lenta-pendente" onclick="abrirLenta()" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4M20 4l-4 4M16 6L6 16l-1 4 4-1L19 9M9.5 12.5l2 2M12.5 9.5l2 2M5 19l-3 3"/></svg>
+    <span class="txt">FALTA A INSULINA DA MANHÃ<small>toque aqui para anotar</small></span>
+  </button>
+
+  <div class="cartao" id="u-cartao">
+    <div class="rot">ÚLTIMA MEDIÇÃO</div>
+    <div class="num" id="u-num">---</div>
+    <div class="unid">mg/dL</div>
+    <div class="status" id="u-status" style="display:none"></div>
+    <div class="quando" id="u-quando">Nenhuma medição ainda</div>
+    <div class="prox" id="u-prox" style="margin-top:8px;display:none"></div>
+  </div>
+
+  <button class="bt bt-verde" onclick="abrirTeclado('medir')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s-6.5 7.2-6.5 11.8a6.5 6.5 0 0 0 13 0C18.5 9.9 12 2.7 12 2.7z"/></svg>
+    <span class="txt">MEDI A GLICEMIA</span>
+  </button>
+  <button class="bt bt-azul" onclick="abrirTeclado('comer')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 2v7a3 3 0 0 0 3 3v10M11 2v7a3 3 0 0 1-3 3M8 2v6M19 22V2c-2.5 1.5-4 4.5-4 8v4h4"/></svg>
+    <span class="txt">VOU COMER</span>
+  </button>
+  <button class="bt bt-roxo" id="btn-lenta" onclick="abrirLenta()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2l4 4M20 4l-4 4M16 6L6 16l-1 4 4-1L19 9M9.5 12.5l2 2M12.5 9.5l2 2M5 19l-3 3"/></svg>
+    <span class="txt">INSULINA DA MANHÃ<small id="lenta-info"></small></span>
+  </button>
+  <button class="bt bt-cinza" onclick="abrirHistorico()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>
+    <span class="txt">MINHAS ANOTAÇÕES</span>
+  </button>
+
+  <button class="link" id="btn-instalar" onclick="instalarApp()" style="display:none">Colocar este app na tela do celular</button>
+  <a class="link" href="/index.html">Abrir o GlicoCare completo</a>
+</section>
+
+<!-- ============ TECLADO ============ -->
+<section class="tela" id="tela-teclado" style="gap:10px">
+  <div class="topo"><button class="voltar" onclick="irInicio()">‹ Voltar</button><div class="titulo" id="tk-titulo"></div></div>
+  <div class="pergunta">Digite o número que apareceu no aparelho</div>
+  <div class="visor"><div class="num" id="tk-visor">---</div><div class="unid">mg/dL</div></div>
+  <div class="teclas">
+    <button class="tecla" onclick="tecla('1')">1</button><button class="tecla" onclick="tecla('2')">2</button><button class="tecla" onclick="tecla('3')">3</button>
+    <button class="tecla" onclick="tecla('4')">4</button><button class="tecla" onclick="tecla('5')">5</button><button class="tecla" onclick="tecla('6')">6</button>
+    <button class="tecla" onclick="tecla('7')">7</button><button class="tecla" onclick="tecla('8')">8</button><button class="tecla" onclick="tecla('9')">9</button>
+    <button class="tecla zero" onclick="tecla('0')">0</button><button class="tecla apagar" onclick="tecla('x')">APAGAR</button>
+  </div>
+  <button class="bt bt-verde so-texto" id="tk-ok" onclick="confirmarTeclado()" style="min-height:80px" disabled><span class="txt">CONFIRMAR</span></button>
+</section>
+
+<!-- ============ RESULTADO DA MEDIÇÃO ============ -->
+<section class="tela" id="tela-resultado">
+  <div class="topo"><button class="voltar" onclick="irInicio()">‹ Início</button></div>
+  <div class="cartao" id="rs-cartao"><div class="rot">GLICEMIA</div><div class="num" id="rs-num"></div><div class="unid">mg/dL</div><div class="status" id="rs-status"></div></div>
+
+  <div class="caixa perigo" id="rs-hipo"></div>
+  <div class="caixa ok" id="rs-ok"><span class="grande">Não precisa de insulina agora.</span></div>
+  <div class="caixa info" id="rs-cobre"><span class="grande">Não precisa aplicar agora.</span>A insulina que você já tomou ainda está agindo no corpo.</div>
+
+  <div id="rs-dose">
+    <div class="rot centro">INSULINA RÁPIDA</div>
+    <div class="passo"><button onclick="passo(-1)" aria-label="menos">−</button><div class="val" id="rs-val">0</div><button onclick="passo(1)" aria-label="mais">+</button></div>
+    <div class="unid centro">unidades</div>
+    <div class="nota" id="rs-iob"></div>
+  </div>
+
+  <div class="prox centro" id="rs-prox"></div>
+  <button class="bt bt-verde so-texto" id="rs-aplicar" onclick="aplicarRapida()"><span class="txt"></span></button>
+  <button class="bt bt-cinza so-texto" id="rs-nao" onclick="naoAplicar()"><span class="txt">NÃO VOU APLICAR</span></button>
+  <button class="bt bt-verde so-texto" id="rs-okbtn" onclick="anotado()"><span class="txt">OK</span></button>
+  <button class="ouvir" onclick="ouvir()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>OUVIR</button>
+</section>
+
+<!-- ============ VOU COMER ============ -->
+<section class="tela" id="tela-comer">
+  <div class="topo"><button class="voltar" onclick="irInicio()">‹ Voltar</button><div class="titulo">VOU COMER</div></div>
+  <div class="cartao" id="cm-cartao"><div class="rot">GLICEMIA</div><div class="num" id="cm-num"></div><div class="unid">mg/dL</div><div class="status" id="cm-status"></div></div>
+
+  <div class="caixa" id="cm-iob"></div>
+  <div class="caixa perigo" id="cm-hipo"></div>
+  <div class="caixa info" id="cm-baixa"><span class="grande">NÃO tome a insulina da refeição agora.</span>Com essa glicemia, a insulina da refeição pode baixar demais. Coma normalmente e meça de novo depois.</div>
+
+  <div id="cm-dose">
+    <div class="rot centro">INSULINA DA REFEIÇÃO</div>
+    <div class="passo"><button onclick="passo(-1)" aria-label="menos">−</button><div class="val" id="cm-val">0</div><button onclick="passo(1)" aria-label="mais">+</button></div>
+    <div class="unid centro">unidades</div>
+    <div class="nota">Doce, pão ou massa pedem mais. Refeição leve pede menos. Siga o que o médico orientou.</div>
+  </div>
+
+  <button class="bt bt-verde so-texto" id="cm-tomar" onclick="anotarComer(P.v)"><span class="txt"></span></button>
+  <button class="bt bt-cinza so-texto" id="cm-nao" onclick="anotarComer(0)"><span class="txt">NÃO VOU TOMAR</span></button>
+  <button class="bt bt-azul so-texto" id="cm-sem" onclick="anotarComer(0)"><span class="txt">ANOTAR SEM INSULINA</span></button>
+  <button class="ouvir" onclick="ouvir()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>OUVIR</button>
+</section>
+
+<!-- ============ INSULINA DA MANHÃ ============ -->
+<section class="tela" id="tela-lenta">
+  <div class="topo"><button class="voltar" onclick="irInicio()">‹ Voltar</button><div class="titulo">INSULINA DA MANHÃ</div></div>
+  <div class="nota" style="margin-top:0">(insulina lenta)</div>
+
+  <div class="caixa alerta" id="ln-ja"></div>
+  <div class="col" id="ln-jabtns">
+    <button class="bt bt-cinza so-texto" onclick="irInicio()"><span class="txt">VOLTAR AO INÍCIO</span></button>
+    <button class="link" onclick="lentaMostrarForm()">Preciso anotar outra dose</button>
+  </div>
+
+  <div class="col" id="ln-form">
+    <div>
+      <div class="rot centro">QUANTAS UNIDADES?</div>
+      <div class="passo"><button onclick="passo(-1)" aria-label="menos">−</button><div class="val" id="ln-val">0</div><button onclick="passo(1)" aria-label="mais">+</button></div>
+      <div class="unid centro">unidades</div>
+    </div>
+    <button class="bt bt-roxo so-texto" id="ln-tomar" onclick="tomarLenta(P.v)"><span class="txt"></span></button>
+    <button class="bt bt-cinza so-texto" id="ln-pular" onclick="pularLenta()"><span class="txt">HOJE NÃO VOU TOMAR</span></button>
+  </div>
+</section>
+
+<!-- ============ ANOTAÇÕES ============ -->
+<section class="tela" id="tela-historico">
+  <div class="topo"><button class="voltar" onclick="irInicio()">‹ Voltar</button><div class="titulo">MINHAS ANOTAÇÕES</div></div>
+  <div class="nota" style="margin-top:0">Últimos 7 dias. Anotou errado? Toque na anotação para apagar.</div>
+  <div class="col" id="hs-lista" style="gap:10px"></div>
+</section>
+
+<!-- ============ AVISO (1ª vez) ============ -->
+<section class="tela" id="tela-aviso">
+  <div class="titulo" style="font-size:1.6rem;margin-top:10px">Antes de começar</div>
+  <div class="caixa alerta">Este aplicativo <b>ajuda a anotar</b> a glicemia e a insulina. Ele <b>não é um aparelho médico</b> e as doses mostradas são só sugestões.<br><br>A dose certa é sempre a que <b>o médico orientou</b>. Na dúvida, fale com o médico.</div>
+  <button class="bt bt-verde so-texto" onclick="aceitarAviso()"><span class="txt">LI E CONCORDO</span></button>
+</section>
+
+<div id="dlg"><div class="dlg-box">
+  <div class="dlg-tit" id="dlg-tit"></div>
+  <div class="dlg-txt" id="dlg-txt"></div>
+  <button class="bt so-texto" id="dlg-sim" onclick="dlgSim()"><span class="txt"></span></button>
+  <button class="bt bt-cinza so-texto" id="dlg-nao" onclick="dlgNao()"><span class="txt"></span></button>
+</div></div>
+
+<div id="anotado">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M7 12.5l3.2 3.2L17 9"/></svg>
+  <div id="an-txt">ANOTADO!</div>
+</div>
+
+<script>
+// Mesmas chaves, mesmas contas e mesmos limites do GlicoCare completo (diabetes_pwa/index.html).
+// Se mudar a conta de dose lá, mudar aqui também.
+const LENTA_PADRAO_U = 25;
+const DUR_RAPIDA_H = 4;
+const MINUTOS_BLOQUEIO = 30;
+const LIMITE_REGISTROS = 8760;
+
+const $ = id => document.getElementById(id);
+const pid = () => localStorage.getItem('gc_active') || 'default';
+
+function loadConfig(){
+  const def = { insulinaTipo:24, doseLenta:25, glicemiaAlvo:200, fatorSens:40, autoAprendizado:false, horaResetLenta:8, doseRefeicao:6 };
+  return Object.assign(def, JSON.parse(localStorage.getItem('gc_cfg_' + pid()) || '{}'));
+}
+function saveConfig(c){ localStorage.setItem('gc_cfg_' + pid(), JSON.stringify(c)); }
+function loadData(){ return JSON.parse(localStorage.getItem('gc_data_' + pid()) || '[]'); }
+function saveData(d){
+  d.sort((a,b) => new Date(a.dt) - new Date(b.dt));
+  if (d.length > LIMITE_REGISTROS) d = d.slice(d.length - LIMITE_REGISTROS);
+  localStorage.setItem('gc_data_' + pid(), JSON.stringify(d));
+  sincronizar();
+}
+
+function doseU(x){ const n = Number(x); return (!isFinite(n) || n <= 0) ? 0 : Math.round(n); }
+function agoraLocal(){ const n = new Date(); return new Date(n.getTime() - n.getTimezoneOffset()*60000).toISOString().slice(0,16); }
+const hhmm = d => new Date(d).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+const unidades = v => v === 1 ? '1 UNIDADE' : v + ' UNIDADES';
+
+function iobRapida(dados){
+  const agora = Date.now(); let iob = 0;
+  for (const r of dados) {
+    if (!r.aplicou || !(r.rapida > 0)) continue;
+    const h = (agora - new Date(r.dt).getTime()) / 3600000;
+    if (!isFinite(h) || h < 0 || h >= DUR_RAPIDA_H) continue;   // registro no futuro não conta
+    iob += r.rapida * (1 - h / DUR_RAPIDA_H);
+  }
+  return iob;
+}
+
+function aprenderFator(dados){
+  const cfg = loadConfig();
+  if (!cfg.autoAprendizado) return;
+  const c = dados.filter(r => r.glicemia != null && r.glicemia > 0);
+  if (c.length < 2) return;
+  const ult = c[c.length-1], ant = c[c.length-2];
+  if (!ant.aplicou || ant.sugRapida == null) return;
+  const h = (new Date(ult.dt) - new Date(ant.dt)) / 3600000;
+  if (h <= 1 || h >= 5) return;
+  const dose = ant.rapida || 0; if (dose <= 0) return;
+  const queda = ant.glicemia - ult.glicemia; if (queda <= 0) return;
+  const f = queda / dose; if (f < 10 || f > 200) return;
+  cfg.fatorSens = cfg.fatorSens * 0.8 + f * 0.2;
+  saveConfig(cfg);
+}
+
+function marcarProxima(g, dose, iob){
+  let h = g < 70 ? 0.5 : g < 100 ? 2 : g <= 140 ? 4 : g <= 250 ? 2 : 1;
+  if (dose > 0 || iob > 0) h = Math.min(h, 2);
+  const ts = Date.now() + h * 3600000;
+  localStorage.setItem('gc_proxts_' + pid(), ts);
+  return ts;
+}
+
+function estado(g){
+  if (g < 70)   return { txt:'BAIXA',      cor:'var(--vermelho)' };
+  if (g <= 140) return { txt:'BOA',        cor:'var(--verde)' };
+  if (g <= 250) return { txt:'ALTA',       cor:'var(--laranja)' };
+  return               { txt:'MUITO ALTA', cor:'var(--verm2)' };
+}
+function pintarCartao(pref, g){
+  const e = estado(g);
+  $(pref + '-num').textContent = g;
+  $(pref + '-num').style.color = e.cor;
+  $(pref + '-status').textContent = e.txt;
+  $(pref + '-status').style.background = e.cor;
+  $(pref + '-cartao').style.borderColor = e.cor;
+}
+function mostrarSo(ids, visiveis){ ids.forEach(id => $(id).style.display = visiveis.includes(id) ? '' : 'none'); }
+const TEXTO_HIPO = '<span class="grande">GLICEMIA BAIXA!</span>Coma açúcar <b>AGORA</b>:<ul><li>1 copo de suco de laranja</li><li>ou 1 colher de açúcar na água</li><li>ou 3 balas <b>comuns</b> (bala diet não serve)</li></ul>Espere 15 minutos e meça de novo. Se não melhorar, <b>chame ajuda</b>.';
+
+function diaRotulo(d){
+  const x = new Date(d); x.setHours(0,0,0,0);
+  const h = new Date(); h.setHours(0,0,0,0);
+  const dif = Math.round((h - x) / 86400000);
+  if (dif === 0) return 'HOJE';
+  if (dif === 1) return 'ONTEM';
+  return x.toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'2-digit'}).toUpperCase();
+}
+function haQuanto(d){
+  const min = Math.round((Date.now() - new Date(d)) / 60000);
+  if (min < 2) return 'agora mesmo';
+  if (min < 60) return 'há ' + min + ' minutos';
+  const h = Math.floor(min / 60);
+  if (h < 24) return 'há ' + h + (h === 1 ? ' hora' : ' horas');
+  const dias = Math.floor(h / 24);
+  return 'há ' + dias + (dias === 1 ? ' dia' : ' dias');
+}
+
+// ── navegação: o "voltar" do Android sempre cai no início, nunca fecha o app no meio de uma anotação ──
+let telaAtual = '', travaAte = 0;
+document.addEventListener('click', e => { if (Date.now() < travaAte) { e.stopPropagation(); e.preventDefault(); } }, true);
+function mostrar(t){
+  document.querySelectorAll('.tela').forEach(el => el.classList.toggle('ativa', el.id === 'tela-' + t));
+  telaAtual = t;
+  travaAte = Date.now() + 600;   // toque duplo no CONFIRMAR não pode cair no botão da tela seguinte
+  window.scrollTo(0, 0);
+}
+function ir(t){ if (telaAtual === 'inicio') history.pushState({fora:1}, ''); mostrar(t); }
+function irInicio(){
+  if (history.state && history.state.fora) history.back();
+  else { mostrar('inicio'); renderInicio(); }
+}
+window.addEventListener('popstate', () => { fecharDlg(); if ('speechSynthesis' in window) speechSynthesis.cancel(); mostrar('inicio'); renderInicio(); });
+
+// ── início ──
+function lentaHoje(){
+  const ini = new Date(); ini.setHours(0,0,0,0);
+  const regs = loadData().filter(r => r._tipo === 'insulina lenta' && new Date(r.dt) >= ini && r.lenta > 0);
+  return { total: regs.reduce((s,r) => s + r.lenta, 0), ultima: regs.length ? regs[regs.length-1].dt : null };
+}
+const marcaLentaHoje = () => new Date().toDateString() + '|manha';
+
+function renderRelogio(){
+  const d = new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+  $('cab-data').textContent = d.charAt(0).toUpperCase() + d.slice(1);
+  $('cab-hora').textContent = hhmm(new Date());
+}
+function renderInicio(){
+  renderRelogio();
+  const ult = loadData().filter(r => r.glicemia).pop();
+  if (ult) {
+    pintarCartao('u', ult.glicemia);
+    $('u-status').style.display = '';
+    $('u-quando').textContent = diaRotulo(ult.dt).toLowerCase() + ' às ' + hhmm(ult.dt) + ' — ' + haQuanto(ult.dt);
+  }
+  const ts = +localStorage.getItem('gc_proxts_' + pid()) || 0, agora = Date.now();
+  const prox = $('u-prox');
+  if (ts > agora) { prox.textContent = 'Medir de novo às ' + hhmm(ts); prox.style.color = 'var(--azul)'; prox.style.display = ''; }
+  else if (ts && agora - ts < 6 * 3600000) { prox.textContent = 'Já está na hora de medir'; prox.style.color = 'var(--laranja)'; prox.style.display = ''; }
+  else prox.style.display = 'none';
+
+  const cfg = loadConfig(), hoje = lentaHoje();
+  const respondeu = localStorage.getItem('gc_lenta_' + pid()) === marcaLentaHoje();
+  const pendente = !respondeu && hoje.total === 0 && new Date().getHours() >= cfg.horaResetLenta;
+  $('btn-lenta-pendente').style.display = pendente ? '' : 'none';
+  $('btn-lenta').style.display = pendente ? 'none' : '';
+  $('lenta-info').textContent = hoje.total > 0 ? 'Hoje: ' + doseU(hoje.total) + ' U às ' + hhmm(hoje.ultima) + ' ✓'
+                              : respondeu ? 'Hoje: não tomada' : 'Ainda não anotada hoje';
+}
+
+// ── teclado ──
+let modo = 'medir', dig = '';
+function abrirTeclado(m){
+  modo = m; dig = '';
+  $('tk-titulo').textContent = m === 'medir' ? 'MEDI A GLICEMIA' : 'VOU COMER';
+  atualizarVisor();
+  ir('teclado');
+}
+function tecla(k){
+  if (k === 'x') dig = dig.slice(0, -1);
+  else if (dig.length < 3 && !(dig === '' && k === '0')) dig += k;
+  atualizarVisor();
+}
+function atualizarVisor(){
+  $('tk-visor').textContent = dig || '---';
+  $('tk-visor').style.color = dig ? '#fff' : 'var(--linha)';
+  $('tk-ok').disabled = dig.length < 2;
+}
+function confirmarTeclado(){
+  const g = parseInt(dig, 10);
+  if (g < 20 || g > 600) {
+    dlg({ tit:'Número estranho', txt:'<b>' + g + '</b> não parece certo.<br>Confira no aparelho e digite de novo.', sim:'DIGITAR DE NOVO', simFn:() => { dig = ''; atualizarVisor(); } });
+    return;
+  }
+  if (modo === 'comer') { telaComer(g); return; }
+  const ult = loadData().filter(r => r._tipo !== 'insulina lenta' && r.glicemia).pop();
+  if (ult) {
+    const min = (Date.now() - new Date(ult.dt)) / 60000;
+    if (min >= 0 && min < MINUTOS_BLOQUEIO) {
+      const m = Math.max(1, Math.floor(min));
+      dlg({ tit:'Já anotou há pouco', txt:'Você já anotou <b>' + ult.glicemia + '</b> às ' + hhmm(ult.dt) + ', há ' + m + (m === 1 ? ' minuto' : ' minutos') + '.<br><br>Anotar de novo?',
+            sim:'SIM, ANOTAR', simFn:() => registrarMedicao(g), nao:'NÃO', naoFn:irInicio });
+      return;
+    }
+  }
+  registrarMedicao(g);
+}
+
+// ── passo (− valor +) ──
+let P = { v:0, max:40, el:null, muda:null };
+function passoIniciar(valId, v, max, muda){ P = { v, max, el:$(valId), muda }; P.el.textContent = v; muda(v); }
+function passo(d){ P.v = Math.min(P.max, Math.max(0, P.v + d)); P.el.textContent = P.v; P.muda(P.v); }
+
+// ── medição normal ──
+let reg = null, falaFn = null;
+function registrarMedicao(g){
+  const id = Date.now();
+  const dados = loadData();
+  dados.push({ id, dt:agoraLocal(), glicemia:g, rapida:0, lenta:0, aplicou:false, sugRapida:null });
+  saveData(dados);
+  aprenderFator(loadData());
+
+  const d2 = loadData(), iob = iobRapida(d2), cfg = loadConfig(), alvo = cfg.glicemiaAlvo;
+  let sug = 0;
+  if (g > alvo) sug = Math.round(Math.max(0, (g - alvo) / cfg.fatorSens - iob) * 2) / 2;
+  const i = d2.findIndex(r => r.id === id);
+  if (i > -1) { d2[i].sugRapida = sug; saveData(d2); }
+  const prox = marcarProxima(g, sug, iob);
+  reg = { id, g };
+
+  pintarCartao('rs', g);
+  const dose = doseU(sug);
+  const partes = ['rs-hipo','rs-ok','rs-cobre','rs-dose','rs-aplicar','rs-nao','rs-okbtn'];
+  if (g < 70) {
+    $('rs-hipo').innerHTML = TEXTO_HIPO;
+    $('rs-okbtn').querySelector('.txt').textContent = 'ENTENDI';
+    mostrarSo(partes, ['rs-hipo','rs-okbtn']);
+  } else if (dose > 0) {
+    $('rs-iob').textContent = iob >= 0.5 ? 'Já descontei ' + doseU(iob) + ' U que ainda estão agindo no corpo.' : '';
+    passoIniciar('rs-val', dose, 40, v => { $('rs-aplicar').querySelector('.txt').textContent = v > 0 ? 'APLIQUEI ' + unidades(v) : 'NÃO APLIQUEI'; });
+    mostrarSo(partes, ['rs-dose','rs-aplicar','rs-nao']);
+  } else {
+    $('rs-okbtn').querySelector('.txt').textContent = 'OK';
+    mostrarSo(partes, [g <= alvo ? 'rs-ok' : 'rs-cobre', 'rs-okbtn']);
+  }
+  $('rs-prox').textContent = 'Medir de novo às ' + hhmm(prox);
+  falaFn = () => 'Glicemia ' + g + '. ' + estado(g).txt.toLowerCase() + '. ' +
+    (g < 70 ? 'Coma açúcar agora e meça de novo em 15 minutos.'
+     : dose > 0 ? 'Insulina rápida: ' + P.v + (P.v === 1 ? ' unidade.' : ' unidades.')
+     : 'Não precisa de insulina agora.') + ' Medir de novo às ' + hhmm(prox) + '.';
+  ir('resultado');
+}
+function aplicarRapida(){
+  const u = P.v, d = loadData(), i = d.findIndex(r => r.id === reg.id);
+  if (i > -1) { d[i].rapida = u; d[i].aplicou = u > 0; saveData(d); }
+  marcarProxima(reg.g, u, iobRapida(loadData()));
+  anotado();
+}
+function naoAplicar(){
+  marcarProxima(reg.g, 0, iobRapida(loadData()));
+  anotado();
+}
+
+// ── vou comer ──
+let comerG = 0;
+function telaComer(g){
+  comerG = g;
+  const cfg = loadConfig(), alvo = cfg.glicemiaAlvo, base = doseU(cfg.doseRefeicao ?? 6);
+  const iob = iobRapida(loadData());
+  pintarCartao('cm', g);
+
+  const box = $('cm-iob');
+  if (iob >= 0.5) {
+    const alto = iob >= 2;
+    box.className = 'caixa ' + (alto ? 'alerta' : 'info');
+    box.innerHTML = 'Você ainda tem <b>' + doseU(iob) + ' U</b> de insulina rápida agindo no corpo.' +
+      (alto ? '<br>Se puder, coma primeiro e meça de novo antes de tomar mais.' : '');
+  }
+  const partes = ['cm-iob','cm-hipo','cm-baixa','cm-dose','cm-tomar','cm-nao','cm-sem'];
+  const vis = iob >= 0.5 ? ['cm-iob'] : [];
+  const pode = !(g < 70 || g < alvo - 40);
+  if (pode) {
+    passoIniciar('cm-val', g < alvo ? doseU(base / 2) : base, 40, v => { $('cm-tomar').querySelector('.txt').textContent = v > 0 ? 'TOMEI ' + unidades(v) : 'ANOTAR SEM INSULINA'; });
+    vis.push('cm-dose','cm-tomar','cm-nao');
+  } else if (g < 70) {
+    $('cm-hipo').innerHTML = TEXTO_HIPO;
+    vis.push('cm-hipo','cm-sem');
+  } else vis.push('cm-baixa','cm-sem');
+  mostrarSo(partes, vis);
+
+  falaFn = () => 'Glicemia ' + g + '. ' + estado(g).txt.toLowerCase() + '. ' +
+    (pode ? 'Insulina da refeição: ' + P.v + (P.v === 1 ? ' unidade.' : ' unidades.')
+     : g < 70 ? 'Glicemia baixa. Coma açúcar agora. Não tome a insulina.'
+     : 'Não tome a insulina da refeição agora.');
+  ir('comer');
+}
+function anotarComer(dose){
+  const dados = loadData(), agora = Date.now();
+  // igual ao GlicoCare completo: se já anotou essa mesma glicemia há pouco (±15 e < 30 min), junta a dose nela em vez de duplicar
+  const ultima = dados.filter(r => r.glicemia != null).sort((a,b) => new Date(b.dt) - new Date(a.dt))[0];
+  const min = ultima ? (agora - new Date(ultima.dt).getTime()) / 60000 : Infinity;
+  if (ultima && Math.abs(ultima.glicemia - comerG) <= 15 && min < 30) {
+    const i = dados.findIndex(r => r.id === ultima.id);
+    dados[i].rapida = (dados[i].rapida || 0) + dose;
+    if (dose > 0 && dados[i].sugRapida == null) dados[i].sugRapida = dose;
+    dados[i].aplicou = dados[i].rapida > 0;
+    dados[i]._antes = true;
+  } else {
+    dados.push({ id:agora, dt:agoraLocal(), glicemia:comerG, rapida:dose, lenta:0, aplicou:dose > 0, sugRapida:dose > 0 ? dose : null, _antes:true });
+  }
+  saveData(dados);
+  marcarProxima(comerG, dose, iobRapida(loadData()));
+  anotado();
+}
+
+// ── insulina da manhã (lenta) ──
+function abrirLenta(){
+  const hoje = lentaHoje();
+  if (hoje.total > 0) {
+    $('ln-ja').innerHTML = '<span class="grande">ATENÇÃO</span>Hoje você já anotou <b>' + doseU(hoje.total) + ' U</b> às ' + hhmm(hoje.ultima) + '.<br><b>Não tome de novo.</b>';
+    mostrarSo(['ln-ja','ln-jabtns','ln-form'], ['ln-ja','ln-jabtns']);
+  } else {
+    mostrarSo(['ln-ja','ln-jabtns','ln-form'], ['ln-form']);
+    $('ln-pular').style.display = '';
+  }
+  passoIniciar('ln-val', LENTA_PADRAO_U, 80, v => { $('ln-tomar').querySelector('.txt').textContent = v > 0 ? 'TOMEI ' + unidades(v) : 'NÃO TOMEI'; });
+  ir('lenta');
+}
+function lentaMostrarForm(){
+  $('ln-jabtns').style.display = 'none';
+  $('ln-pular').style.display = 'none';
+  $('ln-form').style.display = '';
+}
+function tomarLenta(u){
+  if (u <= 0) { pularLenta(); return; }
+  const dados = loadData();
+  dados.push({ id:Date.now(), dt:agoraLocal(), glicemia:null, rapida:0, lenta:u, sugLenta:LENTA_PADRAO_U, aplicou:true, sugRapida:null, _tipo:'insulina lenta' });
+  localStorage.setItem('gc_lenta_' + pid(), marcaLentaHoje());
+  localStorage.setItem('gc_lentadose_' + pid(), u);
+  saveData(dados);
+  anotado();
+}
+function pularLenta(){
+  localStorage.setItem('gc_lenta_' + pid(), marcaLentaHoje());
+  localStorage.setItem('gc_lentadose_' + pid(), 0);
+  anotado('ANOTADO!');
+}
+
+// ── anotações ──
+function abrirHistorico(){ renderHistorico(); ir('historico'); }
+function renderHistorico(){
+  const desde = Date.now() - 7 * 86400000;
+  const regs = loadData().filter(r => new Date(r.dt).getTime() >= desde).reverse();
+  if (!regs.length) { $('hs-lista').innerHTML = '<div class="caixa info">Nenhuma anotação nos últimos 7 dias.</div>'; return; }
+  let html = '', diaAnt = '';
+  for (const r of regs) {
+    const dia = diaRotulo(r.dt);
+    if (dia !== diaAnt) { html += '<div class="dia">' + dia + '</div>'; diaAnt = dia; }
+    const g = r.glicemia ? '<span class="g" style="color:' + estado(r.glicemia).cor + '">' + r.glicemia + '</span>' : '<span class="g" style="color:var(--linha)">—</span>';
+    let tags = '';
+    if (r.rapida > 0) tags += '<span class="tag r">rápida ' + doseU(r.rapida) + ' U</span>';
+    if (r.lenta > 0)  tags += '<span class="tag l">lenta ' + doseU(r.lenta) + ' U</span>';
+    if (r._antes)     tags += '<span class="tag c">antes de comer</span>';
+    html += '<button class="item" onclick="pedirApagar(' + Number(r.id) + ')"><span class="h">' + hhmm(r.dt) + '</span>' + g + '<span class="tags">' + tags + '</span></button>';
+  }
+  $('hs-lista').innerHTML = html;
+}
+function descrever(r){
+  const p = [];
+  if (r.glicemia) p.push('glicemia <b>' + r.glicemia + '</b>');
+  if (r.rapida > 0) p.push('rápida <b>' + doseU(r.rapida) + ' U</b>');
+  if (r.lenta > 0) p.push('lenta <b>' + doseU(r.lenta) + ' U</b>');
+  return diaRotulo(r.dt).toLowerCase() + ' às ' + hhmm(r.dt) + '<br>' + p.join(', ');
+}
+function pedirApagar(id){
+  const r = loadData().find(x => x.id === id);
+  if (!r) return;
+  dlg({ tit:'Apagar esta anotação?', txt:descrever(r), sim:'SIM, APAGAR', perigo:true, nao:'NÃO', simFn:() => {
+    const d = loadData().filter(x => x.id !== id);
+    if (r._tipo === 'insulina lenta' && diaRotulo(r.dt) === 'HOJE') localStorage.removeItem('gc_lenta_' + pid());
+    saveData(d);
+    renderHistorico();
+  }});
+}
+
+// ── caixinha de pergunta, "anotado!" e voz ──
+let dlgFn = null, dlgNaoFn = null;
+function dlg(o){
+  $('dlg-tit').textContent = o.tit;
+  $('dlg-txt').innerHTML = o.txt;
+  $('dlg-sim').querySelector('.txt').textContent = o.sim;
+  $('dlg-sim').className = 'bt so-texto ' + (o.perigo ? 'bt-verm' : 'bt-verde');
+  $('dlg-nao').style.display = o.nao ? '' : 'none';
+  $('dlg-nao').querySelector('.txt').textContent = o.nao || '';
+  dlgFn = o.simFn; dlgNaoFn = o.naoFn;
+  $('dlg').classList.add('show');
+  travaAte = Date.now() + 500;
+}
+function dlgSim(){ const f = dlgFn; fecharDlg(); if (f) f(); }
+function dlgNao(){ const f = dlgNaoFn; fecharDlg(); if (f) f(); }
+function fecharDlg(){ $('dlg').classList.remove('show'); dlgFn = dlgNaoFn = null; }
+
+function anotado(txt){
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  $('an-txt').textContent = txt || 'ANOTADO!';
+  $('anotado').classList.add('show');
+  setTimeout(() => { $('anotado').classList.remove('show'); irInicio(); }, 1500);
+}
+
+function ouvir(){
+  if (!falaFn) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(falaFn());
+  u.lang = 'pt-BR'; u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
+if (!('speechSynthesis' in window)) document.querySelectorAll('.ouvir').forEach(b => b.style.display = 'none');
+
+// ── aviso da primeira vez (mesma chave do GlicoCare completo) ──
+function aceitarAviso(){ localStorage.setItem('gc_aviso_aceito', '1'); mostrar('inicio'); renderInicio(); }
+
+// ── sincronização silenciosa com o painel da mãe (igual ao GlicoCare completo) ──
+function sincronizar(){
+  if (localStorage.getItem('gc_semente') !== '1') return;
+  fetch('https://madmax-1.tailbe358c.ts.net/glicocare/mae_87ea217ed9eae28de1/sync', {
+    method:'POST', headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ dados: loadData(), cfg: loadConfig() })
+  }).catch(() => {});
+}
+(function(){
+  const p = new URLSearchParams(location.search);
+  if (p.get('semente') === '1') { localStorage.setItem('gc_semente', '1'); history.replaceState(null, '', location.pathname); }
+  sincronizar();
+})();
+
+// ── instalar ──
+let pedidoInstalar = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); pedidoInstalar = e; $('btn-instalar').style.display = ''; });
+function instalarApp(){ if (!pedidoInstalar) return; pedidoInstalar.prompt(); pedidoInstalar = null; $('btn-instalar').style.display = 'none'; }
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/facil/sw.js', { scope:'/facil/' }).catch(() => {});
+
+// ── começo ──
+if (localStorage.getItem('gc_aviso_aceito')) { mostrar('inicio'); renderInicio(); }
+else mostrar('aviso');
+setInterval(() => { if (telaAtual === 'inicio') renderInicio(); }, 20000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && telaAtual === 'inicio') renderInicio(); });
+</script>
+</body>
+</html>
